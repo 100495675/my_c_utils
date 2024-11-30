@@ -59,7 +59,7 @@ static inline Result result_err(char *error_message) {
 
 static inline void result_unwrap(Result result) {
   if (result.is_error) {
-    fprintf_s(stderr, "Unwrap on error: %s\n", result.error_message);
+    fprintf(stderr, "Unwrap on error: %s\n", result.error_message);
     exit(1);
   }
 }
