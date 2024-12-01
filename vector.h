@@ -124,12 +124,12 @@
   }                                                                            \
                                                                                \
   /* Dereference the iterator to get the current element */                    \
-  static inline Result_##Type vector_##Type##_iter_deref(                      \
+  static inline Result_##Type##_ref vector_##Type##_iter_deref(                \
       const Vector_##Type##_iter *self) {                                      \
     if (self->index >= self->vector.size) {                                    \
-      return result_##Type##_err("Iterator out of bounds");                    \
+      return result_##Type##_ref_err("Iterator out of bounds");                \
     }                                                                          \
-    return result_##Type##_ok(self->vector.data[self->index]);                 \
+    return result_##Type##_ref_ok(&(self->vector.data[self->index]));          \
   }                                                                            \
                                                                                \
   /* Move the iterator to the next element */                                  \
@@ -144,26 +144,21 @@
            self->index == other.index;                                         \
   }
 
-
-
-
-
-
-
-
+#define vector_for(Type, var_name, vector_ref)                                      \
+  for (Vector_##Type##_iter _it = vector_##Type##_iter(vector_ref);            \
+       result_##Type##_ref_is_ok(vector_##Type##_iter_deref(&_it));            \
+       vector_##Type##_iter_next(&_it)) {                                      \
+    Type *var_name = &(_it.vector.data[_it.index]);
 
 #define COUNT_ARGS(_1, _2, COUNT, ...) COUNT
 #define EXPAND_ARGS(args) COUNT_ARGS args
 #define COUNT(...) EXPAND_ARGS((__VA_ARGS__, 2, 1))
 
-#define VECTOR_CONFIG_2(a, b)                                             \
-  _VECTOR_CONFIG(a, b)
-#define VECTOR_CONFIG_1(a)                                             \
-  _VECTOR_CONFIG(a, NULL)
+#define VECTOR_CONFIG_2(a, b) _VECTOR_CONFIG(a, b)
+#define VECTOR_CONFIG_1(a) _VECTOR_CONFIG(a, NULL)
 
 #define VECTOR_CHOOSER2(count) VECTOR_CONFIG_##count
 #define VECTOR_CHOOSER(count) VECTOR_CHOOSER2(count)
 #define VECTOR_CONFIG(...) VECTOR_CHOOSER(COUNT(__VA_ARGS__))(__VA_ARGS__)
-
 
 #endif
