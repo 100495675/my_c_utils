@@ -3,10 +3,10 @@
 
 // Unicamente no se usa el trivial_free es para structs con punteros,
 // los punteros prestados (borrowed ref) a una variable que tiene dueño no necesitan ser liberados
-#define TRIVIAL_FREE(Type)                           \
-    static inline void Type##_free(ref_##Type value) \
-    {                                                \
-        (void)value;                                 \
+#define TRIVIAL_FREE(TypeName, ParamDecl) \
+    static inline void TypeName##_free(ParamDecl) \
+    { \
+        (void)value; \
     }
 
 /* free.h now only defines the TRIVIAL_FREE macro; primitive instantiations

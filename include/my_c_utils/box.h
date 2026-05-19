@@ -37,7 +37,12 @@
         return (Box_##Type){.value = boxed_value};                                            \
     }                                                                                         \
                                                                                               \
-    static inline ref_##Type Box_##Type##_deref(const ref_Box_##Type self)                    \
+    static inline cref_##Type Box_##Type##_deref(cref_Box_##Type self)                        \
+    {                                                                                         \
+        return self->value;                                                                   \
+    }                                                                                         \
+                                                                                              \
+    static inline ref_##Type Box_##Type##_deref_mut(ref_Box_##Type self)                     \
     {                                                                                         \
         return self->value;                                                                   \
     }                                                                                         \
@@ -55,7 +60,7 @@
         return value;                                                                         \
     }                                                                                         \
                                                                                               \
-    static inline Box_##Type Box_##Type##_clone(const Box_##Type *src)                        \
+    static inline Box_##Type Box_##Type##_clone(cref_Box_##Type src)                          \
     {                                                                                         \
         if (!src)                                                                             \
         {                                                                                     \

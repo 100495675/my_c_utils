@@ -28,7 +28,7 @@
                                                                                    \
   typedef struct                                                                   \
   {                                                                                \
-    const ref_List_##Type list;                                                    \
+    cref_List_##Type list;                                                         \
     ref_Node_##Type node;                                                          \
   } iter_List_##Type;                                                              \
   REF_EXPAND(iter_List_##Type)                                                     \
@@ -101,7 +101,7 @@
     self->size = 0;                                                                \
   }                                                                                \
                                                                                    \
-  static inline void List_##Type##_debug(const ref_List_##Type self)               \
+  static inline void List_##Type##_debug(cref_List_##Type self)                      \
   {                                                                                \
     printf("Size: %zu\n", self->size);                                             \
     ref_Node_##Type current = self->head;                                          \
@@ -114,13 +114,13 @@
     }                                                                              \
   }                                                                                \
                                                                                    \
-  static inline Size List_##Type##_size(const ref_List_##Type self)                \
+  static inline Size List_##Type##_size(cref_List_##Type self)                      \
   {                                                                                \
     return self->size;                                                             \
   }                                                                                \
                                                                                    \
   static inline iter_List_##Type List_##Type##_into_iter(                          \
-      const ref_List_##Type self)                                                  \
+      cref_List_##Type self)                                                         \
   {                                                                                \
     return (iter_List_##Type){                                                     \
         .list = self,                                                              \
@@ -128,7 +128,7 @@
   }                                                                                \
                                                                                    \
   static inline Result_ref_##Type iter_List_##Type##_deref(                        \
-      const ref_iter_List_##Type it)                                               \
+      cref_iter_List_##Type it)                                                      \
   {                                                                                \
     if (it->node == NULL)                                                          \
     {                                                                              \
@@ -149,7 +149,7 @@
   }                                                                                \
                                                                                    \
   RESULT_CONFIG(List_##Type)                                                       \
-  static inline List_##Type List_##Type##_clone(const List_##Type *src) \
+  static inline List_##Type List_##Type##_clone(cref_List_##Type src) \
   {                                                                                \
     if (!src)                                                                      \
     {                                                                              \

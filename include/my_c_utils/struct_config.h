@@ -74,7 +74,7 @@
     }
 
 #define CLONE_CONFIG(Type, ...)                                              \
-    static inline Type Type##_clone(const Type *src)                         \
+    static inline Type Type##_clone(cref_##Type src)                          \
     {                                                                        \
         if (!src)                                                            \
         {                                                                    \

@@ -7,7 +7,7 @@
 #include "my_c_utils/tipos.h"
 
 #define PRIMITIVE_CONFIG(Type) \
-	TRIVIAL_FREE(Type)        \
+	TRIVIAL_FREE(Type, ref_##Type value)        \
 	RESULT_CONFIG(Type)       \
 	TRIVIAL_CLONE(Type)
 

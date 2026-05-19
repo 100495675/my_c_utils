@@ -12,7 +12,7 @@ Functions the containes has to implement to be iterable:
 #define MY_C_UTILS_CONCAT_IMPL(a, b) a##b
 #define MY_C_UTILS_CONCAT(a, b) MY_C_UTILS_CONCAT_IMPL(a, b)
 
-// Reference version (pointer) - original behavior
+// Reference version (borrowed pointer) - exposes immutable borrows.
 #define for_each_ref_IMPL(ItemType, var_name, container, iterable, body, counter)                    \
     for (iter_##container##_##ItemType MY_C_UTILS_CONCAT(_it_, counter) =                            \
              container##_##ItemType##_into_iter(iterable);                                           \
@@ -25,7 +25,7 @@ Functions the containes has to implement to be iterable:
         {                                                                                            \
             break;                                                                                   \
         }                                                                                            \
-        ref_##ItemType var_name = Result_ref_##ItemType##_unwrap(MY_C_UTILS_CONCAT(_res_, counter)); \
+        cref_##ItemType var_name = Result_ref_##ItemType##_unwrap(MY_C_UTILS_CONCAT(_res_, counter)); \
         body                                                                                         \
     }
 

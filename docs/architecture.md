@@ -23,8 +23,9 @@ my_c_utils is a header-only C11 library that provides reusable generic container
 
 ## Ownership model
 
-- `ref_##Type` is a borrowed alias family. It never owns the pointed-to value.
-- `TRIVIAL_FREE(ref_##Type)` exists only to keep borrowed references compatible with the generic destructor API; it never releases memory.
+- `ref_##Type` is the mutable borrowed alias family.
+- `cref_##Type` is the immutable borrowed alias family.
+- Borrowed helpers exist only to keep references compatible with the generic destructor API; they never release memory.
 - Containers own the values they store.
 - `push_back` and `add` copy values into storage.
 - `set`, `remove`, `clear`, and `free` release owned elements before replacing or dropping them.
@@ -32,7 +33,10 @@ my_c_utils is a header-only C11 library that provides reusable generic container
 - `get` and `at` return borrowed references wrapped in typed `Result` values.
 - `Box_Type` owns a heap-allocated `Type` value and provides `deref`, `into_inner`, and `free` helpers.
 - `STRUCT_CONFIG(Type, field_type, field_name, ...)` declares the struct and generates `Type_free` and `Type_clone` under a single rule set.
-- `Type_clone(const Type *src)` returns a cloned value directly; it aborts on invalid input or allocation failure instead of returning `Result`.
+- Read-only APIs should use `cref_##Type` so immutable borrows are visible at the call site.
+- `Type_clone(const cref_##Type src)` returns a cloned value directly; it aborts on invalid input or allocation failure instead of returning `Result`.
+- `STRUCT_CONFIG` is intended for plain data structs whose field list fully defines ownership.
+- Container templates keep manual struct declarations when their invariants require specialized `free`, `clone`, or iterator state.
 
 ## Iterator contract
 

@@ -21,7 +21,7 @@
                                                                                                    \
     typedef struct                                                                                 \
     {                                                                                              \
-        const ref_Vector_##Type vector;                                                            \
+        cref_Vector_##Type vector;                                                                \
         Size index;                                                                                \
     } iter_Vector_##Type;                                                                          \
     REF_EXPAND(iter_Vector_##Type)                                                                 \
@@ -51,7 +51,7 @@
     }                                                                                              \
                                                                                                    \
     static inline Result_ref_##Type Vector_##Type##_at(                                            \
-        const ref_Vector_##Type self, const Size index)                                            \
+        cref_Vector_##Type self, const Size index)                                                   \
     {                                                                                              \
         if (index >= self->size)                                                                   \
         {                                                                                          \
@@ -60,7 +60,7 @@
         return Result_ref_##Type##_ok(&self->data[index]);                                         \
     }                                                                                              \
                                                                                                    \
-    static inline Size Vector_##Type##_size(const ref_Vector_##Type self)                          \
+    static inline Size Vector_##Type##_size(cref_Vector_##Type self)                                \
     {                                                                                              \
         return self->size;                                                                         \
     }                                                                                              \
@@ -123,7 +123,7 @@
         return Result_##Type##_ok(self->data[--self->size]);                                       \
     }                                                                                              \
                                                                                                    \
-    static inline void Vector_##Type##_debug(const ref_Vector_##Type self)                         \
+    static inline void Vector_##Type##_debug(cref_Vector_##Type self)                               \
     {                                                                                              \
         printf("Vector: size=%zu, capacity=%zu{\n", self->size, self->capacity);                   \
         for (Size i = 0; i < self->size; ++i)                                                      \
@@ -134,13 +134,13 @@
     }                                                                                              \
                                                                                                    \
     static inline iter_Vector_##Type Vector_##Type##_into_iter(                                  \
-        const ref_Vector_##Type self)                                                              \
+        cref_Vector_##Type self)                                                                     \
     {                                                                                              \
         return (iter_Vector_##Type){.vector = self, .index = 0};                                   \
     }                                                                                              \
                                                                                                    \
     static inline Result_ref_##Type iter_Vector_##Type##_deref(                                    \
-        const ref_iter_Vector_##Type self)                                                         \
+        cref_iter_Vector_##Type self)                                                                \
     {                                                                                              \
         if (self->index >= self->vector->size)                                                     \
         {                                                                                          \
@@ -159,7 +159,7 @@
     }                                                                                              \
                                                                                                    \
     RESULT_CONFIG(Vector_##Type)                                                                   \
-    static inline Vector_##Type Vector_##Type##_clone(const Vector_##Type *src)                    \
+    static inline Vector_##Type Vector_##Type##_clone(cref_Vector_##Type src)                      \
     {                                                                                              \
         if (!src)                                                                                  \
         {                                                                                          \

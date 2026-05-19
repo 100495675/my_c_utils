@@ -12,7 +12,7 @@
         union                                                                     \
         {                                                                         \
             Type value;                                                           \
-            const ref_Char error_message;                                         \
+            cref_Char error_message;                                              \
         };                                                                        \
         Bool is_error;                                                            \
     } Result_##Type;                                                              \
@@ -23,7 +23,7 @@
         return (Result_##Type){.value = value, .is_error = false};                \
     }                                                                             \
                                                                                   \
-    static inline Result_##Type Result_##Type##_err(const ref_Char error_message) \
+    static inline Result_##Type Result_##Type##_err(cref_Char error_message) \
     {                                                                             \
         return (Result_##Type){.error_message = error_message, .is_error = true}; \
     }                                                                             \
@@ -50,7 +50,7 @@
         return !result.is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+    static inline cref_Char Result_##Type##_unwrap_err(Result_##Type result) \
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
@@ -68,11 +68,11 @@
         }                                                                         \
     }
 
-typedef ref_Char Result;
+typedef cref_Char Result;
 typedef Result *ref_Result;
 
 static inline Result Result_ok() { return NULL; }
-static inline Result Result_err(const ref_Char error_message) { return error_message; }
+static inline Result Result_err(cref_Char error_message) { return error_message; }
 
 static inline void Result_unwrap(Result result)
 {
@@ -88,7 +88,7 @@ static inline void Result_unwrap(Result result)
 static inline Bool Result_is_err(Result result) { return result; }
 static inline Bool Result_is_ok(Result result) { return !result; }
 
-static inline ref_Char Result_unwrap_err(Result result)
+static inline cref_Char Result_unwrap_err(Result result)
 {
     if (!result)
     {

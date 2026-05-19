@@ -26,6 +26,8 @@ Header-only C11 utilities for generic containers, typed result/option helpers, a
 - `pop` returns owned copies.
 - `for_each_ref` exposes borrowed pointers.
 - `for_each_copy` exposes copied values.
+- Mutable borrows use `ref_##Type`; immutable borrows use `cref_##Type`.
+- `STRUCT_CONFIG` is for user-defined data structs; container headers keep dedicated implementations when ownership rules need custom logic.
 
 ## Entry points
 

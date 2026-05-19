@@ -38,7 +38,7 @@
                                                                                         \
   typedef struct                                                                        \
   {                                                                                     \
-    const ref_Hashmap_##Key##_##Value map;                                              \
+    cref_Hashmap_##Key##_##Value map;                                                   \
     Size current_index;                                                                 \
   } iter_Hashmap_##Key##_##Value;                                                       \
   REF_EXPAND(iter_Hashmap_##Key##_##Value)                                              \
@@ -312,7 +312,7 @@
   }                                                                                     \
                                                                                         \
   static inline HashmapStats Hashmap_##Key##_##Value##_stats(                           \
-      const ref_Hashmap_##Key##_##Value map)                                            \
+      cref_Hashmap_##Key##_##Value map)                                                  \
   {                                                                                     \
     HashmapStats stats = {.size = map->size,                                            \
                           .capacity = map->capacity,                                    \
@@ -329,7 +329,7 @@
   }                                                                                     \
                                                                                         \
   static inline Size Hashmap_##Key##_##Value##_seek_next(                               \
-      const ref_Hashmap_##Key##_##Value map, Size start_index)                          \
+      cref_Hashmap_##Key##_##Value map, Size start_index)                                \
   {                                                                                     \
     Size index = start_index;                                                           \
     while (index < map->capacity && !map->data[index].filled)                           \
@@ -340,7 +340,7 @@
   }                                                                                     \
                                                                                         \
   static inline void Hashmap_##Key##_##Value##_debug(                                   \
-      const ref_Hashmap_##Key##_##Value map)                                            \
+      cref_Hashmap_##Key##_##Value map)                                                  \
   {                                                                                     \
     HashmapStats stats = Hashmap_##Key##_##Value##_stats(map);                          \
     printf("size: %zu, capacity: %zu, load factor: %f, collisions: %zu\n",              \
@@ -359,7 +359,7 @@
                                                                                         \
   static inline iter_Hashmap_##Key##_##Value                                            \
   Hashmap_##Key##_##Value##_into_iter(                                                  \
-      const ref_Hashmap_##Key##_##Value map)                                            \
+      cref_Hashmap_##Key##_##Value map)                                                  \
   {                                                                                     \
     Size first_index = Hashmap_##Key##_##Value##_seek_next(map, 0);                     \
     return (iter_Hashmap_##Key##_##Value){.map = map,                                   \
@@ -367,7 +367,7 @@
   }                                                                                     \
                                                                                         \
   static inline Result_ref_##Value iter_Hashmap_##Key##_##Value##_deref(                \
-      const ref_iter_Hashmap_##Key##_##Value iterator)                                  \
+      cref_iter_Hashmap_##Key##_##Value iterator)                                        \
   {                                                                                     \
     if (iterator->current_index >= iterator->map->capacity ||                           \
         !iterator->map->data[iterator->current_index].filled)                           \
