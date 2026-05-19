@@ -245,7 +245,7 @@
     Hashmap_##Key##_##Value##_free_impl(map);                                           \
   }                                                                                     \
                                                                                         \
-  static inline Result_ref##Value Hashmap_##Key##_##Value##_get(                        \
+  static inline Result_ref_##Value Hashmap_##Key##_##Value##_get(                       \
       ref_Hashmap_##Key##_##Value map, Key key)                                         \
   {                                                                                     \
     Size index = Hashmap_##Key##_##Value##_find_index(map, key);                        \
@@ -362,7 +362,7 @@
       const ref_Hashmap_##Key##_##Value map)                                            \
   {                                                                                     \
     Size first_index = Hashmap_##Key##_##Value##_seek_next(map, 0);                     \
-    return (iter_Hashmap_##Key##_##Value##){.map = map,                                 \
+    return (iter_Hashmap_##Key##_##Value){.map = map,                                   \
                                             .current_index = first_index};              \
   }                                                                                     \
                                                                                         \
@@ -394,37 +394,26 @@
   }                                                                                     \
                                                                                         \
   RESULT_CONFIG(Hashmap_##Key##_##Value)                                                \
-  static inline Result_Hashmap_##Key##_##Value                                          \
-  Hashmap_##Key##_##Value##_clone(                                                      \
-      const ref_Hashmap_##Key##_##Value src)                                            \
+    static inline Hashmap_##Key##_##Value Hashmap_##Key##_##Value##_clone(               \
+      const Hashmap_##Key##_##Value *src)                                                \
   {                                                                                     \
-    if (!src)                                                                           \
+    if (!src)                                                                            \
     {                                                                                   \
-      return Result_Hashmap_##Key##_##Value##_err("Cannot clone NULL Hashmap pointer"); \
+      perror("Cannot clone NULL Hashmap pointer");                                     \
+      exit(1);                                                                           \
     }                                                                                   \
-    Hashmap_##Key##_##Value dest = Hashmap_##Key##_##Value##_new(src->capacity);        \
-    dest.key_free = src->key_free;                                                      \
-    dest.value_free = src->value_free;                                                  \
-    for (Size i = 0; i < src->capacity; ++i)                                            \
+    Hashmap_##Key##_##Value dest = Hashmap_##Key##_##Value##_new(src->capacity);         \
+    dest.key_free = src->key_free;                                                       \
+    dest.value_free = src->value_free;                                                   \
+    for (Size i = 0; i < src->capacity; ++i)                                             \
     {                                                                                   \
       if (!src->data[i].filled)                                                         \
         continue;                                                                       \
-      Result_##Key key_res = Key##_clone(&src->data[i].key);                            \
-      if (key_res.is_error)                                                             \
-      {                                                                                 \
-        Hashmap_##Key##_##Value##_free(&dest);                                          \
-        return Result_Hashmap_##Key##_##Value##_err("Failed to clone hashmap key");     \
-      }                                                                                 \
-      Result_##Value val_res = Value##_clone(&src->data[i].value);                      \
-      if (val_res.is_error)                                                             \
-      {                                                                                 \
-        Key##_free(&key_res.value);                                                     \
-        Hashmap_##Key##_##Value##_free(&dest);                                          \
-        return Result_Hashmap_##Key##_##Value##_err("Failed to clone hashmap value");   \
-      }                                                                                 \
-      Hashmap_##Key##_##Value##_add(&dest, key_res.value, val_res.value);               \
+      Key key_clone = Key##_clone(&src->data[i].key);                                   \
+      Value value_clone = Value##_clone(&src->data[i].value);                           \
+      Hashmap_##Key##_##Value##_add(&dest, key_clone, value_clone);                     \
     }                                                                                   \
-    return Result_Hashmap_##Key##_##Value##_ok(dest);                                   \
+    return dest;                                                                         \
   }
 
 #endif

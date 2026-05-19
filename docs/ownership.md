@@ -2,6 +2,8 @@
 
 This project uses a simple rule:
 
+- Borrowed references are represented by `ref_##Type` aliases and never own the underlying data.
+- A `ref` type still gets a `TRIVIAL_FREE` function so generic code can call `_free` uniformly, but that destructor is intentionally a no-op.
 - Containers own the elements stored inside them.
 - Functions ending in `_free` destroy owned elements and release container storage.
 - Functions ending in `_at` or `_get` return borrowed references into internal storage.
@@ -43,6 +45,12 @@ This project uses a simple rule:
 - `Result_##Type##_ok` stores an owned value.
 - `Result_##Type##_err` stores a borrowed error message and does not take ownership of it.
 - `Result_##Type##_free` destroys the stored value only on success.
+
+### Struct generation
+
+- `STRUCT_CONFIG(Type, ...)` should be the default rule for new public structs.
+- It declares the struct, expands `ref_##Type`, and generates matching `Type_free` and `Type_clone` helpers from the same field list.
+- The field list is the source of truth; the free and clone implementations should not be hand-written unless there is a special ownership case.
 
 ## Consequence
 

@@ -26,11 +26,11 @@ Int main(void)
   assert(char_count(vector) == 3);
 
   Result_ref_Char first = Vector_Char_at(&vector, 0);
-  assert(Result_Char_ref_is_ok(first));
-  assert(*Result_Char_ref_unwrap(first) == 'a');
+  assert(Result_ref_Char_is_ok(first));
+  assert(*Result_ref_Char_unwrap(first) == 'a');
 
   assert(Result_is_ok(Vector_Char_set(&vector, 1, 'z')));
-  assert(*Result_Char_ref_unwrap(Vector_Char_at(&vector, 1)) == 'z');
+  assert(*Result_ref_Char_unwrap(Vector_Char_at(&vector, 1)) == 'z');
 
   Result_Char popped = Vector_Char_pop_back(&vector);
   assert(Result_Char_is_ok(popped));

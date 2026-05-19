@@ -23,18 +23,17 @@
     {                                                                                              \
         const ref_Vector_##Type vector;                                                            \
         Size index;                                                                                \
-    } iter_Vector_##Type;                                                                        \
-    REF_EXPAND(iter_Vector_##Type)                                                               \
+    } iter_Vector_##Type;                                                                          \
+    REF_EXPAND(iter_Vector_##Type)                                                                 \
                                                                                                    \
     RESULT_CONFIG(ref_##Type)                                                                      \
-    RESULT_CONFIG(Type)                                                                            \
                                                                                                    \
     static inline Vector_##Type Vector_##Type##_new()                                              \
     {                                                                                              \
         return (Vector_##Type){.data = NULL, .size = 0, .capacity = 0};                            \
     }                                                                                              \
                                                                                                    \
-    static inline Result Vector_##Type##_push_back(Vector_##ref_##Type self,                       \
+    static inline Result Vector_##Type##_push_back(ref_Vector_##Type self,                         \
                                                    const Type value)                               \
     {                                                                                              \
         if (self->size == self->capacity)                                                          \
@@ -52,13 +51,13 @@
     }                                                                                              \
                                                                                                    \
     static inline Result_ref_##Type Vector_##Type##_at(                                            \
-        const Vector_ref_##Type self, const Size index)                                            \
+        const ref_Vector_##Type self, const Size index)                                            \
     {                                                                                              \
         if (index >= self->size)                                                                   \
         {                                                                                          \
-            return Result_ref_##Type_err("Index out of bounds");                                   \
+            return Result_ref_##Type##_err("Index out of bounds");                                 \
         }                                                                                          \
-        return Result_##ref_##Type_ok(&self->data[index]);                                         \
+        return Result_ref_##Type##_ok(&self->data[index]);                                         \
     }                                                                                              \
                                                                                                    \
     static inline Size Vector_##Type##_size(const ref_Vector_##Type self)                          \
@@ -137,52 +136,48 @@
     static inline iter_Vector_##Type Vector_##Type##_into_iter(                                  \
         const ref_Vector_##Type self)                                                              \
     {                                                                                              \
-        return (iter_Vector_##Type){.vector = self, .index = 0};                                 \
+        return (iter_Vector_##Type){.vector = self, .index = 0};                                   \
     }                                                                                              \
                                                                                                    \
-    static inline Result_ref##Type iter_Vector_##Type##_deref(                                     \
-        const ref_iter_Vector_##Type self)                                                       \
+    static inline Result_ref_##Type iter_Vector_##Type##_deref(                                    \
+        const ref_iter_Vector_##Type self)                                                         \
     {                                                                                              \
         if (self->index >= self->vector->size)                                                     \
         {                                                                                          \
-            return Result_ref##Type##_err("Iterator out of bounds");                               \
+            return Result_ref_##Type##_err("Iterator out of bounds");                             \
         }                                                                                          \
-        return Result_ref##Type##_ok(&(self->vector->data[self->index]));                          \
+        return Result_ref_##Type##_ok(&(self->vector->data[self->index]));                         \
     }                                                                                              \
                                                                                                    \
-    static inline Result_ref##Type iter_Vector_##Type##_next(ref_iter_Vector_##Type self)        \
+    static inline Result_ref_##Type iter_Vector_##Type##_next(ref_iter_Vector_##Type self)        \
     {                                                                                              \
         if (self->index >= self->vector->size)                                                     \
         {                                                                                          \
-            return Result_ref##Type##_err("Iterator out of bounds");                               \
+            return Result_ref_##Type##_err("Iterator out of bounds");                             \
         }                                                                                          \
-        return Result_ref##Type##_ok(&self->vector->data[self->index++]);                          \
+        return Result_ref_##Type##_ok(&self->vector->data[self->index++]);                         \
     }                                                                                              \
                                                                                                    \
     RESULT_CONFIG(Vector_##Type)                                                                   \
-    static inline Result_Vector_##Type Vector_##Type##_clone(                                      \
-        const ref_Vector_##Type src)                                                               \
+    static inline Vector_##Type Vector_##Type##_clone(const Vector_##Type *src)                    \
     {                                                                                              \
         if (!src)                                                                                  \
         {                                                                                          \
-            return Result_Vector_##Type##_err("Cannot clone NULL Vector pointer");                 \
+            perror("Cannot clone NULL Vector pointer");                                          \
+            exit(1);                                                                               \
         }                                                                                          \
         Vector_##Type dest = Vector_##Type##_new();                                                \
         for (Size i = 0; i < src->size; ++i)                                                       \
         {                                                                                          \
-            Result_##Type elem_res = Type##_clone(&src->data[i]);                                  \
-            if (elem_res.is_error)                                                                 \
-            {                                                                                      \
-                Vector_##Type##_free(&dest);                                                       \
-                return Result_Vector_##Type##_err("Failed to clone vector element");               \
-            }                                                                                      \
-            Result push_res = Vector_##Type##_push_back(&dest, elem_res.value);                    \
+            Type cloned_value = Type##_clone(&src->data[i]);                                       \
+            Result push_res = Vector_##Type##_push_back(&dest, cloned_value);                      \
             if (Result_is_err(push_res))                                                           \
             {                                                                                      \
                 Vector_##Type##_free(&dest);                                                       \
-                return Result_Vector_##Type##_err("Memory allocation failed during vector clone"); \
+                perror("Memory allocation failed during vector clone");                          \
+                exit(1);                                                                           \
             }                                                                                      \
         }                                                                                          \
-        return Result_Vector_##Type##_ok(dest);                                                    \
+        return dest;                                                                               \
     }
 #endif

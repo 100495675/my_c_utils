@@ -5,7 +5,7 @@
 
 HASH_MAP_CONFIG(String, Int)
 
-static void assert_map_iteration(const Hashmap_String_Int *hm,
+static void assert_map_iteration(Hashmap_String_Int *hm,
                                  Size expected_count,
                                  Int expected_sum)
 {
@@ -39,13 +39,13 @@ Int main(void)
   assert(Hashmap_String_Int_contains(&hm, "two"));
   assert(Hashmap_String_Int_contains(&hm, "three"));
 
-  Result_Int_ref two_result = Hashmap_String_Int_get(&hm, "two");
-  assert(Result_Int_ref_is_ok(two_result));
-  assert(*Result_Int_ref_unwrap(two_result) == 20);
+  Result_ref_Int two_result = Hashmap_String_Int_get(&hm, "two");
+  assert(Result_ref_Int_is_ok(two_result));
+  assert(*Result_ref_Int_unwrap(two_result) == 20);
 
   Hashmap_String_Int_remove(&hm, "two");
   assert(!Hashmap_String_Int_contains(&hm, "two"));
-  assert(Result_Int_ref_is_err(Hashmap_String_Int_get(&hm, "two")));
+  assert(Result_ref_Int_is_err(Hashmap_String_Int_get(&hm, "two")));
 
   Result_Int popped_three = Hashmap_String_Int_pop(&hm, "three");
   assert(Result_Int_is_ok(popped_three));

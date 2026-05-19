@@ -13,7 +13,8 @@
 
 1. Split test support into reusable helpers for strings, temporary files, and subprocess assertions.
 2. Keep documentation synchronized with ownership and iterator contracts whenever a public macro changes.
-3. Consider a tagged release once the current header layout, ownership rules, and iterator contract stop moving.
+3. Keep the public headers layered so most consumers can include a single umbrella header instead of learning internal dependencies like `tipos.h`.
+4. Consider a tagged release once the current header layout, ownership rules, and iterator contract stop moving.
 
 ## Release target
 

@@ -10,6 +10,7 @@ Header-only C11 utilities for generic containers, typed result/option helpers, a
 - A singly linked list.
 - An open-addressing hash map.
 - Reference and copy-based iteration macros.
+- A single umbrella header for users who do not want to manage individual includes.
 
 ## Project layout
 
@@ -25,6 +26,15 @@ Header-only C11 utilities for generic containers, typed result/option helpers, a
 - `pop` returns owned copies.
 - `for_each_ref` exposes borrowed pointers.
 - `for_each_copy` exposes copied values.
+
+## Entry points
+
+Most users should include [include/my_c_utils/my_c_utils.h](include/my_c_utils/my_c_utils.h) and let it pull in the core helpers, containers, and struct macro layer in the correct order.
+
+Lower-level headers remain available when a translation unit wants a narrower dependency surface:
+
+- [include/my_c_utils/core.h](include/my_c_utils/core.h) for types, result/option, iterator, free/clone, and struct macros.
+- [include/my_c_utils/containers.h](include/my_c_utils/containers.h) for box/vector/list/hash map.
 
 ## Build and test
 

@@ -30,7 +30,7 @@
   {                                                                                \
     const ref_List_##Type list;                                                    \
     ref_Node_##Type node;                                                          \
-  } iter_List_##Type##;                                                            \
+  } iter_List_##Type;                                                              \
   REF_EXPAND(iter_List_##Type)                                                     \
                                                                                    \
   RESULT_CONFIG(ref_##Type)                                                        \
@@ -149,27 +149,22 @@
   }                                                                                \
                                                                                    \
   RESULT_CONFIG(List_##Type)                                                       \
-  static inline Result_List_##Type List_##Type##_clone(                            \
-      const ref_List_##Type src)                                                   \
+  static inline List_##Type List_##Type##_clone(const List_##Type *src) \
   {                                                                                \
     if (!src)                                                                      \
     {                                                                              \
-      return Result_List_##Type##_err("Cannot clone NULL List pointer");           \
+      perror("Cannot clone NULL List pointer");                                   \
+      exit(1);                                                                     \
     }                                                                              \
-    List_##Type dest = List_##Type##_new();                                        \
+    List_##Type dest = List_##Type##_new();                                         \
     ref_Node_##Type node = src->head;                                              \
     while (node != NULL)                                                           \
     {                                                                              \
-      Result_##Type elem_res = Type##_clone(&node->data);                          \
-      if (elem_res.is_error)                                                       \
-      {                                                                            \
-        List_##Type##_free(&dest);                                                 \
-        return Result_List_##Type##_err("Failed to clone list element");           \
-      }                                                                            \
-      List_##Type##_push_back(&dest, elem_res.value);                              \
+      Type cloned_value = Type##_clone(&node->data);                                \
+      List_##Type##_push_back(&dest, cloned_value);                                \
       node = node->next;                                                           \
     }                                                                              \
-    return Result_List_##Type##_ok(dest);                                          \
+    return dest;                                                                   \
   }
 
 #endif

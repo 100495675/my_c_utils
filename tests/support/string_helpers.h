@@ -4,10 +4,12 @@
 #include "my_c_utils/free.h"
 #include "my_c_utils/result.h"
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef Char *String;
+REF_EXPAND(String)
 
 static inline String string_dup(const Char *text)
 {
@@ -43,13 +45,14 @@ static inline void String_free(String *value)
 
 RESULT_CONFIG(String)
 
-static inline Result_String String_clone(const String *src)
+static inline String String_clone(const String *src)
 {
   if (!src)
   {
-    return Result_String_err("Cannot clone NULL pointer");
+    perror("Cannot clone NULL pointer");
+    exit(1);
   }
-  return Result_String_ok(string_dup(*src));
+  return string_dup(*src);
 }
 
 #endif

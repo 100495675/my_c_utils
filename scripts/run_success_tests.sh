@@ -4,7 +4,7 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 CC=${CC:-gcc}
-CFLAGS=${CFLAGS:--std=c11 -Wall -Wextra -Iinclude -Itests}
+CFLAGS=${CFLAGS:--std=c11 -Wall -Wextra -Wno-psabi -Iinclude -Itests}
 
 BUILD_DIR="$ROOT/build/success"
 

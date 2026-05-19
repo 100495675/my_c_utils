@@ -14,13 +14,13 @@ Functions the containes has to implement to be iterable:
 
 // Reference version (pointer) - original behavior
 #define for_each_ref_IMPL(ItemType, var_name, container, iterable, body, counter)                    \
-    for (container##_##ItemType##_iter MY_C_UTILS_CONCAT(_it_, counter) =                            \
+    for (iter_##container##_##ItemType MY_C_UTILS_CONCAT(_it_, counter) =                            \
              container##_##ItemType##_into_iter(iterable);                                           \
          ;                                                                                           \
          /* loop until iter_next signals no more items */)                                           \
     {                                                                                                \
         Result_ref_##ItemType MY_C_UTILS_CONCAT(_res_, counter) =                                    \
-            container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));                   \
+            iter_##container##_##ItemType##_next(&MY_C_UTILS_CONCAT(_it_, counter));                 \
         if (!Result_ref_##ItemType##_is_ok(MY_C_UTILS_CONCAT(_res_, counter)))                       \
         {                                                                                            \
             break;                                                                                   \
@@ -31,12 +31,12 @@ Functions the containes has to implement to be iterable:
 
 // Copy version (value by-copy)
 #define for_each_copy_IMPL(ItemType, var_name, container, iterable, body, counter)              \
-    for (container##_##ItemType##_iter MY_C_UTILS_CONCAT(_it_, counter) =                       \
+    for (iter_##container##_##ItemType MY_C_UTILS_CONCAT(_it_, counter) =                       \
              container##_##ItemType##_into_iter(iterable);                                      \
          ;)                                                                                     \
     {                                                                                           \
         Result_ref_##ItemType MY_C_UTILS_CONCAT(_res_, counter) =                               \
-            container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));              \
+            iter_##container##_##ItemType##_next(&MY_C_UTILS_CONCAT(_it_, counter));            \
         if (!Result_ref_##ItemType##_is_ok(MY_C_UTILS_CONCAT(_res_, counter)))                  \
         {                                                                                       \
             break;                                                                              \

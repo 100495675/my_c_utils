@@ -1,7 +1,6 @@
 #ifndef MY_C_UTILS_FREE_H
 #define MY_C_UTILS_FREE_H
 
-#include "my_c_utils/tipos.h"
 // Unicamente no se usa el trivial_free es para structs con punteros,
 // los punteros prestados (borrowed ref) a una variable que tiene dueño no necesitan ser liberados
 #define TRIVIAL_FREE(Type)                           \

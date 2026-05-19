@@ -50,7 +50,7 @@
         return !result.is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+    static inline ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
@@ -68,8 +68,8 @@
         }                                                                         \
     }
 
-typedef const ref_Char Result;
-REF_EXPAND(Result)
+typedef ref_Char Result;
+typedef Result *ref_Result;
 
 static inline Result Result_ok() { return NULL; }
 static inline Result Result_err(const ref_Char error_message) { return error_message; }
@@ -88,7 +88,7 @@ static inline void Result_unwrap(Result result)
 static inline Bool Result_is_err(Result result) { return result; }
 static inline Bool Result_is_ok(Result result) { return !result; }
 
-static inline const ref_Char Result_unwrap_err(Result result)
+static inline ref_Char Result_unwrap_err(Result result)
 {
     if (!result)
     {
