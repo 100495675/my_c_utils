@@ -1,0 +1,812 @@
+In file included from include/my_c_utils/vector.h:9,
+                 from /home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:2:
+include/my_c_utils/result.h:74:15: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   74 | static inline Result Result_ok() { return NULL; }
+      |               ^~~~~~
+include/my_c_utils/result.h:75:15: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   75 | static inline Result Result_err(const ref_Char error_message) { return error_message; }
+      |               ^~~~~~
+include/my_c_utils/result.h:91:15: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   91 | static inline const ref_Char Result_unwrap_err(Result result)
+      |               ^~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:11:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   11 | TRIVIAL_CLONE(Bool)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:13:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   13 | TRIVIAL_CLONE(Char)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:15:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   15 | TRIVIAL_CLONE(SChar)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:17:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   17 | TRIVIAL_CLONE(UChar)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:19:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   19 | TRIVIAL_CLONE(Short)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:21:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   21 | TRIVIAL_CLONE(UShort)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:25:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   25 | TRIVIAL_CLONE(UInt)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:27:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   27 | TRIVIAL_CLONE(Long)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:29:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   29 | TRIVIAL_CLONE(ULong)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:31:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   31 | TRIVIAL_CLONE(LongLong)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:33:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   33 | TRIVIAL_CLONE(ULongLong)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:35:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   35 | TRIVIAL_CLONE(Float)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:37:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   37 | TRIVIAL_CLONE(Double)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h: In function ‘Result_LongDouble_ok’:
+include/my_c_utils/result.h:13:9: note: the ABI of passing union with ‘long double’ has changed in GCC 4.4
+   13 |         {                                                                         \
+      |         ^
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:39:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   39 | TRIVIAL_CLONE(LongDouble)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h: At top level:
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:39:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   39 | TRIVIAL_CLONE(LongDouble)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:41:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   41 | TRIVIAL_CLONE(WChar)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:44:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   44 | TRIVIAL_CLONE(I8)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:46:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   46 | TRIVIAL_CLONE(U8)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:48:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   48 | TRIVIAL_CLONE(I16)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:50:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   50 | TRIVIAL_CLONE(U16)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:52:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   52 | TRIVIAL_CLONE(I32)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:54:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   54 | TRIVIAL_CLONE(U32)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:56:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   56 | TRIVIAL_CLONE(I64)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:58:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   58 | TRIVIAL_CLONE(U64)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:60:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   60 | TRIVIAL_CLONE(IntPtr)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:62:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   62 | TRIVIAL_CLONE(UIntPtr)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:64:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   64 | TRIVIAL_CLONE(IntMax)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:66:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   66 | TRIVIAL_CLONE(UIntMax)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:68:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   68 | TRIVIAL_CLONE(PtrDiff)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:70:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   70 | TRIVIAL_CLONE(Size)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/vector.h:29:5: note: in expansion of macro ‘RESULT_CONFIG’
+   29 |     RESULT_CONFIG(ref_##Type)                                                                      \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: In function ‘Result_ref_Int_free’:
+include/my_c_utils/vector.h:29:19: error: implicit declaration of function ‘ref_Int_free’; did you mean ‘UInt_free’? [-Wimplicit-function-declaration]
+   29 |     RESULT_CONFIG(ref_##Type)                                                                      \
+      |                   ^~~~
+include/my_c_utils/result.h:67:13: note: in definition of macro ‘RESULT_CONFIG’
+   67 |             Type##_free(&result->value);                                          \
+      |             ^~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: At top level:
+include/my_c_utils/result.h:18:7: error: conflicting types for ‘Result_Int’; have ‘struct <anonymous>’
+   18 |     } Result_##Type;                                                              \
+      |       ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:18:7: note: previous declaration of ‘Result_Int’ with type ‘Result_Int’
+   18 |     } Result_##Type;                                                              \
+      |       ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+In file included from include/my_c_utils/tipos.h:8,
+                 from include/my_c_utils/free.h:4,
+                 from /home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:1:
+include/my_c_utils/ref.h:6:19: error: conflicting types for ‘ref_Result_Int’; have ‘Result_Int *’
+    6 |     typedef Type *ref_##Type;                           \
+      |                   ^~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:6:19: note: previous declaration of ‘ref_Result_Int’ with type ‘ref_Result_Int’ {aka ‘Result_Int *’}
+    6 |     typedef Type *ref_##Type;                           \
+      |                   ^~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:7:25: error: conflicting types for ‘ref_ref_Result_Int’; have ‘Result_Int **’
+    7 |     typedef ref_##Type *ref_ref_##Type;                 \
+      |                         ^~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:7:25: note: previous declaration of ‘ref_ref_Result_Int’ with type ‘ref_ref_Result_Int’ {aka ‘Result_Int **’}
+    7 |     typedef ref_##Type *ref_ref_##Type;                 \
+      |                         ^~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:8:29: error: conflicting types for ‘ref_ref_ref_Result_Int’; have ‘Result_Int ***’
+    8 |     typedef ref_ref_##Type *ref_ref_ref_##Type;         \
+      |                             ^~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:8:29: note: previous declaration of ‘ref_ref_ref_Result_Int’ with type ‘ref_ref_ref_Result_Int’ {aka ‘Result_Int ***’}
+    8 |     typedef ref_ref_##Type *ref_ref_ref_##Type;         \
+      |                             ^~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:9:33: error: conflicting types for ‘ref_ref_ref_ref_Result_Int’; have ‘Result_Int ****’
+    9 |     typedef ref_ref_ref_##Type *ref_ref_ref_ref_##Type; \
+      |                                 ^~~~~~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:9:33: note: previous declaration of ‘ref_ref_ref_ref_Result_Int’ with type ‘ref_ref_ref_ref_Result_Int’ {aka ‘Result_Int ****’}
+    9 |     typedef ref_ref_ref_##Type *ref_ref_ref_ref_##Type; \
+      |                                 ^~~~~~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:10:37: error: conflicting types for ‘ref_ref_ref_ref_ref_Result_Int’; have ‘Result_Int *****’
+   10 |     typedef ref_ref_ref_ref_##Type *ref_ref_ref_ref_ref_##Type;
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/ref.h:10:37: note: previous declaration of ‘ref_ref_ref_ref_ref_Result_Int’ with type ‘ref_ref_ref_ref_ref_Result_Int’ {aka ‘Result_Int *****’}
+   10 |     typedef ref_ref_ref_ref_##Type *ref_ref_ref_ref_ref_##Type;
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+include/my_c_utils/result.h:19:5: note: in expansion of macro ‘REF_EXPAND’
+   19 |     REF_EXPAND(Result_##Type)                                                     \
+      |     ^~~~~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:21:33: error: conflicting types for ‘Result_Int_ok’; have ‘Result_Int(Int)’ {aka ‘Result_Int(int)’}
+   21 |     static inline Result_##Type Result_##Type##_ok(Type value)                    \
+      |                                 ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:21:33: note: previous definition of ‘Result_Int_ok’ with type ‘Result_Int(Int)’ {aka ‘Result_Int(int)’}
+   21 |     static inline Result_##Type Result_##Type##_ok(Type value)                    \
+      |                                 ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:26:33: error: conflicting types for ‘Result_Int_err’; have ‘Result_Int(Char * const)’ {aka ‘Result_Int(char * const)’}
+   26 |     static inline Result_##Type Result_##Type##_err(const ref_Char error_message) \
+      |                                 ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:26:33: note: previous definition of ‘Result_Int_err’ with type ‘Result_Int(Char * const)’ {aka ‘Result_Int(char * const)’}
+   26 |     static inline Result_##Type Result_##Type##_err(const ref_Char error_message) \
+      |                                 ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:31:24: error: conflicting types for ‘Result_Int_unwrap’; have ‘Int(Result_Int)’ {aka ‘int(Result_Int)’}
+   31 |     static inline Type Result_##Type##_unwrap(Result_##Type result)               \
+      |                        ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:31:24: note: previous definition of ‘Result_Int_unwrap’ with type ‘Int(Result_Int)’ {aka ‘int(Result_Int)’}
+   31 |     static inline Type Result_##Type##_unwrap(Result_##Type result)               \
+      |                        ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:43:24: error: conflicting types for ‘Result_Int_is_err’; have ‘Bool(Result_Int)’ {aka ‘_Bool(Result_Int)’}
+   43 |     static inline Bool Result_##Type##_is_err(Result_##Type result)               \
+      |                        ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:43:24: note: previous definition of ‘Result_Int_is_err’ with type ‘Bool(Result_Int)’ {aka ‘_Bool(Result_Int)’}
+   43 |     static inline Bool Result_##Type##_is_err(Result_##Type result)               \
+      |                        ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:48:24: error: conflicting types for ‘Result_Int_is_ok’; have ‘Bool(Result_Int)’ {aka ‘_Bool(Result_Int)’}
+   48 |     static inline Bool Result_##Type##_is_ok(Result_##Type result)                \
+      |                        ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:48:24: note: previous definition of ‘Result_Int_is_ok’ with type ‘Bool(Result_Int)’ {aka ‘_Bool(Result_Int)’}
+   48 |     static inline Bool Result_##Type##_is_ok(Result_##Type result)                \
+      |                        ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:34: error: conflicting types for ‘Result_Int_unwrap_err’; have ‘Char *(Result_Int)’ {aka ‘char *(Result_Int)’}
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                                  ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:34: note: previous definition of ‘Result_Int_unwrap_err’ with type ‘Char *(Result_Int)’ {aka ‘char *(Result_Int)’}
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                                  ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:63:24: error: conflicting types for ‘Result_Int_free’; have ‘void(Result_Int *)’
+   63 |     static inline void Result_##Type##_free(ref_Result_##Type result)             \
+      |                        ^~~~~~~
+include/my_c_utils/vector.h:30:5: note: in expansion of macro ‘RESULT_CONFIG’
+   30 |     RESULT_CONFIG(Type)                                                                            \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:63:24: note: previous definition of ‘Result_Int_free’ with type ‘void(Result_Int *)’
+   63 |     static inline void Result_##Type##_free(ref_Result_##Type result)             \
+      |                        ^~~~~~~
+include/my_c_utils/clone.h:39:5: note: in expansion of macro ‘RESULT_CONFIG’
+   39 |     RESULT_CONFIG(Type)                                              \
+      |     ^~~~~~~~~~~~~
+include/my_c_utils/primitives.h:23:1: note: in expansion of macro ‘TRIVIAL_CLONE’
+   23 | TRIVIAL_CLONE(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:37:52: error: unknown type name ‘Vector_ref_Int’; did you mean ‘Vector_Int’?
+   37 |     static inline Result Vector_##Type##_push_back(Vector_##ref_##Type self,                       \
+      |                                                    ^~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:55:15: error: unknown type name ‘Vector_ref_Int’; did you mean ‘Vector_Int’?
+   55 |         const Vector_ref_##Type self, const Size index)                                            \
+      |               ^~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: In function ‘Vector_Int_at’:
+include/my_c_utils/vector.h:57:26: error: invalid type argument of ‘->’ (have ‘int’)
+   57 |         if (index >= self->size)                                                                   \
+      |                          ^~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:59:20: error: implicit declaration of function ‘Result_ref_Type_err’; did you mean ‘Result_ref_Int_err’? [-Wimplicit-function-declaration]
+   59 |             return Result_ref_##Type_err("Index out of bounds");                                   \
+      |                    ^~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:59:20: error: incompatible types when returning type ‘int’ but ‘Result_ref_Int’ was expected
+   59 |             return Result_ref_##Type_err("Index out of bounds");                                   \
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:61:16: error: implicit declaration of function ‘Result_ref_Type_ok’; did you mean ‘Result_ref_Int_ok’? [-Wimplicit-function-declaration]
+   61 |         return Result_##ref_##Type_ok(&self->data[index]);                                         \
+      |                ^~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:61:44: error: invalid type argument of ‘->’ (have ‘int’)
+   61 |         return Result_##ref_##Type_ok(&self->data[index]);                                         \
+      |                                            ^~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: At top level:
+include/my_c_utils/vector.h:69:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   69 |     static inline Result Vector_##Type##_set(                                                      \
+      |                   ^~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:102:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  102 |     static inline Result Vector_##Type##_reserve(ref_Vector_##Type self,                           \
+      |                   ^~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:143:19: error: unknown type name ‘Result_refInt’; did you mean ‘Result_ref_Int’?
+  143 |     static inline Result_ref##Type iter_Vector_##Type##_deref(                                     \
+      |                   ^~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: In function ‘iter_Vector_Int_deref’:
+include/my_c_utils/vector.h:148:20: error: implicit declaration of function ‘Result_refInt_err’; did you mean ‘Result_ref_Int_err’? [-Wimplicit-function-declaration]
+  148 |             return Result_ref##Type##_err("Iterator out of bounds");                               \
+      |                    ^~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:150:16: error: implicit declaration of function ‘Result_refInt_ok’; did you mean ‘Result_ref_Int_ok’? [-Wimplicit-function-declaration]
+  150 |         return Result_ref##Type##_ok(&(self->vector->data[self->index]));                          \
+      |                ^~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: At top level:
+include/my_c_utils/vector.h:153:19: error: unknown type name ‘Result_refInt’; did you mean ‘Result_ref_Int’?
+  153 |     static inline Result_ref##Type iter_Vector_##Type##_next(ref_iter_Vector_##Type self)        \
+      |                   ^~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/result.h:53:19: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   53 |     static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+      |                   ^~~~~
+include/my_c_utils/vector.h:162:5: note: in expansion of macro ‘RESULT_CONFIG’
+  162 |     RESULT_CONFIG(Vector_##Type)                                                                   \
+      |     ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: In function ‘Vector_Int_clone’:
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:15: error: invalid initializer
+    6 | VECTOR_CONFIG(Int)
+      |               ^~~
+include/my_c_utils/vector.h:173:38: note: in definition of macro ‘VECTOR_CONFIG’
+  173 |             Result_##Type elem_res = Type##_clone(&src->data[i]);                                  \
+      |                                      ^~~~
+include/my_c_utils/vector.h:179:31: error: implicit declaration of function ‘Vector_Int_push_back’; did you mean ‘Vector_Int_pop_back’? [-Wimplicit-function-declaration]
+  179 |             Result push_res = Vector_##Type##_push_back(&dest, elem_res.value);                    \
+      |                               ^~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+include/my_c_utils/vector.h:179:31: error: initialization of ‘Result’ {aka ‘char * const’} from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:6:1: note: in expansion of macro ‘VECTOR_CONFIG’
+    6 | VECTOR_CONFIG(Int)
+      | ^~~~~~~~~~~~~
+In file included from /home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:3:
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c: In function ‘main’:
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:12:23: error: passing argument 1 of ‘Result_is_ok’ makes pointer from integer without a cast [-Wint-conversion]
+   12 |   assert(Result_is_ok(Vector_Int_push_back(&vector, 10)));
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       int
+include/my_c_utils/result.h:89:40: note: expected ‘Result’ {aka ‘char * const’} but argument is of type ‘int’
+   89 | static inline Bool Result_is_ok(Result result) { return !result; }
+      |                                 ~~~~~~~^~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:13:23: error: passing argument 1 of ‘Result_is_ok’ makes pointer from integer without a cast [-Wint-conversion]
+   13 |   assert(Result_is_ok(Vector_Int_push_back(&vector, 20)));
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       int
+include/my_c_utils/result.h:89:40: note: expected ‘Result’ {aka ‘char * const’} but argument is of type ‘int’
+   89 | static inline Bool Result_is_ok(Result result) { return !result; }
+      |                                 ~~~~~~~^~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:14:23: error: passing argument 1 of ‘Result_is_ok’ makes pointer from integer without a cast [-Wint-conversion]
+   14 |   assert(Result_is_ok(Vector_Int_push_back(&vector, 30)));
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       int
+include/my_c_utils/result.h:89:40: note: expected ‘Result’ {aka ‘char * const’} but argument is of type ‘int’
+   89 | static inline Bool Result_is_ok(Result result) { return !result; }
+      |                                 ~~~~~~~^~~~~~
+In file included from include/my_c_utils/vector.h:10:
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:27: error: unknown type name ‘Vector_Int_iter’; did you mean ‘Vector_Int’?
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:50:5: note: in expansion of macro ‘for_each_ref_IMPL’
+   50 |     for_each_ref_IMPL(ItemType, var_name, container, iterable, body, __COUNTER__)
+      |     ^~~~~~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:3: note: in expansion of macro ‘for_each_ref’
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:27: error: incompatible types when initializing type ‘int’ using type ‘iter_Vector_Int’
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:18:14: note: in definition of macro ‘for_each_ref_IMPL’
+   18 |              container##_##ItemType##_into_iter(iterable);                                           \
+      |              ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:3: note: in expansion of macro ‘for_each_ref’
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:27: error: implicit declaration of function ‘Vector_Int_iter_next’; did you mean ‘Vector_Int_clone’? [-Wimplicit-function-declaration]
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:23:13: note: in definition of macro ‘for_each_ref_IMPL’
+   23 |             container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));                   \
+      |             ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:3: note: in expansion of macro ‘for_each_ref’
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:27: error: invalid initializer
+include/my_c_utils/iterator.h:23:13: note: in definition of macro ‘for_each_ref_IMPL’
+   23 |             container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));                   \
+      |             ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:17:3: note: in expansion of macro ‘for_each_ref’
+   17 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:28: error: unknown type name ‘Vector_Int_iter’; did you mean ‘Vector_Int’?
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |                            ^~~~~~
+include/my_c_utils/iterator.h:34:10: note: in definition of macro ‘for_each_copy_IMPL’
+   34 |     for (container##_##ItemType##_iter MY_C_UTILS_CONCAT(_it_, counter) =                       \
+      |          ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:3: note: in expansion of macro ‘for_each_copy’
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:28: error: incompatible types when initializing type ‘int’ using type ‘iter_Vector_Int’
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |                            ^~~~~~
+include/my_c_utils/iterator.h:35:14: note: in definition of macro ‘for_each_copy_IMPL’
+   35 |              container##_##ItemType##_into_iter(iterable);                                      \
+      |              ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:3: note: in expansion of macro ‘for_each_copy’
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:28: error: invalid initializer
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |                            ^~~~~~
+include/my_c_utils/iterator.h:39:13: note: in definition of macro ‘for_each_copy_IMPL’
+   39 |             container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));              \
+      |             ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:23:3: note: in expansion of macro ‘for_each_copy’
+   23 |   for_each_copy(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:27: error: unknown type name ‘Vector_Int_iter’; did you mean ‘Vector_Int’?
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:17:10: note: in definition of macro ‘for_each_ref_IMPL’
+   17 |     for (container##_##ItemType##_iter MY_C_UTILS_CONCAT(_it_, counter) =                            \
+      |          ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:3: note: in expansion of macro ‘for_each_ref’
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:27: error: incompatible types when initializing type ‘int’ using type ‘iter_Vector_Int’
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:18:14: note: in definition of macro ‘for_each_ref_IMPL’
+   18 |              container##_##ItemType##_into_iter(iterable);                                           \
+      |              ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:3: note: in expansion of macro ‘for_each_ref’
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:27: error: invalid initializer
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |                           ^~~~~~
+include/my_c_utils/iterator.h:23:13: note: in definition of macro ‘for_each_ref_IMPL’
+   23 |             container##_##ItemType##_iter_next(&MY_C_UTILS_CONCAT(_it_, counter));                   \
+      |             ^~~~~~~~~
+/home/uwu/Desktop/my_c_utils/tests/integration/iterator_variants_test.c:29:3: note: in expansion of macro ‘for_each_ref’
+   29 |   for_each_ref(Int, item, Vector, &vector, {
+      |   ^~~~~~~~~~~~
+make: *** [Makefile:13: test-pass] Error 1

@@ -1,42 +1,7 @@
-#include "my_c_utils/hash_map.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/hash_map.h"
+#include "../../support/string_helpers.h"
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef Char *String;
-
-void String_free(String *s)
-{
-  free(*s);
-}
-
-static String string_dup(const Char *text)
-{
-  Size length = strlen(text);
-  String copy = malloc(length + 1);
-  assert(copy != NULL);
-  for (Size i = 0; i <= length; ++i)
-  {
-    copy[i] = text[i];
-  }
-  return copy;
-}
-
-Size String_hash(String key)
-{
-  Size hash = 0;
-  while (*key)
-  {
-    hash = (hash * 31) + (UChar)*key++;
-  }
-  return hash;
-}
-
-Bool String_equals(String a, String b)
-{
-  return strcmp(a, b) == 0;
-}
 
 HASH_MAP_CONFIG(String, Int)
 
@@ -56,7 +21,7 @@ static void assert_map_iteration(const Hashmap_String_Int *hm,
   assert(sum == expected_sum);
 }
 
-Int main()
+Int main(void)
 {
   Hashmap_String_Int hm = Hashmap_String_Int_new(4);
 

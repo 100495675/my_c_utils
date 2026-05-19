@@ -1,5 +1,5 @@
-#include "my_c_utils/vector.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/vector.h"
 #include <assert.h>
 
 VECTOR_CONFIG(Char)
@@ -14,7 +14,7 @@ static Size char_count(Vector_Char vector)
   return count;
 }
 
-Int main()
+Int main(void)
 {
   Vector_Char vector = Vector_Char_new();
   assert(Vector_Char_size(&vector) == 0);
@@ -25,7 +25,7 @@ Int main()
   assert(Vector_Char_size(&vector) == 3);
   assert(char_count(vector) == 3);
 
-  Result_Char_ref first = Vector_Char_at(&vector, 0);
+  Result_ref_Char first = Vector_Char_at(&vector, 0);
   assert(Result_Char_ref_is_ok(first));
   assert(*Result_Char_ref_unwrap(first) == 'a');
 

@@ -12,17 +12,18 @@
         union                                                                     \
         {                                                                         \
             Type value;                                                           \
-            const Char *error_message;                                            \
+            const ref_Char error_message;                                         \
         };                                                                        \
         Bool is_error;                                                            \
     } Result_##Type;                                                              \
+    REF_EXPAND(Result_##Type)                                                     \
                                                                                   \
     static inline Result_##Type Result_##Type##_ok(Type value)                    \
     {                                                                             \
         return (Result_##Type){.value = value, .is_error = false};                \
     }                                                                             \
                                                                                   \
-    static inline Result_##Type Result_##Type##_err(const Char *error_message)    \
+    static inline Result_##Type Result_##Type##_err(const ref_Char error_message) \
     {                                                                             \
         return (Result_##Type){.error_message = error_message, .is_error = true}; \
     }                                                                             \
@@ -49,7 +50,7 @@
         return !result.is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline const Char *Result_##Type##_unwrap_err(Result_##Type result)    \
+    static inline const ref_Char Result_##Type##_unwrap_err(Result_##Type result) \
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
@@ -59,7 +60,7 @@
         return result.error_message;                                              \
     }                                                                             \
                                                                                   \
-    static inline void Result_##Type##_free(Result_##Type *result)                \
+    static inline void Result_##Type##_free(ref_Result_##Type result)             \
     {                                                                             \
         if (!result->is_error)                                                    \
         {                                                                         \
@@ -67,10 +68,11 @@
         }                                                                         \
     }
 
-typedef const Char *Result;
+typedef const ref_Char Result;
+REF_EXPAND(Result)
 
 static inline Result Result_ok() { return NULL; }
-static inline Result Result_err(const Char *error_message) { return error_message; }
+static inline Result Result_err(const ref_Char error_message) { return error_message; }
 
 static inline void Result_unwrap(Result result)
 {
@@ -86,7 +88,7 @@ static inline void Result_unwrap(Result result)
 static inline Bool Result_is_err(Result result) { return result; }
 static inline Bool Result_is_ok(Result result) { return !result; }
 
-static inline const Char *Result_unwrap_err(Result result)
+static inline const ref_Char Result_unwrap_err(Result result)
 {
     if (!result)
     {
@@ -96,7 +98,7 @@ static inline const Char *Result_unwrap_err(Result result)
     return result;
 }
 
-static inline void Result_free(Result *result)
+static inline void Result_free(ref_Result result)
 {
     (void)result;
 }

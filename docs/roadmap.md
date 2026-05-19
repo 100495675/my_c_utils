@@ -1,20 +1,25 @@
 # Roadmap
 
-## Next steps
+## Near-term priorities
 
-1. Add a dedicated test runner or task configuration for the files in `tests/`.
-2. Add collision-heavy tests for the hash map, especially deletion after probing and resize behavior.
-3. Add tests for nested containers, such as `List_Vector_Char` and `Hashmap_String_Vector_Int`.
-4. Decide whether `debug` helpers should stay in the public headers or move behind optional compile-time flags.
-5. Add a consistent include guard and naming convention audit for all public macros and types.
-6. Consider optional clone/copy helpers for containers that need deep duplication.
-7. Consider allocator hooks if the library should be embedded in constrained or custom-memory projects.
+1. Keep the structured test layout growing by module: `tests/unit/` for isolated behavior and `tests/integration/` for nested and cross-container cases.
+2. Keep expanding the expected-failure suite under `tests/expected_fail/`, especially `Result` unwraps on error, `Option` unwraps on none, and iterator exhaustion.
+3. Keep the dedicated success/failure runners aligned with CI and editor tasks.
+4. Decide whether public debug helpers should remain in the core headers or move behind compile-time flags.
+5. Add allocator hooks if the library should be embedded in constrained or custom-memory projects.
+6. Add deep clone helpers for nested containers that need explicit duplication semantics.
 
-## Versioning target
+## Structural follow-ups
 
-The current code is at the stage where API contracts are still being stabilized. A good next milestone is a `v0.1.0` release focused on:
+1. Split test support into reusable helpers for strings, temporary files, and subprocess assertions.
+2. Keep documentation synchronized with ownership and iterator contracts whenever a public macro changes.
+3. Consider a tagged release once the current header layout, ownership rules, and iterator contract stop moving.
 
-- stable ownership rules
+## Release target
+
+A sensible next milestone is a `v0.1.0` release focused on:
+
 - stable include layout
-- assertion-based tests
-- documented container semantics
+- stable ownership rules
+- explicit iterator semantics
+- a documented, recursive test suite

@@ -1,10 +1,7 @@
-#include "my_c_utils/hash_map.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/hash_map.h"
+#include "../../support/string_helpers.h"
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef Char *String;
 
 static String make_key(Int value)
 {
@@ -18,7 +15,7 @@ static String make_key(Int value)
   } while (value > 0);
 
   const Size prefix_len = 4;
-  String key = malloc(prefix_len + digits_len + 1);
+  String key = (String)malloc(prefix_len + digits_len + 1);
   assert(key != NULL);
 
   key[0] = 'k';
@@ -34,19 +31,9 @@ static String make_key(Int value)
   return key;
 }
 
-Size String_hash(String key)
-{
-  (void)key;
-  return 1;
-}
-
-Bool String_equals(String a, String b) { return strcmp(a, b) == 0; }
-
-void String_free(String *s) { free(*s); }
-
 HASH_MAP_CONFIG(String, Int)
 
-Int main()
+Int main(void)
 {
   Hashmap_String_Int hm = Hashmap_String_Int_new(8);
 

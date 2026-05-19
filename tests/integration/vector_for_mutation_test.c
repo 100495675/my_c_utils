@@ -1,10 +1,11 @@
-#include "my_c_utils/vector.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/vector.h"
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
 
-Int main(void) {
+Int main(void)
+{
   Vector_Int vector = Vector_Int_new();
   assert(Result_is_ok(Vector_Int_push_back(&vector, 1)));
   assert(Result_is_ok(Vector_Int_push_back(&vector, 2)));
@@ -15,7 +16,8 @@ Int main(void) {
   for_each_ref(Int, item, Vector, &vector, {
     seen_sum += *item;
     ++seen_count;
-    if (*item == 2) {
+    if (*item == 2)
+    {
       assert(Result_is_ok(Vector_Int_push_back(&vector, 3)));
       assert(Result_is_ok(Vector_Int_push_back(&vector, 4)));
     }

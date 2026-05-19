@@ -1,18 +1,21 @@
+#include "my_c_utils/free.h"
 #include "my_c_utils/linked_list.h"
 #include "my_c_utils/vector.h"
-#include "my_c_utils/free.h"
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
-
 typedef Vector_Int Vector_Int_list;
-static inline void Vector_Int_list_free(Vector_Int_list *value) {
+static inline void Vector_Int_list_free(Vector_Int_list *value)
+{
   Vector_Int_free(value);
 }
 
+RESULT_CONFIG(Vector_Int_list)
+
 LINKED_LIST_CONFIG(Vector_Int_list)
 
-Int main(void) {
+Int main(void)
+{
   List_Vector_Int_list list = List_Vector_Int_list_new();
 
   Vector_Int first = Vector_Int_new();

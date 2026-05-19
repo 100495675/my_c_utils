@@ -1,10 +1,10 @@
-#include "my_c_utils/linked_list.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/linked_list.h"
 #include <assert.h>
 
 LINKED_LIST_CONFIG(Int)
 
-Int main()
+Int main(void)
 {
   List_Int ll = List_Int_new();
   assert(List_Int_size(&ll) == 0);
@@ -14,12 +14,8 @@ Int main()
   assert(List_Int_size(&ll) == 3);
 
   Result_Int result = List_Int_pop_back(&ll);
-  if (Result_Int_is_ok(result))
-  {
-    assert(Result_Int_unwrap(result) == 30);
-  }
-
-  assert(List_Int_size(&ll) == 2);
+  assert(Result_Int_is_ok(result));
+  assert(Result_Int_unwrap(result) == 30);
 
   Result_Int second = List_Int_pop_back(&ll);
   assert(Result_Int_is_ok(second));

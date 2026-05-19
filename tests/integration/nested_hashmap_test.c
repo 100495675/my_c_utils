@@ -1,44 +1,32 @@
+#include "my_c_utils/free.h"
 #include "my_c_utils/hash_map.h"
 #include "my_c_utils/vector.h"
-#include "my_c_utils/free.h"
+#include "../support/string_helpers.h"
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef Char *String;
-
-static String string_dup(const Char *text) {
-  Size length = strlen(text);
-  String copy = malloc(length + 1);
-  assert(copy != NULL);
-  for (Size i = 0; i <= length; ++i) {
-    copy[i] = text[i];
-  }
-  return copy;
-}
-
-Size String_hash(String key) {
-  Size hash = 0;
-  while (*key) {
-    hash = (hash * 31) + (UChar)*key++;
-  }
-  return hash;
-}
-
-Bool String_equals(String a, String b) { return strcmp(a, b) == 0; }
-
-void String_free(String *value) { free(*value); }
 
 VECTOR_CONFIG(Int)
-
 typedef Vector_Int Vector_Int_map;
-static inline void Vector_Int_map_free(Vector_Int_map *value) {
+static inline void Vector_Int_map_free(Vector_Int_map *value)
+{
   Vector_Int_free(value);
+}
+
+RESULT_CONFIG(Vector_Int_map)
+
+static inline Result_Vector_Int_map Vector_Int_map_clone(const Vector_Int_map *src)
+{
+  Result_Vector_Int vector_clone = Vector_Int_clone(src);
+  if (vector_clone.is_error)
+  {
+    return Result_Vector_Int_map_err(vector_clone.error_message);
+  }
+  return Result_Vector_Int_map_ok(vector_clone.value);
 }
 
 HASH_MAP_CONFIG(String, Vector_Int_map)
 
-Int main(void) {
+Int main(void)
+{
   Hashmap_String_Vector_Int_map map = Hashmap_String_Vector_Int_map_new(4);
 
   Vector_Int alpha = Vector_Int_new();

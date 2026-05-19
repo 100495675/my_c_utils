@@ -1,15 +1,14 @@
-#include "my_c_utils/hash_map.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/hash_map.h"
 #include <assert.h>
-#include <stdlib.h>
+#include <stdio.h>
 
-Size Int_hash(Int key) { return (Size)key; }
-
-Bool Int_equals(Int a, Int b) { return a == b; }
+static Size Int_hash(Int key) { return (Size)key; }
+static Bool Int_equals(Int a, Int b) { return a == b; }
 
 HASH_MAP_CONFIG(Int, Int)
 
-Int main()
+Int main(void)
 {
   Hashmap_Int_Int hm = Hashmap_Int_Int_new(4);
 
