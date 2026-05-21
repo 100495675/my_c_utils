@@ -28,14 +28,22 @@ Int main(void)
   Vector_Vector_Int outer = Vector_Vector_Int_new();
 
   Vector_Int first = Vector_Int_new();
-  assert(Result_is_ok(Vector_Int_push_back(&first, 1)));
-  assert(Result_is_ok(Vector_Int_push_back(&first, 2)));
-  assert(Result_is_ok(Vector_Vector_Int_push_back(&outer, first)));
+  Result r1 = Vector_Int_push_back(&first, 1);
+  assert(Result_is_ok(&r1));
+  Result r2 = Vector_Int_push_back(&first, 2);
+  assert(Result_is_ok(&r2));
+  
+  Result r3 = Vector_Vector_Int_push_back(&outer, first);
+  assert(Result_is_ok(&r3));
   first = Vector_Int_new();
 
+  
   Vector_Int second = Vector_Int_new();
-  assert(Result_is_ok(Vector_Int_push_back(&second, 3)));
-  assert(Result_is_ok(Vector_Vector_Int_push_back(&outer, second)));
+  Result r4 = Vector_Int_push_back(&second, 3);
+  assert(Result_is_ok(&r4));
+
+  Result r5 = Vector_Vector_Int_push_back(&outer, second);
+  assert(Result_is_ok(&r5));
   second = Vector_Int_new();
 
   assert_nested_iteration(&outer, 3, 6);

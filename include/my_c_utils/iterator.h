@@ -21,7 +21,7 @@ Functions the containes has to implement to be iterable:
     {                                                                                                \
         Result_ref_##ItemType MY_C_UTILS_CONCAT(_res_, counter) =                                    \
             iter_##container##_##ItemType##_next(&MY_C_UTILS_CONCAT(_it_, counter));                 \
-        if (!Result_ref_##ItemType##_is_ok(MY_C_UTILS_CONCAT(_res_, counter)))                       \
+        if (!Result_ref_##ItemType##_is_ok(&MY_C_UTILS_CONCAT(_res_, counter)))                       \
         {                                                                                            \
             break;                                                                                   \
         }                                                                                            \
@@ -37,7 +37,7 @@ Functions the containes has to implement to be iterable:
     {                                                                                           \
         Result_ref_##ItemType MY_C_UTILS_CONCAT(_res_, counter) =                               \
             iter_##container##_##ItemType##_next(&MY_C_UTILS_CONCAT(_it_, counter));            \
-        if (!Result_ref_##ItemType##_is_ok(MY_C_UTILS_CONCAT(_res_, counter)))                  \
+        if (!Result_ref_##ItemType##_is_ok(&MY_C_UTILS_CONCAT(_res_, counter)))                  \
         {                                                                                       \
             break;                                                                              \
         }                                                                                       \

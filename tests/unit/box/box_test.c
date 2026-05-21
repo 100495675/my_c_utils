@@ -24,8 +24,10 @@ Int main(void)
   Box_Int_free(&cloned_number);
 
   Vector_Int vector = Vector_Int_new();
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 1)));
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 2)));
+  Result r1 = Vector_Int_push_back(&vector, 1);
+  assert(Result_is_ok(&r1));
+  Result r2 = Vector_Int_push_back(&vector, 2);
+  assert(Result_is_ok(&r2));
 
   Box_Vector_Int vector_box = Box_Vector_Int_new(vector);
   vector = Vector_Int_new();
@@ -38,13 +40,15 @@ Int main(void)
       Vector_Int_at(Box_Vector_Int_deref(&vector_box), 0);
   Result_ref_Int cloned_first =
       Vector_Int_at(Box_Vector_Int_deref(&cloned_vector_box), 0);
-  assert(Result_ref_Int_is_ok(original_first));
-  assert(Result_ref_Int_is_ok(cloned_first));
+  assert(Result_ref_Int_is_ok(&original_first));
+  assert(Result_ref_Int_is_ok(&cloned_first));
   assert(*Result_ref_Int_unwrap(original_first) == 1);
   assert(*Result_ref_Int_unwrap(cloned_first) == 1);
 
-  assert(Result_is_ok(Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99)));
-  assert(Result_is_ok(Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99)));
+  Result r3 = Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99);
+  assert(Result_is_ok(&r3));
+  Result r4 = Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99);
+  assert(Result_is_ok(&r4));
   assert(*Result_ref_Int_unwrap(Vector_Int_at(Box_Vector_Int_deref(&vector_box), 0)) == 99);
   assert(*Result_ref_Int_unwrap(Vector_Int_at(Box_Vector_Int_deref(&cloned_vector_box), 0)) == 1);
 

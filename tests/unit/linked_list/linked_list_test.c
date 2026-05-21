@@ -14,15 +14,15 @@ Int main(void)
   assert(List_Int_size(&ll) == 3);
 
   Result_Int result = List_Int_pop_back(&ll);
-  assert(Result_Int_is_ok(result));
+  assert(Result_Int_is_ok(&result));
   assert(Result_Int_unwrap(result) == 30);
 
   Result_Int second = List_Int_pop_back(&ll);
-  assert(Result_Int_is_ok(second));
+  assert(Result_Int_is_ok(&second));
   assert(Result_Int_unwrap(second) == 20);
 
   Result_Int third = List_Int_pop_back(&ll);
-  assert(Result_Int_is_ok(third));
+  assert(Result_Int_is_ok(&third));
   assert(Result_Int_unwrap(third) == 10);
 
   assert(List_Int_size(&ll) == 0);

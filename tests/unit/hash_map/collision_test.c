@@ -47,7 +47,7 @@ Int main(void)
     String key = make_key(i);
     assert(Hashmap_String_Int_contains(&hm, key));
     Result_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_ref_Int_is_ok(r));
+    assert(Result_ref_Int_is_ok(&r));
     assert(*Result_ref_Int_unwrap(r) == i);
     free(key);
   }
@@ -71,7 +71,7 @@ Int main(void)
     String key = make_key(i);
     assert(Hashmap_String_Int_contains(&hm, key));
     Result_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_ref_Int_is_ok(r));
+    assert(Result_ref_Int_is_ok(&r));
     assert(*Result_ref_Int_unwrap(r) == i);
     free(key);
   }

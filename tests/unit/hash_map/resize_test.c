@@ -22,14 +22,14 @@ Int main(void)
   {
     assert(Hashmap_Int_Int_contains(&hm, i));
     Result_ref_Int r = Hashmap_Int_Int_get(&hm, i);
-    assert(Result_ref_Int_is_ok(r));
+    assert(Result_ref_Int_is_ok(&r));
     assert(*Result_ref_Int_unwrap(r) == i * 2);
   }
 
   for (Int i = 0; i < N; i += 3)
   {
     Result_Int popped = Hashmap_Int_Int_pop(&hm, i);
-    assert(Result_Int_is_ok(popped));
+    assert(Result_Int_is_ok(&popped));
   }
 
   Hashmap_Int_Int_free(&hm);

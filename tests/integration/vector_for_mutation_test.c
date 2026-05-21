@@ -7,8 +7,10 @@ VECTOR_CONFIG(Int)
 Int main(void)
 {
   Vector_Int vector = Vector_Int_new();
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 1)));
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 2)));
+  Result r1 = Vector_Int_push_back(&vector, 1);
+  assert(Result_is_ok(&r1));
+  Result r2 = Vector_Int_push_back(&vector, 2);
+  assert(Result_is_ok(&r2));
 
   Int seen_sum = 0;
   Size seen_count = 0;
@@ -18,8 +20,10 @@ Int main(void)
     ++seen_count;
     if (*item == 2)
     {
-      assert(Result_is_ok(Vector_Int_push_back(&vector, 3)));
-      assert(Result_is_ok(Vector_Int_push_back(&vector, 4)));
+      Result r3 = Vector_Int_push_back(&vector, 3);
+      assert(Result_is_ok(&r3));
+      Result r4 = Vector_Int_push_back(&vector, 4);
+      assert(Result_is_ok(&r4));
     }
   });
 

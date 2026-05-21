@@ -23,7 +23,7 @@
         return (Result_##Type){.value = value, .is_error = false};                \
     }                                                                             \
                                                                                   \
-    static inline Result_##Type Result_##Type##_err(cref_Char error_message) \
+    static inline Result_##Type Result_##Type##_err(cref_Char error_message)      \
     {                                                                             \
         return (Result_##Type){.error_message = error_message, .is_error = true}; \
     }                                                                             \
@@ -40,17 +40,17 @@
         return result.value;                                                      \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_##Type##_is_err(Result_##Type result)               \
+    static inline Bool Result_##Type##_is_err(cref_Result_##Type result)          \
     {                                                                             \
-        return result.is_error;                                                   \
+        return result->is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_##Type##_is_ok(Result_##Type result)                \
+    static inline Bool Result_##Type##_is_ok(cref_Result_##Type result)           \
     {                                                                             \
-        return !result.is_error;                                                  \
+        return !(result->is_error);                                               \
     }                                                                             \
                                                                                   \
-    static inline cref_Char Result_##Type##_unwrap_err(Result_##Type result) \
+    static inline cref_Char Result_##Type##_unwrap_err(Result_##Type result)      \
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
@@ -69,7 +69,7 @@
     }
 
 typedef cref_Char Result;
-typedef Result *ref_Result;
+REF_EXPAND(Result)
 
 static inline Result Result_ok() { return NULL; }
 static inline Result Result_err(cref_Char error_message) { return error_message; }
@@ -85,8 +85,8 @@ static inline void Result_unwrap(Result result)
     }
 }
 
-static inline Bool Result_is_err(Result result) { return result; }
-static inline Bool Result_is_ok(Result result) { return !result; }
+static inline Bool Result_is_err(cref_Result result) { return *result; }
+static inline Bool Result_is_ok(cref_Result result) { return !(*result); }
 
 static inline cref_Char Result_unwrap_err(Result result)
 {

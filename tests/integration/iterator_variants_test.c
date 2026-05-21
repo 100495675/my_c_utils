@@ -9,15 +9,23 @@ Int main(void)
 {
   Vector_Int vector = Vector_Int_new();
 
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 10)));
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 20)));
-  assert(Result_is_ok(Vector_Int_push_back(&vector, 30)));
+  Result r1 = Vector_Int_push_back(&vector, 10);
+  assert(Result_is_ok(&r1));
+  Result_free(&r1);
+  Result r2 = Vector_Int_push_back(&vector, 20);
+  assert(Result_is_ok(&r2));
+  Result_free(&r2);
+  Result r3 = Vector_Int_push_back(&vector, 30);
+  assert(Result_is_ok(&r3));
+  Result_free(&r3);
+
 
   Int sum_ref = 0;
   for_each_ref(Int, item, Vector, &vector, {
     sum_ref += *item;
   });
   assert(sum_ref == 60);
+  Int_free(&sum_ref);
 
   Int sum_copy = 0;
   for_each_copy(Int, item, Vector, &vector, {

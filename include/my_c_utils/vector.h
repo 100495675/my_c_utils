@@ -171,7 +171,7 @@
         {                                                                                          \
             Type cloned_value = Type##_clone(&src->data[i]);                                       \
             Result push_res = Vector_##Type##_push_back(&dest, cloned_value);                      \
-            if (Result_is_err(push_res))                                                           \
+            if (Result_is_err(&push_res))                                                           \
             {                                                                                      \
                 Vector_##Type##_free(&dest);                                                       \
                 perror("Memory allocation failed during vector clone");                          \
