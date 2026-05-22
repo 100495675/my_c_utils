@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "my_c_utils/allocator.h"
 #include "my_c_utils/result.h"
 #include "my_c_utils/primitives.h"
 
@@ -18,7 +19,7 @@
         if (self->value)                                                                      \
         {                                                                                     \
             Type##_free(self->value);                                                         \
-            free(self->value);                                                                \
+            MY_C_UTILS_FREE(self->value);                                                     \
             self->value = NULL;                                                               \
         }                                                                                     \
     }                                                                                         \
@@ -27,7 +28,7 @@
                                                                                               \
     static inline Box_##Type Box_##Type##_new(Type value)                                     \
     {                                                                                         \
-        ref_##Type boxed_value = malloc(sizeof(Type));                                        \
+        ref_##Type boxed_value = MY_C_UTILS_MALLOC(sizeof(Type));                             \
         if (!boxed_value)                                                                     \
         {                                                                                     \
             perror("Memory allocation failed");                                              \
@@ -55,7 +56,7 @@
             exit(1);                                                                          \
         }                                                                                     \
         Type value = *self->value;                                                            \
-        free(self->value);                                                                    \
+        MY_C_UTILS_FREE(self->value);                                                         \
         self->value = NULL;                                                                   \
         return value;                                                                         \
     }                                                                                         \

@@ -15,20 +15,20 @@
             cref_Char error_message;                                              \
         };                                                                        \
         Bool is_error;                                                            \
-    } Result_##Type;                                                              \
-    REF_EXPAND(Result_##Type)                                                     \
+    } Result_Void_##Type;                                                              \
+    REF_EXPAND(Result_Void_##Type)                                                     \
                                                                                   \
-    static inline Result_##Type Result_##Type##_ok(Type value)                    \
+    static inline Result_Void_##Type Result_Void_##Type##_ok(Type value)                    \
     {                                                                             \
-        return (Result_##Type){.value = value, .is_error = false};                \
+        return (Result_Void_##Type){.value = value, .is_error = false};                \
     }                                                                             \
                                                                                   \
-    static inline Result_##Type Result_##Type##_err(cref_Char error_message)      \
+    static inline Result_Void_##Type Result_Void_##Type##_err(cref_Char error_message)      \
     {                                                                             \
-        return (Result_##Type){.error_message = error_message, .is_error = true}; \
+        return (Result_Void_##Type){.error_message = error_message, .is_error = true}; \
     }                                                                             \
                                                                                   \
-    static inline Type Result_##Type##_unwrap(Result_##Type result)               \
+    static inline Type Result_Void_##Type##_unwrap(Result_Void_##Type result)               \
     {                                                                             \
         if (result.is_error)                                                      \
         {                                                                         \
@@ -40,27 +40,27 @@
         return result.value;                                                      \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_##Type##_is_err(cref_Result_##Type result)          \
+    static inline Bool Result_Void_##Type##_is_err(cref_Result_Void_##Type result)          \
     {                                                                             \
         return result->is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_##Type##_is_ok(cref_Result_##Type result)           \
+    static inline Bool Result_Void_##Type##_is_ok(cref_Result_Void_##Type result)           \
     {                                                                             \
         return !(result->is_error);                                               \
     }                                                                             \
                                                                                   \
-    static inline cref_Char Result_##Type##_unwrap_err(Result_##Type result)      \
+    static inline cref_Char Result_Void_##Type##_unwrap_err(Result_Void_##Type result)      \
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
-            perror("Result is ok");                                               \
+            perror("Result_Void is ok");                                               \
             exit(1);                                                              \
         }                                                                         \
         return result.error_message;                                              \
     }                                                                             \
                                                                                   \
-    static inline void Result_##Type##_free(ref_Result_##Type result)             \
+    static inline void Result_Void_##Type##_free(ref_Result_Void_##Type result)             \
     {                                                                             \
         if (!result->is_error)                                                    \
         {                                                                         \
@@ -68,37 +68,55 @@
         }                                                                         \
     }
 
-typedef cref_Char Result;
-REF_EXPAND(Result)
-
-static inline Result Result_ok() { return NULL; }
-static inline Result Result_err(cref_Char error_message) { return error_message; }
-
-static inline void Result_unwrap(Result result)
+typedef struct
 {
-    if (result)
+    cref_Char error_message;
+    Bool is_error;
+} Result_Void;
+REF_EXPAND(Result_Void)
+
+static inline Result_Void Result_Void_ok()
+{
+    return (Result_Void){.error_message = NULL, .is_error = false};
+}
+
+static inline Result_Void Result_Void_err(cref_Char error_message)
+{
+    return (Result_Void){.error_message = error_message, .is_error = true};
+}
+
+static inline void Result_Void_unwrap(Result_Void result)
+{
+    if (result.is_error)
     {
         fputs("Unwrap on error: ", stderr);
-        fputs(result, stderr);
+        fputs(result.error_message, stderr);
         fputc('\n', stderr);
         exit(1);
     }
 }
 
-static inline Bool Result_is_err(cref_Result result) { return *result; }
-static inline Bool Result_is_ok(cref_Result result) { return !(*result); }
-
-static inline cref_Char Result_unwrap_err(Result result)
+static inline Bool Result_Void_is_err(cref_Result_Void result)
 {
-    if (!result)
-    {
-        perror("Result is ok");
-        exit(1);
-    }
-    return result;
+    return result->is_error;
 }
 
-static inline void Result_free(ref_Result result)
+static inline Bool Result_Void_is_ok(cref_Result_Void result)
+{
+    return !(result->is_error);
+}
+
+static inline cref_Char Result_Void_unwrap_err(Result_Void result)
+{
+    if (!result.is_error)
+    {
+        perror("Result_Void is ok");
+        exit(1);
+    }
+    return result.error_message;
+}
+
+static inline void Result_Void_free(ref_Result_Void result)
 {
     (void)result;
 }

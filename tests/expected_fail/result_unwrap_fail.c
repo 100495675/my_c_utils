@@ -10,6 +10,6 @@ RESULT_CONFIG(Int)
 
 Int main(void)
 {
-  Result_Int_unwrap(Result_Int_err("boom"));
+  Result_Void_Int_unwrap(Result_Void_Int_err("boom"));
   return 0;
 }

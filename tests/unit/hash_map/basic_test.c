@@ -1,6 +1,6 @@
 #include "my_c_utils/free.h"
 #include "my_c_utils/hash_map.h"
-#include "../../support/string_helpers.h"
+#include "my_c_utils/string_type.h"
 #include <assert.h>
 
 HASH_MAP_CONFIG(String, Int)
@@ -39,18 +39,18 @@ Int main(void)
   assert(Hashmap_String_Int_contains(&hm, "two"));
   assert(Hashmap_String_Int_contains(&hm, "three"));
 
-  Result_ref_Int two_result = Hashmap_String_Int_get(&hm, "two");
-  assert(Result_ref_Int_is_ok(&two_result));
-  assert(*Result_ref_Int_unwrap(two_result) == 20);
+  Result_Void_ref_Int two_result = Hashmap_String_Int_get(&hm, "two");
+  assert(Result_Void_ref_Int_is_ok(&two_result));
+  assert(*Result_Void_ref_Int_unwrap(two_result) == 20);
 
   Hashmap_String_Int_remove(&hm, "two");
   assert(!Hashmap_String_Int_contains(&hm, "two"));
-  Result_ref_Int two_result_after_removal = Hashmap_String_Int_get(&hm, "two");
-  assert(Result_ref_Int_is_err(&two_result_after_removal));
+  Result_Void_ref_Int two_result_after_removal = Hashmap_String_Int_get(&hm, "two");
+  assert(Result_Void_ref_Int_is_err(&two_result_after_removal));
 
-  Result_Int popped_three = Hashmap_String_Int_pop(&hm, "three");
-  assert(Result_Int_is_ok(&popped_three));
-  assert(Result_Int_unwrap(popped_three) == 30);
+  Result_Void_Int popped_three = Hashmap_String_Int_pop(&hm, "three");
+  assert(Result_Void_Int_is_ok(&popped_three));
+  assert(Result_Void_Int_unwrap(popped_three) == 30);
   assert(!Hashmap_String_Int_contains(&hm, "three"));
 
   Hashmap_String_Int_add(&hm, string_dup("four"), 40);

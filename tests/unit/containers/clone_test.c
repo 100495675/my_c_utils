@@ -62,16 +62,16 @@ void test_clone_vector_int_simple(void)
     Vector_Int result = Vector_Int_clone(&original);
     assert(result.size == 3);
 
-    Result_ref_Int v0 = Vector_Int_at(&result, 0);
-    Result_ref_Int v1 = Vector_Int_at(&result, 1);
-    Result_ref_Int v2 = Vector_Int_at(&result, 2);
+    Result_Void_ref_Int v0 = Vector_Int_at(&result, 0);
+    Result_Void_ref_Int v1 = Vector_Int_at(&result, 1);
+    Result_Void_ref_Int v2 = Vector_Int_at(&result, 2);
     assert(!v0.is_error && *v0.value == 10);
     assert(!v1.is_error && *v1.value == 20);
     assert(!v2.is_error && *v2.value == 30);
 
     /* Verify clone is independent: modify original */
     Vector_Int_set(&original, 0, 999);
-    Result_ref_Int cloned_v0 = Vector_Int_at(&result, 0);
+    Result_Void_ref_Int cloned_v0 = Vector_Int_at(&result, 0);
     assert(!cloned_v0.is_error && *cloned_v0.value == 10);
 
     Vector_Int_free(&original);
@@ -116,32 +116,32 @@ void test_clone_vector_of_vectors_nested(void)
     assert(result.size == 2);
 
     /* Verify first nested vector */
-    Result_ref_Vector_Int ref1 = Vector_Vector_Int_at(&result, 0);
+    Result_Void_ref_Vector_Int ref1 = Vector_Vector_Int_at(&result, 0);
     assert(!ref1.is_error);
     assert(ref1.value->size == 3);
-    Result_ref_Int v1_0 = Vector_Int_at(ref1.value, 0);
-    Result_ref_Int v1_1 = Vector_Int_at(ref1.value, 1);
-    Result_ref_Int v1_2 = Vector_Int_at(ref1.value, 2);
+    Result_Void_ref_Int v1_0 = Vector_Int_at(ref1.value, 0);
+    Result_Void_ref_Int v1_1 = Vector_Int_at(ref1.value, 1);
+    Result_Void_ref_Int v1_2 = Vector_Int_at(ref1.value, 2);
     assert(!v1_0.is_error && *v1_0.value == 1);
     assert(!v1_1.is_error && *v1_1.value == 2);
     assert(!v1_2.is_error && *v1_2.value == 3);
 
     /* Verify second nested vector */
-    Result_ref_Vector_Int ref2 = Vector_Vector_Int_at(&result, 1);
+    Result_Void_ref_Vector_Int ref2 = Vector_Vector_Int_at(&result, 1);
     assert(!ref2.is_error);
     assert(ref2.value->size == 2);
-    Result_ref_Int v2_0 = Vector_Int_at(ref2.value, 0);
-    Result_ref_Int v2_1 = Vector_Int_at(ref2.value, 1);
+    Result_Void_ref_Int v2_0 = Vector_Int_at(ref2.value, 0);
+    Result_Void_ref_Int v2_1 = Vector_Int_at(ref2.value, 1);
     assert(!v2_0.is_error && *v2_0.value == 10);
     assert(!v2_1.is_error && *v2_1.value == 20);
 
     /* Verify independence: modify original's nested vector */
-    Result_ref_Vector_Int orig_ref1 = Vector_Vector_Int_at(&original, 0);
+    Result_Void_ref_Vector_Int orig_ref1 = Vector_Vector_Int_at(&original, 0);
     assert(!orig_ref1.is_error);
     Vector_Int_set(orig_ref1.value, 0, 999);
 
     /* Cloned version should be unchanged */
-    Result_ref_Int cloned_check =
+    Result_Void_ref_Int cloned_check =
         Vector_Int_at((Vector_Vector_Int_at(&result, 0)).value, 0);
     assert(!cloned_check.is_error && *cloned_check.value == 1);
 

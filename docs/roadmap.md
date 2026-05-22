@@ -3,7 +3,7 @@
 ## Near-term priorities
 
 1. Keep the structured test layout growing by module: `tests/unit/` for isolated behavior and `tests/integration/` for nested and cross-container cases.
-2. Keep expanding the expected-failure suite under `tests/expected_fail/`, especially `Result` unwraps on error, `Option` unwraps on none, and iterator exhaustion.
+2. Keep expanding the expected-failure suite under `tests/expected_fail/`, especially `Result_Void` unwraps on error, `Option` unwraps on none, and iterator exhaustion.
 3. Keep the dedicated success/failure runners aligned with CI and editor tasks.
 4. Decide whether public debug helpers should remain in the core headers or move behind compile-time flags.
 5. Add allocator hooks if the library should be embedded in constrained or custom-memory projects.

@@ -1,6 +1,6 @@
 #include "my_c_utils/free.h"
 #include "my_c_utils/hash_map.h"
-#include "../../support/string_helpers.h"
+#include "my_c_utils/string_type.h"
 #include <assert.h>
 
 static String make_key(Int value)
@@ -46,9 +46,9 @@ Int main(void)
   {
     String key = make_key(i);
     assert(Hashmap_String_Int_contains(&hm, key));
-    Result_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_ref_Int_is_ok(&r));
-    assert(*Result_ref_Int_unwrap(r) == i);
+    Result_Void_ref_Int r = Hashmap_String_Int_get(&hm, key);
+    assert(Result_Void_ref_Int_is_ok(&r));
+    assert(*Result_Void_ref_Int_unwrap(r) == i);
     free(key);
   }
 
@@ -70,9 +70,9 @@ Int main(void)
   {
     String key = make_key(i);
     assert(Hashmap_String_Int_contains(&hm, key));
-    Result_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_ref_Int_is_ok(&r));
-    assert(*Result_ref_Int_unwrap(r) == i);
+    Result_Void_ref_Int r = Hashmap_String_Int_get(&hm, key);
+    assert(Result_Void_ref_Int_is_ok(&r));
+    assert(*Result_Void_ref_Int_unwrap(r) == i);
     free(key);
   }
 

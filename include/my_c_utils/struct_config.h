@@ -73,17 +73,17 @@
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_FREE, __VA_ARGS__) \
     }
 
-#define CLONE_CONFIG(Type, ...)                                              \
-    static inline Type Type##_clone(cref_##Type src)                          \
-    {                                                                        \
-        if (!src)                                                            \
-        {                                                                    \
-            perror("Cannot clone NULL pointer");                            \
-            exit(1);                                                         \
-        }                                                                    \
-        Type dest = {0};                                                     \
+#define CLONE_CONFIG(Type, ...)                                                 \
+    static inline Type Type##_clone(cref_##Type src)                            \
+    {                                                                           \
+        if (!src)                                                               \
+        {                                                                       \
+            perror("Cannot clone NULL pointer");                                \
+            exit(1);                                                            \
+        }                                                                       \
+        Type dest = {0};                                                        \
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_CLONE, __VA_ARGS__) \
-        return dest;                                                         \
+        return dest;                                                            \
     }
 
 #define STRUCT_CONFIG(Type, ...)                                                  \
@@ -94,6 +94,7 @@
     REF_EXPAND(Type)                                                              \
     FREE_CONFIG(Type, __VA_ARGS__)                                                \
     RESULT_CONFIG(Type)                                                           \
+    RESULT_CONFIG(ref_##Type)                                                     \
     CLONE_CONFIG(Type, __VA_ARGS__)
 
 #endif

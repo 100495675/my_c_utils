@@ -9,15 +9,15 @@ Int main(void)
 {
   Vector_Int vector = Vector_Int_new();
 
-  Result r1 = Vector_Int_push_back(&vector, 10);
-  assert(Result_is_ok(&r1));
-  Result_free(&r1);
-  Result r2 = Vector_Int_push_back(&vector, 20);
-  assert(Result_is_ok(&r2));
-  Result_free(&r2);
-  Result r3 = Vector_Int_push_back(&vector, 30);
-  assert(Result_is_ok(&r3));
-  Result_free(&r3);
+  Result_Void r1 = Vector_Int_push_back(&vector, 10);
+  assert(Result_Void_is_ok(&r1));
+  Result_Void_free(&r1);
+  Result_Void r2 = Vector_Int_push_back(&vector, 20);
+  assert(Result_Void_is_ok(&r2));
+  Result_Void_free(&r2);
+  Result_Void r3 = Vector_Int_push_back(&vector, 30);
+  assert(Result_Void_is_ok(&r3));
+  Result_Void_free(&r3);
 
 
   Int sum_ref = 0;

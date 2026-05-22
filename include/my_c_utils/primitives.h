@@ -5,11 +5,14 @@
 #include "my_c_utils/clone.h"
 #include "my_c_utils/result.h"
 #include "my_c_utils/tipos.h"
+#include "my_c_utils/hash_defaults.h"
 
-#define PRIMITIVE_CONFIG(Type) \
-	TRIVIAL_FREE(Type, ref_##Type value)        \
-	RESULT_CONFIG(Type)       \
-	TRIVIAL_CLONE(Type)
+#define PRIMITIVE_CONFIG(Type)           \
+	TRIVIAL_FREE(Type, ref_##Type value) \
+	RESULT_CONFIG(Type)                  \
+	RESULT_CONFIG(ref_##Type)            \
+	TRIVIAL_CLONE(Type)                  \
+	PRIMITIVE_HASH_EQUALS(Type)
 
 /* Instantiate the primitive helpers in a safe order. */
 PRIMITIVE_CONFIG(Bool)

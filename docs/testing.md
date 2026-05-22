@@ -6,7 +6,7 @@ The test suite is organized to validate the library as a real reusable C project
 
 ## Structure
 
-- `tests/unit/result_option/`: success and failure cases for `Result` and `Option`.
+- `tests/unit/result_option/`: success and failure cases for `Result_Void` and `Option`.
 - `tests/expected_fail/`: binaries that are expected to terminate with a non-zero exit status.
 - `tests/unit/vector/`: vector boundary and mutation behavior.
 - `tests/unit/linked_list/`: linked list push/pop and iteration behavior.
@@ -16,7 +16,7 @@ The test suite is organized to validate the library as a real reusable C project
 
 ## Covered cases
 
-### Result and Option
+### Result_Void and Option
 
 - unwrap of valid values
 - free on success and on error states
