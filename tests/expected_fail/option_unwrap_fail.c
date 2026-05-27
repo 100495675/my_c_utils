@@ -10,6 +10,6 @@ OPTION_CONFIG(Int)
 
 Int main(void)
 {
-  Option_Int_unwrap(Option_Int_none());
+  Option_unwrap(Int)(Option_none(Int)());
   return 0;
 }

@@ -7,9 +7,9 @@ VECTOR_CONFIG(Char)
 
 STRUCT_CONFIG(Sub_dato,
               Int, numero,
-              Vector_Char, texto)
+              Vector(Char), texto)
 
-Sub_dato Sub_dato_new(Int numero, Vector_Char texto)
+Sub_dato Sub_dato_new(Int numero, Vector(Char) texto)
 {
   return (Sub_dato){.numero = numero, .texto = texto};
 }
@@ -17,10 +17,10 @@ Sub_dato Sub_dato_new(Int numero, Vector_Char texto)
 BOX_CONFIG(Sub_dato)
 
 STRUCT_CONFIG(Mi_struct,
-              Box_Sub_dato, dato,
+              Box(Sub_dato), dato,
               Int, otro_numero)
 
-Mi_struct Mi_struct_new(Box_Sub_dato dato, Int otro_numero)
+Mi_struct Mi_struct_new(Box(Sub_dato) dato, Int otro_numero)
 {
   return (Mi_struct){.dato = dato, .otro_numero = otro_numero};
 }
@@ -29,27 +29,27 @@ VECTOR_CONFIG(Mi_struct)
 
 Int main()
 {
-  Vector_Char texto = Vector_Char_new();
+  Vector(Char) texto = Vector_new(Char)();
   for (const Char *c = "Hola"; *c; ++c)
   {
-    Vector_Char_push_back(&texto, *c);
+    Vector_push_back(Char)(&texto, *c);
   }
-  Mi_struct mi_struct = Mi_struct_new(Box_Sub_dato_new(Sub_dato_new(42, texto)), 7);
-  Vector_Mi_struct vector = Vector_Mi_struct_new();
+  Mi_struct mi_struct = Mi_struct_new(Box_new(Sub_dato)(Sub_dato_new(42, texto)), 7);
+  Vector(Mi_struct) vector = Vector_new(Mi_struct)();
 
-  Result_Void r1 = Vector_Mi_struct_push_back(&vector, mi_struct);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void_free(&r1);
+  Result(Void, cref_Char) r1 = Vector_push_back(Mi_struct)(&vector, mi_struct);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result_free(Void, cref_Char)(&r1);
 
-  Result_Void_ref_Mi_struct result = Vector_Mi_struct_at(&vector, 0);
-  assert(Result_Void_ref_Mi_struct_is_ok(&result));
-  Mi_struct *retrieved = Result_Void_ref_Mi_struct_unwrap(result);
-  Result_Void_ref_Mi_struct_free(&result);
+  Result(ref_Mi_struct, cref_Char) result = Vector_at(Mi_struct)(&vector, 0);
+  assert(Result_is_ok(ref_Mi_struct, cref_Char)(&result));
+  Mi_struct *retrieved = Result_unwrap(ref_Mi_struct, cref_Char)(result);
+  Result_free(ref_Mi_struct, cref_Char)(&result);
 
   assert(retrieved->otro_numero == 7);
-  assert(Box_Sub_dato_deref(&retrieved->dato)->numero == 42);
+  assert(Box_deref(Sub_dato)(&retrieved->dato)->numero == 42);
 
-  Vector_Mi_struct_free(&vector);
+  Vector_free(Mi_struct)(&vector);
 
   return 0;
 }

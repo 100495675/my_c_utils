@@ -69,4 +69,7 @@ REF_EXPAND(PtrDiff)
 typedef size_t Size;
 REF_EXPAND(Size)
 
+#define MY_C_UTILS_CONCAT_IMPL(a, b) a##b
+#define MY_C_UTILS_CONCAT(a, b) MY_C_UTILS_CONCAT_IMPL(a, b)
+
 #endif

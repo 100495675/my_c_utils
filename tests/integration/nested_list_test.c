@@ -2,38 +2,38 @@
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
-LINKED_LIST_CONFIG(Vector_Int)
+LINKED_LIST_CONFIG(Vector(Int))
 
 Int main(void)
 {
-  List_Vector_Int list = List_Vector_Int_new();
+  List(Vector(Int)) list = List_new(Vector(Int))();
 
-  Vector_Int first = Vector_Int_new();
-  Result_Void r1 = Vector_Int_push_back(&first, 7);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void_free(&r1);
-  Result_Void r2 = Vector_Int_push_back(&first, 8);
-  assert(Result_Void_is_ok(&r2));
-  Result_Void_free(&r2);
-  List_Vector_Int_push_back(&list, first);
-  first = Vector_Int_new();
+  Vector(Int) first = Vector_new(Int)();
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&first, 7);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result_free(Void, cref_Char)(&r1);
+  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&first, 8);
+  assert(Result_is_ok(Void, cref_Char)(&r2));
+  Result_free(Void, cref_Char)(&r2);
+  List_push_back(Vector(Int))(&list, first);
+  first = Vector_new(Int)();
 
-  Vector_Int second = Vector_Int_new();
+  Vector(Int) second = Vector_new(Int)();
 
-  Result_Void r3 = Vector_Int_push_back(&second, 9);
-  assert(Result_Void_is_ok(&r3));
-  Result_Void_free(&r3);
-  List_Vector_Int_push_back(&list, second);
-  second = Vector_Int_new();
+  Result(Void, cref_Char) r3 = Vector_push_back(Int)(&second, 9);
+  assert(Result_is_ok(Void, cref_Char)(&r3));
+  Result_free(Void, cref_Char)(&r3);
+  List_push_back(Vector(Int))(&list, second);
+  second = Vector_new(Int)();
 
-  assert(List_Vector_Int_size(&list) == 2);
+  assert(List_size(Vector(Int))(&list) == 2);
 
-  Result_Void_Vector_Int popped = List_Vector_Int_pop_back(&list);
-  assert(Result_Void_Vector_Int_is_ok(&popped));
-  Vector_Int popped_vector = Result_Void_Vector_Int_unwrap(popped);
-  assert(Vector_Int_size(&popped_vector) == 1);
-  Vector_Int_free(&popped_vector);
+  Result(Vector(Int), cref_Char) popped = List_pop_back(Vector(Int))(&list);
+  assert(Result_is_ok(Vector(Int), cref_Char)(&popped));
+  Vector(Int) popped_vector = Result_unwrap(Vector(Int), cref_Char)(popped);
+  assert(Vector_size(Int)(&popped_vector) == 1);
+  Vector_free(Int)(&popped_vector);
 
-  List_Vector_Int_free(&list);
+  List_free(Vector(Int))(&list);
   return 0;
 }

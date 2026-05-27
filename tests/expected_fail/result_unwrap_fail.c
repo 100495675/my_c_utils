@@ -6,10 +6,10 @@ static inline void Int_free(Int *value)
   (void)value;
 }
 
-RESULT_CONFIG(Int)
+RESULT_CONFIG(Int, cref_Char)
 
 Int main(void)
 {
-  Result_Void_Int_unwrap(Result_Void_Int_err("boom"));
+  Result_unwrap(Int, cref_Char)(Result_err(Int, cref_Char)("boom"));
   return 0;
 }

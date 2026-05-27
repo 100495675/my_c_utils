@@ -6,6 +6,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define Option(Type) MY_C_UTILS_CONCAT(Option_, Type)
+#define ref_Option(Type) MY_C_UTILS_CONCAT(ref_Option_, Type)
+#define cref_Option(Type) MY_C_UTILS_CONCAT(cref_Option_, Type)
+
+#define Option_some(Type) MY_C_UTILS_CONCAT(Option(Type), _some)
+#define Option_none(Type) MY_C_UTILS_CONCAT(Option(Type), _none)
+#define Option_unwrap(Type) MY_C_UTILS_CONCAT(Option(Type), _unwrap)
+#define Option_is_none(Type) MY_C_UTILS_CONCAT(Option(Type), _is_none)
+#define Option_is_some(Type) MY_C_UTILS_CONCAT(Option(Type), _is_some)
+#define Option_free(Type) MY_C_UTILS_CONCAT(Option(Type), _free)
+
 #define OPTION_CONFIG(Type)                                               \
     typedef struct                                                        \
     {                                                                     \

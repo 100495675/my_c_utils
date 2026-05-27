@@ -3,21 +3,21 @@
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
-VECTOR_CONFIG(Vector_Int)
+VECTOR_CONFIG(Vector(Int))
 
-static void assert_nested_iteration(const Vector_Vector_Int *outer,
+static void assert_nested_iteration(const Vector(Vector(Int)) *outer,
                                     Size expected_count,
                                     Int expected_sum)
 {
   Size count = 0;
   Int sum = 0;
 
-  for_each_ref(Vector_Int, inner, Vector, outer, {
-    for_each_ref(Int, item, Vector, inner, {
+  for_each_ref(Vector(Vector(Int)), inner, outer) {
+    for_each_ref(Vector(Int), item, inner) {
       sum += *item;
       ++count;
-    });
-  });
+    }
+  }
 
   assert(count == expected_count);
   assert(sum == expected_sum);
@@ -25,29 +25,29 @@ static void assert_nested_iteration(const Vector_Vector_Int *outer,
 
 Int main(void)
 {
-  Vector_Vector_Int outer = Vector_Vector_Int_new();
+  Vector(Vector(Int)) outer = Vector_new(Vector(Int))();
 
-  Vector_Int first = Vector_Int_new();
-  Result_Void r1 = Vector_Int_push_back(&first, 1);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void r2 = Vector_Int_push_back(&first, 2);
-  assert(Result_Void_is_ok(&r2));
+  Vector(Int) first = Vector_new(Int)();
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&first, 1);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&first, 2);
+  assert(Result_is_ok(Void, cref_Char)(&r2));
   
-  Result_Void r3 = Vector_Vector_Int_push_back(&outer, first);
-  assert(Result_Void_is_ok(&r3));
-  first = Vector_Int_new();
+  Result(Void, cref_Char) r3 = Vector_push_back(Vector(Int))(&outer, first);
+  assert(Result_is_ok(Void, cref_Char)(&r3));
+  first = Vector_new(Int)();
 
   
-  Vector_Int second = Vector_Int_new();
-  Result_Void r4 = Vector_Int_push_back(&second, 3);
-  assert(Result_Void_is_ok(&r4));
+  Vector(Int) second = Vector_new(Int)();
+  Result(Void, cref_Char) r4 = Vector_push_back(Int)(&second, 3);
+  assert(Result_is_ok(Void, cref_Char)(&r4));
 
-  Result_Void r5 = Vector_Vector_Int_push_back(&outer, second);
-  assert(Result_Void_is_ok(&r5));
-  second = Vector_Int_new();
+  Result(Void, cref_Char) r5 = Vector_push_back(Vector(Int))(&outer, second);
+  assert(Result_is_ok(Void, cref_Char)(&r5));
+  second = Vector_new(Int)();
 
   assert_nested_iteration(&outer, 3, 6);
 
-  Vector_Vector_Int_free(&outer);
+  Vector_free(Vector(Int))(&outer);
   return 0;
 }

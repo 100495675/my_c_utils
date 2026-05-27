@@ -15,7 +15,7 @@
 VECTOR_CONFIG(Int)
 
 /* Vector<Vector<Int>> - nested deep cloning */
-VECTOR_CONFIG(Vector_Int)
+VECTOR_CONFIG(Vector(Int))
 
 /* ========== Test: Clone Primitive Types ========== */
 
@@ -39,43 +39,43 @@ void test_clone_primitive_char(void)
 
 /* ========== Test: Vector Clone (Shallow Elements) ========== */
 
-void test_clone_vector_int_empty(void)
+void test_clone_Vector_Int_empty(void)
 {
-    printf("TEST: Clone empty Vector_Int... ");
-    Vector_Int original = Vector_Int_new();
-    Vector_Int result = Vector_Int_clone(&original);
+    printf("TEST: Clone empty Vector(Int)... ");
+    Vector(Int) original = Vector_new(Int)();
+    Vector(Int) result = Vector_clone(Int)(&original);
 
     assert(result.size == 0);
 
-    Vector_Int_free(&result);
+    Vector_free(Int)(&result);
     printf("✓\n");
 }
 
-void test_clone_vector_int_simple(void)
+void test_clone_Vector_Int_simple(void)
 {
-    printf("TEST: Clone Vector_Int with elements... ");
-    Vector_Int original = Vector_Int_new();
-    Vector_Int_push_back(&original, 10);
-    Vector_Int_push_back(&original, 20);
-    Vector_Int_push_back(&original, 30);
+    printf("TEST: Clone Vector(Int) with elements... ");
+    Vector(Int) original = Vector_new(Int)();
+    Vector_push_back(Int)(&original, 10);
+    Vector_push_back(Int)(&original, 20);
+    Vector_push_back(Int)(&original, 30);
 
-    Vector_Int result = Vector_Int_clone(&original);
+    Vector(Int) result = Vector_clone(Int)(&original);
     assert(result.size == 3);
 
-    Result_Void_ref_Int v0 = Vector_Int_at(&result, 0);
-    Result_Void_ref_Int v1 = Vector_Int_at(&result, 1);
-    Result_Void_ref_Int v2 = Vector_Int_at(&result, 2);
-    assert(!v0.is_error && *v0.value == 10);
-    assert(!v1.is_error && *v1.value == 20);
-    assert(!v2.is_error && *v2.value == 30);
+    Result(ref_Int, cref_Char) v0 = Vector_at(Int)(&result, 0);
+    Result(ref_Int, cref_Char) v1 = Vector_at(Int)(&result, 1);
+    Result(ref_Int, cref_Char) v2 = Vector_at(Int)(&result, 2);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v0) && *Result_unwrap(ref_Int, cref_Char)(v0) == 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1) && *Result_unwrap(ref_Int, cref_Char)(v1) == 20);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2) && *Result_unwrap(ref_Int, cref_Char)(v2) == 30);
 
     /* Verify clone is independent: modify original */
-    Vector_Int_set(&original, 0, 999);
-    Result_Void_ref_Int cloned_v0 = Vector_Int_at(&result, 0);
-    assert(!cloned_v0.is_error && *cloned_v0.value == 10);
+    Vector_set(Int)(&original, 0, 999);
+    Result(ref_Int, cref_Char) cloned_v0 = Vector_at(Int)(&result, 0);
+    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_v0) && *Result_unwrap(ref_Int, cref_Char)(cloned_v0) == 10);
 
-    Vector_Int_free(&original);
-    Vector_Int_free(&result);
+    Vector_free(Int)(&original);
+    Vector_free(Int)(&result);
     printf("✓\n");
 }
 
@@ -83,70 +83,70 @@ void test_clone_vector_int_simple(void)
 
 void test_clone_vector_of_vectors_empty(void)
 {
-    printf("TEST: Clone empty Vector_Vector_Int... ");
-    Vector_Vector_Int original = Vector_Vector_Int_new();
-    Vector_Vector_Int result = Vector_Vector_Int_clone(&original);
+    printf("TEST: Clone empty Vector_Vector(Int)... ");
+    Vector(Vector(Int)) original = Vector_new(Vector(Int))();
+    Vector(Vector(Int)) result = Vector_clone(Vector(Int))(&original);
 
     assert(result.size == 0);
 
-    Vector_Vector_Int_free(&result);
+    Vector_free(Vector(Int))(&result);
     printf("✓\n");
 }
 
 void test_clone_vector_of_vectors_nested(void)
 {
-    printf("TEST: Clone Vector_Vector_Int with nested data... ");
-    Vector_Vector_Int original = Vector_Vector_Int_new();
+    printf("TEST: Clone Vector_Vector(Int) with nested data... ");
+    Vector(Vector(Int)) original = Vector_new(Vector(Int))();
 
     /* Create nested vectors */
-    Vector_Int inner1 = Vector_Int_new();
-    Vector_Int_push_back(&inner1, 1);
-    Vector_Int_push_back(&inner1, 2);
-    Vector_Int_push_back(&inner1, 3);
+    Vector(Int) inner1 = Vector_new(Int)();
+    Vector_push_back(Int)(&inner1, 1);
+    Vector_push_back(Int)(&inner1, 2);
+    Vector_push_back(Int)(&inner1, 3);
 
-    Vector_Int inner2 = Vector_Int_new();
-    Vector_Int_push_back(&inner2, 10);
-    Vector_Int_push_back(&inner2, 20);
+    Vector(Int) inner2 = Vector_new(Int)();
+    Vector_push_back(Int)(&inner2, 10);
+    Vector_push_back(Int)(&inner2, 20);
 
-    Vector_Vector_Int_push_back(&original, inner1);
-    Vector_Vector_Int_push_back(&original, inner2);
+    Vector_push_back(Vector(Int))(&original, inner1);
+    Vector_push_back(Vector(Int))(&original, inner2);
 
     /* Clone the nested structure */
-    Vector_Vector_Int result = Vector_Vector_Int_clone(&original);
+    Vector(Vector(Int)) result = Vector_clone(Vector(Int))(&original);
     assert(result.size == 2);
 
     /* Verify first nested vector */
-    Result_Void_ref_Vector_Int ref1 = Vector_Vector_Int_at(&result, 0);
-    assert(!ref1.is_error);
-    assert(ref1.value->size == 3);
-    Result_Void_ref_Int v1_0 = Vector_Int_at(ref1.value, 0);
-    Result_Void_ref_Int v1_1 = Vector_Int_at(ref1.value, 1);
-    Result_Void_ref_Int v1_2 = Vector_Int_at(ref1.value, 2);
-    assert(!v1_0.is_error && *v1_0.value == 1);
-    assert(!v1_1.is_error && *v1_1.value == 2);
-    assert(!v1_2.is_error && *v1_2.value == 3);
+    Result(ref_Vector(Int), cref_Char) ref1 = Vector_at(Vector(Int))(&result, 0);
+    assert(Result_is_ok(ref_Vector(Int), cref_Char)(&ref1));
+    assert(Result_unwrap(ref_Vector(Int), cref_Char)(ref1)->size == 3);
+    Result(ref_Int, cref_Char) v1_0 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 0);
+    Result(ref_Int, cref_Char) v1_1 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 1);
+    Result(ref_Int, cref_Char) v1_2 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 2);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_0) && *Result_unwrap(ref_Int, cref_Char)(v1_0) == 1);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_1) && *Result_unwrap(ref_Int, cref_Char)(v1_1) == 2);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_2) && *Result_unwrap(ref_Int, cref_Char)(v1_2) == 3);
 
     /* Verify second nested vector */
-    Result_Void_ref_Vector_Int ref2 = Vector_Vector_Int_at(&result, 1);
-    assert(!ref2.is_error);
-    assert(ref2.value->size == 2);
-    Result_Void_ref_Int v2_0 = Vector_Int_at(ref2.value, 0);
-    Result_Void_ref_Int v2_1 = Vector_Int_at(ref2.value, 1);
-    assert(!v2_0.is_error && *v2_0.value == 10);
-    assert(!v2_1.is_error && *v2_1.value == 20);
+    Result(ref_Vector(Int), cref_Char) ref2 = Vector_at(Vector(Int))(&result, 1);
+    assert(Result_is_ok(ref_Vector(Int), cref_Char)(&ref2));
+    assert(Result_unwrap(ref_Vector(Int), cref_Char)(ref2)->size == 2);
+    Result(ref_Int, cref_Char) v2_0 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref2), 0);
+    Result(ref_Int, cref_Char) v2_1 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref2), 1);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2_0) && *Result_unwrap(ref_Int, cref_Char)(v2_0) == 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2_1) && *Result_unwrap(ref_Int, cref_Char)(v2_1) == 20);
 
     /* Verify independence: modify original's nested vector */
-    Result_Void_ref_Vector_Int orig_ref1 = Vector_Vector_Int_at(&original, 0);
-    assert(!orig_ref1.is_error);
-    Vector_Int_set(orig_ref1.value, 0, 999);
+    Result(ref_Vector(Int), cref_Char) orig_ref1 = Vector_at(Vector(Int))(&original, 0);
+    assert(Result_is_ok(ref_Vector(Int), cref_Char)(&orig_ref1));
+    Vector_set(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(orig_ref1), 0, 999);
 
     /* Cloned version should be unchanged */
-    Result_Void_ref_Int cloned_check =
-        Vector_Int_at((Vector_Vector_Int_at(&result, 0)).value, 0);
-    assert(!cloned_check.is_error && *cloned_check.value == 1);
+    Result(ref_Int, cref_Char) cloned_check =
+        Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(Vector_at(Vector(Int))(&result, 0)), 0);
+    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_check) && *Result_unwrap(ref_Int, cref_Char)(cloned_check) == 1);
 
-    Vector_Vector_Int_free(&original);
-    Vector_Vector_Int_free(&result);
+    Vector_free(Vector(Int))(&original);
+    Vector_free(Vector(Int))(&result);
     printf("✓\n");
 }
 
@@ -169,8 +169,8 @@ int main(void)
     test_clone_primitive_char();
 
     /* Vector cloning */
-    test_clone_vector_int_empty();
-    test_clone_vector_int_simple();
+    test_clone_Vector_Int_empty();
+    test_clone_Vector_Int_simple();
 
     /* Nested vector cloning (deep clone) */
     test_clone_vector_of_vectors_empty();
@@ -179,4 +179,3 @@ int main(void)
     printf("\n=== All clone tests passed! ===\n\n");
     return 0;
 }
-

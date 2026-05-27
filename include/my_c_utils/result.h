@@ -6,119 +6,86 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define RESULT_CONFIG(Type)                                                       \
+#define Result(Type, Err) MY_C_UTILS_CONCAT(Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
+#define ref_Result(Type, Err) MY_C_UTILS_CONCAT(ref_Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
+#define cref_Result(Type, Err) MY_C_UTILS_CONCAT(cref_Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
+
+#define Result_is_ok(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _is_ok)
+#define Result_is_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _is_err)
+#define Result_unwrap(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _unwrap)
+#define Result_unwrap_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _unwrap_err)
+#define Result_free(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _free)
+#define Result_ok(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _ok)
+#define Result_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _err)
+
+#define RESULT_CONFIG(Type, Err) RESULT_CONFIG_IMPL(Type, Err)
+
+#define RESULT_CONFIG_IMPL(Type, Err)                                             \
     typedef struct                                                                \
     {                                                                             \
         union                                                                     \
         {                                                                         \
             Type value;                                                           \
-            cref_Char error_message;                                              \
+            Err error;                                                            \
         };                                                                        \
         Bool is_error;                                                            \
-    } Result_Void_##Type;                                                              \
-    REF_EXPAND(Result_Void_##Type)                                                     \
+    } Result_##Type##_##Err;                                                      \
+    REF_EXPAND(Result_##Type##_##Err)                                             \
                                                                                   \
-    static inline Result_Void_##Type Result_Void_##Type##_ok(Type value)                    \
+    static inline Result_##Type##_##Err Result_##Type##_##Err##_ok(Type value)    \
     {                                                                             \
-        return (Result_Void_##Type){.value = value, .is_error = false};                \
+        return (Result_##Type##_##Err){.value = value, .is_error = false};        \
     }                                                                             \
                                                                                   \
-    static inline Result_Void_##Type Result_Void_##Type##_err(cref_Char error_message)      \
+    static inline Result_##Type##_##Err Result_##Type##_##Err##_err(Err error)    \
     {                                                                             \
-        return (Result_Void_##Type){.error_message = error_message, .is_error = true}; \
+        return (Result_##Type##_##Err){.error = error, .is_error = true};         \
     }                                                                             \
                                                                                   \
-    static inline Type Result_Void_##Type##_unwrap(Result_Void_##Type result)               \
+    static inline Type Result_##Type##_##Err##_unwrap(Result_##Type##_##Err result)\
     {                                                                             \
         if (result.is_error)                                                      \
         {                                                                         \
-            fputs("Unwrap on error: ", stderr);                                   \
-            fputs(result.error_message, stderr);                                  \
-            fputc('\n', stderr);                                                  \
+            fputs("Unwrap on error\n", stderr);                                   \
             exit(1);                                                              \
         }                                                                         \
         return result.value;                                                      \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_Void_##Type##_is_err(cref_Result_Void_##Type result)          \
+    static inline Bool Result_##Type##_##Err##_is_err(cref_Result_##Type##_##Err result)\
     {                                                                             \
         return result->is_error;                                                  \
     }                                                                             \
                                                                                   \
-    static inline Bool Result_Void_##Type##_is_ok(cref_Result_Void_##Type result)           \
+    static inline Bool Result_##Type##_##Err##_is_ok(cref_Result_##Type##_##Err result)\
     {                                                                             \
         return !(result->is_error);                                               \
     }                                                                             \
                                                                                   \
-    static inline cref_Char Result_Void_##Type##_unwrap_err(Result_Void_##Type result)      \
+    static inline Err Result_##Type##_##Err##_unwrap_err(Result_##Type##_##Err result)\
     {                                                                             \
         if (!result.is_error)                                                     \
         {                                                                         \
-            perror("Result_Void is ok");                                               \
+            perror("Result is ok");                                               \
             exit(1);                                                              \
         }                                                                         \
-        return result.error_message;                                              \
+        return result.error;                                                      \
     }                                                                             \
                                                                                   \
-    static inline void Result_Void_##Type##_free(ref_Result_Void_##Type result)             \
+    static inline void Result_##Type##_##Err##_free(ref_Result_##Type##_##Err result)\
     {                                                                             \
         if (!result->is_error)                                                    \
         {                                                                         \
             Type##_free(&result->value);                                          \
-        }                                                                         \
-    }
+        }                                                                             \
+    }                                                                             \
 
-typedef struct
+typedef struct {} Void;
+static inline void Void_free(Void *value)
 {
-    cref_Char error_message;
-    Bool is_error;
-} Result_Void;
-REF_EXPAND(Result_Void)
-
-static inline Result_Void Result_Void_ok()
-{
-    return (Result_Void){.error_message = NULL, .is_error = false};
+    (void)value;
 }
 
-static inline Result_Void Result_Void_err(cref_Char error_message)
-{
-    return (Result_Void){.error_message = error_message, .is_error = true};
-}
-
-static inline void Result_Void_unwrap(Result_Void result)
-{
-    if (result.is_error)
-    {
-        fputs("Unwrap on error: ", stderr);
-        fputs(result.error_message, stderr);
-        fputc('\n', stderr);
-        exit(1);
-    }
-}
-
-static inline Bool Result_Void_is_err(cref_Result_Void result)
-{
-    return result->is_error;
-}
-
-static inline Bool Result_Void_is_ok(cref_Result_Void result)
-{
-    return !(result->is_error);
-}
-
-static inline cref_Char Result_Void_unwrap_err(Result_Void result)
-{
-    if (!result.is_error)
-    {
-        perror("Result_Void is ok");
-        exit(1);
-    }
-    return result.error_message;
-}
-
-static inline void Result_Void_free(ref_Result_Void result)
-{
-    (void)result;
-}
+RESULT_CONFIG(Void, cref_Char)
 
 #endif

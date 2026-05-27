@@ -2,6 +2,7 @@
 #define MY_C_UTILS_TESTS_PROCESS_HELPERS_H
 
 #include "my_c_utils/free.h"
+#include "my_c_utils/tipos.h"
 #include <assert.h>
 #include <sys/wait.h>
 #include <unistd.h>

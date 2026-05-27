@@ -35,47 +35,47 @@ HASH_MAP_CONFIG(String, Int)
 
 Int main(void)
 {
-  Hashmap_String_Int hm = Hashmap_String_Int_new(8);
+  Hashmap(String, Int) hm = Hashmap_new(String, Int)(8);
 
   for (Int i = 0; i < 200; ++i)
   {
-    Hashmap_String_Int_add(&hm, make_key(i), i);
+    Hashmap_add(String, Int)(&hm, make_key(i), i);
   }
 
   for (Int i = 0; i < 200; ++i)
   {
     String key = make_key(i);
-    assert(Hashmap_String_Int_contains(&hm, key));
-    Result_Void_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_Void_ref_Int_is_ok(&r));
-    assert(*Result_Void_ref_Int_unwrap(r) == i);
+    assert(Hashmap_contains(String, Int)(&hm, key));
+    Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&hm, key);
+    assert(Result_is_ok(ref_Int, cref_Char)(&r));
+    assert(*Result_unwrap(ref_Int, cref_Char)(r) == i);
     free(key);
   }
 
   for (Int i = 0; i < 100; ++i)
   {
     String key = make_key(i);
-    Hashmap_String_Int_remove(&hm, key);
+    Hashmap_remove(String, Int)(&hm, key);
     free(key);
   }
 
   for (Int i = 0; i < 100; ++i)
   {
     String key = make_key(i);
-    assert(!Hashmap_String_Int_contains(&hm, key));
+    assert(!Hashmap_contains(String, Int)(&hm, key));
     free(key);
   }
 
   for (Int i = 100; i < 200; ++i)
   {
     String key = make_key(i);
-    assert(Hashmap_String_Int_contains(&hm, key));
-    Result_Void_ref_Int r = Hashmap_String_Int_get(&hm, key);
-    assert(Result_Void_ref_Int_is_ok(&r));
-    assert(*Result_Void_ref_Int_unwrap(r) == i);
+    assert(Hashmap_contains(String, Int)(&hm, key));
+    Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&hm, key);
+    assert(Result_is_ok(ref_Int, cref_Char)(&r));
+    assert(*Result_unwrap(ref_Int, cref_Char)(r) == i);
     free(key);
   }
 
-  Hashmap_String_Int_free(&hm);
+  Hashmap_free(String, Int)(&hm);
   return 0;
 }

@@ -6,41 +6,41 @@ LINKED_LIST_CONFIG(Int)
 
 Int main(void)
 {
-  List_Int ll = List_Int_new();
-  assert(List_Int_size(&ll) == 0);
-  List_Int_push_back(&ll, 10);
-  List_Int_push_back(&ll, 20);
-  List_Int_push_back(&ll, 30);
-  assert(List_Int_size(&ll) == 3);
+  List(Int) ll = List_new(Int)();
+  assert(List_size(Int)(&ll) == 0);
+  List_push_back(Int)(&ll, 10);
+  List_push_back(Int)(&ll, 20);
+  List_push_back(Int)(&ll, 30);
+  assert(List_size(Int)(&ll) == 3);
 
-  Result_Void_Int result = List_Int_pop_back(&ll);
-  assert(Result_Void_Int_is_ok(&result));
-  assert(Result_Void_Int_unwrap(result) == 30);
+  Result(Int, cref_Char) result = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref_Char)(&result));
+  assert(Result_unwrap(Int, cref_Char)(result) == 30);
 
-  Result_Void_Int second = List_Int_pop_back(&ll);
-  assert(Result_Void_Int_is_ok(&second));
-  assert(Result_Void_Int_unwrap(second) == 20);
+  Result(Int, cref_Char) second = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref_Char)(&second));
+  assert(Result_unwrap(Int, cref_Char)(second) == 20);
 
-  Result_Void_Int third = List_Int_pop_back(&ll);
-  assert(Result_Void_Int_is_ok(&third));
-  assert(Result_Void_Int_unwrap(third) == 10);
+  Result(Int, cref_Char) third = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref_Char)(&third));
+  assert(Result_unwrap(Int, cref_Char)(third) == 10);
 
-  assert(List_Int_size(&ll) == 0);
+  assert(List_size(Int)(&ll) == 0);
 
-  List_Int_push_back(&ll, 1);
-  List_Int_push_back(&ll, 2);
-  List_Int_push_back(&ll, 3);
+  List_push_back(Int)(&ll, 1);
+  List_push_back(Int)(&ll, 2);
+  List_push_back(Int)(&ll, 3);
 
   Int sum = 0;
   Size count = 0;
-  for_each_ref(Int, item, List, &ll, {
+  for_each_ref(List(Int), item, &ll) {
     sum += *item;
     ++count;
-  });
+  }
 
   assert(count == 3);
   assert(sum == 6);
 
-  List_Int_free(&ll);
+  List_free(Int)(&ll);
   return 0;
 }

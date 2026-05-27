@@ -7,38 +7,38 @@ VECTOR_CONFIG(Int)
 
 Int main(void)
 {
-  Vector_Int vector = Vector_Int_new();
+  Vector(Int) vector = Vector_new(Int)();
 
-  Result_Void r1 = Vector_Int_push_back(&vector, 10);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void_free(&r1);
-  Result_Void r2 = Vector_Int_push_back(&vector, 20);
-  assert(Result_Void_is_ok(&r2));
-  Result_Void_free(&r2);
-  Result_Void r3 = Vector_Int_push_back(&vector, 30);
-  assert(Result_Void_is_ok(&r3));
-  Result_Void_free(&r3);
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 10);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result_free(Void, cref_Char)(&r1);
+  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 20);
+  assert(Result_is_ok(Void, cref_Char)(&r2));
+  Result_free(Void, cref_Char)(&r2);
+  Result(Void, cref_Char) r3 = Vector_push_back(Int)(&vector, 30);
+  assert(Result_is_ok(Void, cref_Char)(&r3));
+  Result_free(Void, cref_Char)(&r3);
 
 
   Int sum_ref = 0;
-  for_each_ref(Int, item, Vector, &vector, {
+  for_each_ref(Vector(Int), item, &vector) {
     sum_ref += *item;
-  });
+  }
   assert(sum_ref == 60);
   Int_free(&sum_ref);
 
   Int sum_copy = 0;
-  for_each_copy(Int, item, Vector, &vector, {
+  for_each_copy(Vector(Int), item, &vector) {
     sum_copy += item;
-  });
+  }
   assert(sum_copy == 60);
 
   Int sum_compat = 0;
-  for_each_ref(Int, item, Vector, &vector, {
+  for_each_ref(Vector(Int), item, &vector) {
     sum_compat += *item;
-  });
+  }
   assert(sum_compat == 60);
 
-  Vector_Int_free(&vector);
+  Vector_free(Int)(&vector);
   return 0;
 }

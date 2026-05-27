@@ -44,8 +44,8 @@ my_c_utils is a header-only C11 library that provides reusable generic container
 - `into_iter` creates a cursor.
 - `iter_next` returns the next borrowed element wrapped in `Result_Void_##Type##_ref` and advances the cursor.
 - Exhaustion is reported as an error result.
-- `for_each_ref` exposes borrowed pointers.
-- `for_each_copy` exposes copied values.
+- `for_each_ref(ContainerType, var_name, iterable)` exposes borrowed pointers (used as `for_each_ref(Vector(Int), item, &vector) { ... }`).
+- `for_each_copy(ContainerType, var_name, iterable)` exposes copied values (used as `for_each_copy(Vector(Int), item, &vector) { ... }`).
 
 ## Type aliases
 

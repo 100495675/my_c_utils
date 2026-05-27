@@ -6,31 +6,31 @@ VECTOR_CONFIG(Int)
 
 Int main(void)
 {
-  Vector_Int vector = Vector_Int_new();
-  Result_Void r1 = Vector_Int_push_back(&vector, 1);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void r2 = Vector_Int_push_back(&vector, 2);
-  assert(Result_Void_is_ok(&r2));
+  Vector(Int) vector = Vector_new(Int)();
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 2);
+  assert(Result_is_ok(Void, cref_Char)(&r2));
 
   Int seen_sum = 0;
   Size seen_count = 0;
 
-  for_each_ref(Int, item, Vector, &vector, {
+  for_each_ref(Vector(Int), item, &vector) {
     seen_sum += *item;
     ++seen_count;
     if (*item == 2)
     {
-      Result_Void r3 = Vector_Int_push_back(&vector, 3);
-      assert(Result_Void_is_ok(&r3));
-      Result_Void r4 = Vector_Int_push_back(&vector, 4);
-      assert(Result_Void_is_ok(&r4));
+      Result(Void, cref_Char) r3 = Vector_push_back(Int)(&vector, 3);
+      assert(Result_is_ok(Void, cref_Char)(&r3));
+      Result(Void, cref_Char) r4 = Vector_push_back(Int)(&vector, 4);
+      assert(Result_is_ok(Void, cref_Char)(&r4));
     }
-  });
+  }
 
   assert(seen_count == 4);
   assert(seen_sum == 10);
-  assert(Vector_Int_size(&vector) == 4);
+  assert(Vector_size(Int)(&vector) == 4);
 
-  Vector_Int_free(&vector);
+  Vector_free(Int)(&vector);
   return 0;
 }

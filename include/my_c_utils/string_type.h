@@ -61,8 +61,8 @@ static inline void String_free(String *value)
     }
 }
 
-RESULT_CONFIG(String)
-RESULT_CONFIG(ref_String)
+RESULT_CONFIG(String, cref_Char)
+RESULT_CONFIG(ref_String, cref_Char)
 
 static inline String String_clone(const String *src)
 {

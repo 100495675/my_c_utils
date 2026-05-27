@@ -6,21 +6,21 @@ VECTOR_CONFIG(Int)
 
 Int main(void)
 {
-  Vector_Int vector = Vector_Int_new();
+  Vector(Int) vector = Vector_new(Int)();
 
-  iter_Vector_Int it = Vector_Int_into_iter(&vector);
-  Result_Void_ref_Int out = iter_Vector_Int_next(&it);
-  assert(Result_Void_ref_Int_is_err(&out));
+  iter_Vector(Int) it = Vector_into_iter(Int)(&vector);
+  Result(ref_Int, cref_Char) out = iter_Vector_next(Int)(&it);
+  assert(Result_is_err(ref_Int, cref_Char)(&out));
 
-  Result_Void r1 = Vector_Int_push_back(&vector, 1);
-  assert(Result_Void_is_ok(&r1));
-  iter_Vector_Int it2 = Vector_Int_into_iter(&vector);
-  Result_Void_ref_Int out2 = iter_Vector_Int_next(&it2);
-  assert(Result_Void_ref_Int_is_ok(&out2));
-  assert(*Result_Void_ref_Int_unwrap(out2) == 1);
-  Result_Void_ref_Int out3 = iter_Vector_Int_next(&it2);
-  assert(Result_Void_ref_Int_is_err(&out3));
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  iter_Vector(Int) it2 = Vector_into_iter(Int)(&vector);
+  Result(ref_Int, cref_Char) out2 = iter_Vector_next(Int)(&it2);
+  assert(Result_is_ok(ref_Int, cref_Char)(&out2));
+  assert(*Result_unwrap(ref_Int, cref_Char)(out2) == 1);
+  Result(ref_Int, cref_Char) out3 = iter_Vector_next(Int)(&it2);
+  assert(Result_is_err(ref_Int, cref_Char)(&out3));
 
-  Vector_Int_free(&vector);
+  Vector_free(Int)(&vector);
   return 0;
 }

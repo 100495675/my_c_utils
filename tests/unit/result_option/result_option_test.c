@@ -10,19 +10,53 @@ static inline String make_text(void)
 
 OPTION_CONFIG(String)
 
+static inline void Int_free(Int *val)
+{
+  (void)val;
+}
+
+RESULT_CONFIG(Int, Int)
+
 Int main(void)
 {
-  Result_Void_String ok = Result_Void_String_ok(make_text());
-  Result_Void_String_free(&ok);
+  // Test new simplified C++/Rust two-parameter Result(String, cref_Char)
+  Result(String, cref_Char) ok = Result_ok(String, cref_Char)(make_text());
+  assert(Result_is_ok(String, cref_Char)(&ok));
+  String ok_val = Result_unwrap(String, cref_Char)(ok);
+  assert(strcmp(ok_val, "hello") == 0);
+  String_free(&ok_val);
 
-  Result_Void_String err = Result_Void_String_err("oops");
-  Result_Void_String_free(&err);
+  Result(String, cref_Char) err = Result_err(String, cref_Char)("oops");
+  assert(Result_is_err(String, cref_Char)(&err));
+  assert(strcmp(Result_unwrap_err(String, cref_Char)(err), "oops") == 0);
 
-  Option_String some = Option_String_some(make_text());
-  Option_String_free(&some);
+  // Test new C++/Rust two-parameter Result(Int, Int)
+  Result(Int, Int) res_ok = Result_ok(Int, Int)(42);
+  assert(Result_is_ok(Int, Int)(&res_ok));
+  assert(!Result_is_err(Int, Int)(&res_ok));
+  assert(Result_unwrap(Int, Int)(res_ok) == 42);
 
-  Option_String none = Option_String_none();
-  Option_String_free(&none);
+  Result(Int, Int) res_err = Result_err(Int, Int)(99);
+  assert(!Result_is_ok(Int, Int)(&res_err));
+  assert(Result_is_err(Int, Int)(&res_err));
+  assert(Result_unwrap_err(Int, Int)(res_err) == 99);
+
+  // Test Option
+  Option(String) some = Option_some(String)(make_text());
+  assert(Option_is_some(String)(&some));
+  assert(!Option_is_none(String)(&some));
+  String some_val = Option_unwrap(String)(some);
+  assert(strcmp(some_val, "hello") == 0);
+  String_free(&some_val);
+
+  Option(String) some2 = Option_some(String)(make_text());
+  assert(Option_is_some(String)(&some2));
+  Option_free(String)(&some2);
+
+  Option(String) none = Option_none(String)();
+  assert(Option_is_none(String)(&none));
+  assert(!Option_is_some(String)(&none));
+  Option_free(String)(&none);
 
   return 0;
 }

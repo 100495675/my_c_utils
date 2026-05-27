@@ -12,7 +12,7 @@
 
 /* Generate configs for container types we'll use in testing.
    We can now safely use the SAME element type (Int) across multiple
-   containers because Result_Void_ref_Int is pre-configured in primitives.h,
+   containers because Result(ref_Int, cref_Char) is pre-configured in primitives.h,
    eliminating any duplicate symbol macro configuration conflicts! */
 VECTOR_CONFIG(Int)
 LINKED_LIST_CONFIG(Int)
@@ -31,123 +31,123 @@ int compare_ints(const void *a, const void *b)
 void test_vector_insert_at(void)
 {
     printf("TEST: Vector_Int_insert_at... ");
-    Vector_Int vec = Vector_Int_new();
+    Vector(Int) vec = Vector_new(Int)();
     
     // Insert in empty vector (index 0)
-    Result_Void r = Vector_Int_insert_at(&vec, 0, 10);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = Vector_insert_at(Int)(&vec, 0, 10);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 1);
     
     // Insert at end (index 1)
-    r = Vector_Int_insert_at(&vec, 1, 30);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_insert_at(Int)(&vec, 1, 30);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 2);
     
     // Insert in middle (index 1)
-    r = Vector_Int_insert_at(&vec, 1, 20);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_insert_at(Int)(&vec, 1, 20);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 3);
     
     // Insert at beginning (index 0)
-    r = Vector_Int_insert_at(&vec, 0, 5);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_insert_at(Int)(&vec, 0, 5);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 4);
     
     // Verify values: 5, 10, 20, 30
-    assert(*Vector_Int_at(&vec, 0).value == 5);
-    assert(*Vector_Int_at(&vec, 1).value == 10);
-    assert(*Vector_Int_at(&vec, 2).value == 20);
-    assert(*Vector_Int_at(&vec, 3).value == 30);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 5);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 10);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 20);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3)) == 30);
     
     // Bounds check
-    r = Vector_Int_insert_at(&vec, 5, 99);
-    assert(Result_Void_is_err(&r));
+    r = Vector_insert_at(Int)(&vec, 5, 99);
+    assert(Result_is_err(Void, cref_Char)(&r));
     
-    Vector_Int_free(&vec);
+    Vector_free(Int)(&vec);
     printf("✓\n");
 }
 
 void test_vector_remove_at(void)
 {
     printf("TEST: Vector_Int_remove_at... ");
-    Vector_Int vec = Vector_Int_new();
-    Vector_Int_push_back(&vec, 10);
-    Vector_Int_push_back(&vec, 20);
-    Vector_Int_push_back(&vec, 30);
-    Vector_Int_push_back(&vec, 40);
+    Vector(Int) vec = Vector_new(Int)();
+    Vector_push_back(Int)(&vec, 10);
+    Vector_push_back(Int)(&vec, 20);
+    Vector_push_back(Int)(&vec, 30);
+    Vector_push_back(Int)(&vec, 40);
     
     // Remove from middle (index 1) -> 10, 30, 40
-    Result_Void r = Vector_Int_remove_at(&vec, 1);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = Vector_remove_at(Int)(&vec, 1);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 3);
-    assert(*Vector_Int_at(&vec, 0).value == 10);
-    assert(*Vector_Int_at(&vec, 1).value == 30);
-    assert(*Vector_Int_at(&vec, 2).value == 40);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 30);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 40);
     
     // Remove from beginning (index 0) -> 30, 40
-    r = Vector_Int_remove_at(&vec, 0);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_remove_at(Int)(&vec, 0);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 2);
-    assert(*Vector_Int_at(&vec, 0).value == 30);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 30);
     
     // Remove from end (index 1) -> 30
-    r = Vector_Int_remove_at(&vec, 1);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_remove_at(Int)(&vec, 1);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 1);
-    assert(*Vector_Int_at(&vec, 0).value == 30);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 30);
     
     // Bounds check
-    r = Vector_Int_remove_at(&vec, 1);
-    assert(Result_Void_is_err(&r));
+    r = Vector_remove_at(Int)(&vec, 1);
+    assert(Result_is_err(Void, cref_Char)(&r));
     
-    Vector_Int_free(&vec);
+    Vector_free(Int)(&vec);
     printf("✓\n");
 }
 
 void test_vector_shrink_to_fit(void)
 {
     printf("TEST: Vector_Int_shrink_to_fit... ");
-    Vector_Int vec = Vector_Int_new();
+    Vector(Int) vec = Vector_new(Int)();
     
     // Test on empty vector
-    Result_Void r = Vector_Int_shrink_to_fit(&vec);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = Vector_shrink_to_fit(Int)(&vec);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.capacity == 0);
     
-    Vector_Int_push_back(&vec, 10);
-    Vector_Int_push_back(&vec, 20);
+    Vector_push_back(Int)(&vec, 10);
+    Vector_push_back(Int)(&vec, 20);
     assert(vec.capacity >= 2);
     
-    Vector_Int_reserve(&vec, 100);
+    Vector_reserve(Int)(&vec, 100);
     assert(vec.capacity >= 100);
     
-    r = Vector_Int_shrink_to_fit(&vec);
-    assert(Result_Void_is_ok(&r));
+    r = Vector_shrink_to_fit(Int)(&vec);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.capacity == vec.size);
-    assert(*Vector_Int_at(&vec, 0).value == 10);
-    assert(*Vector_Int_at(&vec, 1).value == 20);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 20);
     
-    Vector_Int_free(&vec);
+    Vector_free(Int)(&vec);
     printf("✓\n");
 }
 
 void test_vector_sort(void)
 {
     printf("TEST: Vector_Int_sort... ");
-    Vector_Int vec = Vector_Int_new();
-    Vector_Int_push_back(&vec, 30);
-    Vector_Int_push_back(&vec, 10);
-    Vector_Int_push_back(&vec, 40);
-    Vector_Int_push_back(&vec, 20);
+    Vector(Int) vec = Vector_new(Int)();
+    Vector_push_back(Int)(&vec, 30);
+    Vector_push_back(Int)(&vec, 10);
+    Vector_push_back(Int)(&vec, 40);
+    Vector_push_back(Int)(&vec, 20);
     
-    Vector_Int_sort(&vec, compare_ints);
+    Vector_sort(Int)(&vec, compare_ints);
     
-    assert(*Vector_Int_at(&vec, 0).value == 10);
-    assert(*Vector_Int_at(&vec, 1).value == 20);
-    assert(*Vector_Int_at(&vec, 2).value == 30);
-    assert(*Vector_Int_at(&vec, 3).value == 40);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 20);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 30);
+    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3)) == 40);
     
-    Vector_Int_free(&vec);
+    Vector_free(Int)(&vec);
     printf("✓\n");
 }
 
@@ -156,55 +156,55 @@ void test_vector_sort(void)
 void test_linked_list_push_pop_front(void)
 {
     printf("TEST: List_Int_push_front and pop_front... ");
-    List_Int list = List_Int_new();
+    List(Int) list = List_new(Int)();
     
     // push_front
-    Result_Void r = List_Int_push_front(&list, 10);
-    assert(Result_Void_is_ok(&r));
-    r = List_Int_push_front(&list, 20);
-    assert(Result_Void_is_ok(&r));
-    r = List_Int_push_front(&list, 30);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = List_push_front(Int)(&list, 10);
+    assert(Result_is_ok(Void, cref_Char)(&r));
+    r = List_push_front(Int)(&list, 20);
+    assert(Result_is_ok(Void, cref_Char)(&r));
+    r = List_push_front(Int)(&list, 30);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     
     assert(list.size == 3);
     
     // pop_front
-    Result_Void_Int pop_res = List_Int_pop_front(&list);
-    assert(!pop_res.is_error);
-    assert(pop_res.value == 30);
+    Result(Int, cref_Char) pop_res = List_pop_front(Int)(&list);
+    assert(Result_is_ok(Int, cref_Char)(&pop_res));
+    assert(Result_unwrap(Int, cref_Char)(pop_res) == 30);
     
-    pop_res = List_Int_pop_front(&list);
-    assert(!pop_res.is_error);
-    assert(pop_res.value == 20);
+    pop_res = List_pop_front(Int)(&list);
+    assert(Result_is_ok(Int, cref_Char)(&pop_res));
+    assert(Result_unwrap(Int, cref_Char)(pop_res) == 20);
     
-    pop_res = List_Int_pop_front(&list);
-    assert(!pop_res.is_error);
-    assert(pop_res.value == 10);
+    pop_res = List_pop_front(Int)(&list);
+    assert(Result_is_ok(Int, cref_Char)(&pop_res));
+    assert(Result_unwrap(Int, cref_Char)(pop_res) == 10);
     
     assert(list.size == 0);
     
     // Pop on empty list
-    pop_res = List_Int_pop_front(&list);
-    assert(pop_res.is_error);
+    pop_res = List_pop_front(Int)(&list);
+    assert(Result_is_err(Int, cref_Char)(&pop_res));
     
-    List_Int_free(&list);
+    List_free(Int)(&list);
     printf("✓\n");
 }
 
 void test_linked_list_push_back_result(void)
 {
     printf("TEST: List_Int_push_back returning Result_Void... ");
-    List_Int list = List_Int_new();
+    List(Int) list = List_new(Int)();
     
-    Result_Void r = List_Int_push_back(&list, 42);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = List_push_back(Int)(&list, 42);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     assert(list.size == 1);
     
-    Result_Void_Int pop_res = List_Int_pop_back(&list);
-    assert(!pop_res.is_error);
-    assert(pop_res.value == 42);
+    Result(Int, cref_Char) pop_res = List_pop_back(Int)(&list);
+    assert(Result_is_ok(Int, cref_Char)(&pop_res));
+    assert(Result_unwrap(Int, cref_Char)(pop_res) == 42);
     
-    List_Int_free(&list);
+    List_free(Int)(&list);
     printf("✓\n");
 }
 
@@ -213,25 +213,25 @@ void test_linked_list_push_back_result(void)
 void test_hash_map_get_mut(void)
 {
     printf("TEST: Hashmap_Int_Int_get_mut... ");
-    Hashmap_Int_Int map = Hashmap_Int_Int_new(4);
+    Hashmap(Int, Int) map = Hashmap_new(Int, Int)(4);
     
-    Result_Void r = Hashmap_Int_Int_add(&map, 10, 100);
-    assert(Result_Void_is_ok(&r));
+    Result(Void, cref_Char) r = Hashmap_add(Int, Int)(&map, 10, 100);
+    assert(Result_is_ok(Void, cref_Char)(&r));
     
     // Retrieve mutable pointer and modify value
-    Result_Void_ref_Int get_res = Hashmap_Int_Int_get_mut(&map, 10);
-    assert(!get_res.is_error);
-    assert(*get_res.value == 100);
+    Result(ref_Int, cref_Char) get_res = Hashmap_get_mut(Int, Int)(&map, 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&get_res));
+    assert(*Result_unwrap(ref_Int, cref_Char)(get_res) == 100);
     
     // Modify through the returned pointer
-    *get_res.value = 999;
+    *Result_unwrap(ref_Int, cref_Char)(get_res) = 999;
     
     // Get again to verify modification
-    get_res = Hashmap_Int_Int_get(&map, 10);
-    assert(!get_res.is_error);
-    assert(*get_res.value == 999);
+    get_res = Hashmap_get(Int, Int)(&map, 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&get_res));
+    assert(*Result_unwrap(ref_Int, cref_Char)(get_res) == 999);
     
-    Hashmap_Int_Int_free(&map);
+    Hashmap_free(Int, Int)(&map);
     printf("✓\n");
 }
 

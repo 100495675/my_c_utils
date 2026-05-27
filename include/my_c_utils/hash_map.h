@@ -13,7 +13,41 @@
 
 #define DEFAULT_LOAD_FACTOR 0.75
 
-#define HASH_MAP_CONFIG(Key, Value)                                                     \
+#define Hashmap(Key, Value) MY_C_UTILS_CONCAT(Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+#define ref_Hashmap(Key, Value) MY_C_UTILS_CONCAT(ref_Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+#define cref_Hashmap(Key, Value) MY_C_UTILS_CONCAT(cref_Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+
+#define iter_Hashmap(Key, Value) MY_C_UTILS_CONCAT(iter_Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+#define ref_iter_Hashmap(Key, Value) MY_C_UTILS_CONCAT(ref_iter_Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+#define cref_iter_Hashmap(Key, Value) MY_C_UTILS_CONCAT(cref_iter_Hashmap_, MY_C_UTILS_CONCAT(Key, MY_C_UTILS_CONCAT(_, Value)))
+
+#define Hashmap_new(Key, Value)           MY_C_UTILS_CONCAT(Hashmap(Key, Value), _new)
+#define Hashmap_add(Key, Value)           MY_C_UTILS_CONCAT(Hashmap(Key, Value), _add)
+#define Hashmap_free(Key, Value)          MY_C_UTILS_CONCAT(Hashmap(Key, Value), _free)
+#define Hashmap_get(Key, Value)           MY_C_UTILS_CONCAT(Hashmap(Key, Value), _get)
+#define Hashmap_get_mut(Key, Value)       MY_C_UTILS_CONCAT(Hashmap(Key, Value), _get_mut)
+#define Hashmap_pop(Key, Value)           MY_C_UTILS_CONCAT(Hashmap(Key, Value), _pop)
+#define Hashmap_contains(Key, Value)      MY_C_UTILS_CONCAT(Hashmap(Key, Value), _contains)
+#define Hashmap_remove(Key, Value)        MY_C_UTILS_CONCAT(Hashmap(Key, Value), _remove)
+#define Hashmap_stats(Key, Value)         MY_C_UTILS_CONCAT(Hashmap(Key, Value), _stats)
+#define Hashmap_debug(Key, Value)         MY_C_UTILS_CONCAT(Hashmap(Key, Value), _debug)
+#define Hashmap_into_iter(Key, Value)     MY_C_UTILS_CONCAT(Hashmap(Key, Value), _into_iter)
+#define Hashmap_clone(Key, Value)         MY_C_UTILS_CONCAT(Hashmap(Key, Value), _clone)
+
+#define iter_Hashmap_deref(Key, Value)    MY_C_UTILS_CONCAT(iter_Hashmap(Key, Value), _deref)
+#define iter_Hashmap_next(Key, Value)     MY_C_UTILS_CONCAT(iter_Hashmap(Key, Value), _next)
+
+#define Hashmap_insert_entry(Key, Value)  MY_C_UTILS_CONCAT(Hashmap(Key, Value), _insert_entry)
+#define Hashmap_find_index(Key, Value)    MY_C_UTILS_CONCAT(Hashmap(Key, Value), _find_index)
+#define Hashmap_shift_delete(Key, Value)  MY_C_UTILS_CONCAT(Hashmap(Key, Value), _shift_delete)
+#define Hashmap_resize(Key, Value)        MY_C_UTILS_CONCAT(Hashmap(Key, Value), _resize)
+#define Hashmap_resize_if_needed(Key, Value) MY_C_UTILS_CONCAT(Hashmap(Key, Value), _resize_if_needed)
+#define Hashmap_free_impl(Key, Value)     MY_C_UTILS_CONCAT(Hashmap(Key, Value), _free_impl)
+#define Hashmap_seek_next(Key, Value)     MY_C_UTILS_CONCAT(Hashmap(Key, Value), _seek_next)
+
+#define HASH_MAP_CONFIG(Key, Value) HASH_MAP_CONFIG_IMPL(Key, Value)
+
+#define HASH_MAP_CONFIG_IMPL(Key, Value)                                                     \
                                                                                         \
   typedef struct                                                                        \
   {                                                                                     \
@@ -52,7 +86,7 @@
   } HashmapStats;                                                                       \
   REF_EXPAND(HashmapStats)                                                              \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_insert_entry(                            \
+  static inline void Hashmap_insert_entry(Key, Value)(                            \
       ref_Entry_##Key##_##Value data, Size capacity,                                    \
       Entry_##Key##_##Value entry)                                                      \
   {                                                                                     \
@@ -75,8 +109,8 @@
     }                                                                                   \
   }                                                                                     \
                                                                                         \
-  static inline Size Hashmap_##Key##_##Value##_find_index(                              \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline Size Hashmap_find_index(Key, Value)(                              \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
     Size key_hash = Key##_hash(key);                                                    \
     Size index = key_hash % map->capacity;                                              \
@@ -98,8 +132,8 @@
     return map->capacity;                                                               \
   }                                                                                     \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_shift_delete(                            \
-      ref_Hashmap_##Key##_##Value map, Size delete_index)                               \
+  static inline void Hashmap_shift_delete(Key, Value)(                            \
+      ref_Hashmap(Key, Value) map, Size delete_index)                               \
   {                                                                                     \
     Size hole = delete_index;                                                           \
     Size index = (hole + 1) % map->capacity;                                            \
@@ -114,7 +148,7 @@
     map->data[hole].distance = 0;                                                       \
   }                                                                                     \
                                                                                         \
-  static inline Hashmap_##Key##_##Value Hashmap_##Key##_##Value##_new(                  \
+  static inline Hashmap_##Key##_##Value Hashmap_new(Key, Value)(                  \
       Size capacity)                                                                    \
   {                                                                                     \
     if (capacity == 0)                                                                  \
@@ -137,14 +171,14 @@
         .value_free = NULL};                                                            \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void Hashmap_##Key##_##Value##_resize(                                \
-      ref_Hashmap_##Key##_##Value map, Size new_capacity)                               \
+  static inline Result(Void, cref_Char) Hashmap_resize(Key, Value)(                                \
+      ref_Hashmap(Key, Value) map, Size new_capacity)                               \
   {                                                                                     \
     ref_Entry_##Key##_##Value new_data =                                                \
         MY_C_UTILS_CALLOC(new_capacity, sizeof(Entry_##Key##_##Value));                 \
     if (!new_data)                                                                      \
     {                                                                                   \
-      return Result_Void_err("Memory allocation failed");                                    \
+      return Result_err(Void, cref_Char)("Memory allocation failed");                                    \
     }                                                                                   \
     for (Size i = 0; i < map->capacity; i++)                                            \
     {                                                                                   \
@@ -152,31 +186,31 @@
       {                                                                                 \
         Entry_##Key##_##Value entry = map->data[i];                                     \
         entry.distance = 0;                                                             \
-        Hashmap_##Key##_##Value##_insert_entry(new_data, new_capacity,                  \
-                                               entry);                                  \
+        Hashmap_insert_entry(Key, Value)(new_data, new_capacity,                  \
+                                                entry);                                  \
       }                                                                                 \
     }                                                                                   \
     MY_C_UTILS_FREE(map->data);                                                         \
     map->data = new_data;                                                               \
     map->capacity = new_capacity;                                                       \
-    return Result_Void_ok();                                                                 \
+    return Result_ok(Void, cref_Char)((Void){});                                                                 \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void Hashmap_##Key##_##Value##_resize_if_needed(                      \
-      ref_Hashmap_##Key##_##Value map)                                                  \
+  static inline Result(Void, cref_Char) Hashmap_resize_if_needed(Key, Value)(                      \
+      ref_Hashmap(Key, Value) map)                                                  \
   {                                                                                     \
     Double load_factor = (Double)map->size / map->capacity;                             \
     if (load_factor >= DEFAULT_LOAD_FACTOR)                                             \
     {                                                                                   \
-      return Hashmap_##Key##_##Value##_resize(map, map->capacity * 2);                  \
+      return Hashmap_resize(Key, Value)(map, map->capacity * 2);                  \
     }                                                                                   \
-    return Result_Void_ok();                                                                 \
+    return Result_ok(Void, cref_Char)((Void){});                                                                 \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void Hashmap_##Key##_##Value##_add(                                   \
-      ref_Hashmap_##Key##_##Value map, Key key, Value value)                            \
+  static inline Result(Void, cref_Char) Hashmap_add(Key, Value)(                                   \
+      ref_Hashmap(Key, Value) map, Key key, Value value)                            \
   {                                                                                     \
-    Size existing_index = Hashmap_##Key##_##Value##_find_index(map, key);               \
+    Size existing_index = Hashmap_find_index(Key, Value)(map, key);               \
     if (existing_index < map->capacity)                                                 \
     {                                                                                   \
       if (map->key_free)                                                                \
@@ -198,10 +232,10 @@
       map->data[existing_index].key = key;                                              \
       map->data[existing_index].value = value;                                          \
       map->data[existing_index].hash = Key##_hash(key);                                 \
-      return Result_Void_ok();                                                               \
+      return Result_ok(Void, cref_Char)((Void){});                                                               \
     }                                                                                   \
-    Result_Void resize_res = Hashmap_##Key##_##Value##_resize_if_needed(map);                \
-    if (Result_Void_is_err(&resize_res))                                                     \
+    Result(Void, cref_Char) resize_res = Hashmap_resize_if_needed(Key, Value)(map);                \
+    if (Result_is_err(Void, cref_Char)(&resize_res))                                                     \
     {                                                                                   \
       return resize_res;                                                                \
     }                                                                                   \
@@ -210,14 +244,14 @@
                                        .hash = Key##_hash(key),                         \
                                        .distance = 0,                                   \
                                        .filled = true};                                 \
-    Hashmap_##Key##_##Value##_insert_entry(map->data, map->capacity,                    \
+    Hashmap_insert_entry(Key, Value)(map->data, map->capacity,                    \
                                            new_entry);                                  \
     map->size++;                                                                        \
-    return Result_Void_ok();                                                                 \
+    return Result_ok(Void, cref_Char)((Void){});                                                                 \
   }                                                                                     \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_free_impl(                               \
-      ref_Hashmap_##Key##_##Value map)                                                  \
+  static inline void Hashmap_free_impl(Key, Value)(                               \
+      ref_Hashmap(Key, Value) map)                                                  \
   {                                                                                     \
     for (Size i = 0; i < map->capacity; i++)                                            \
     {                                                                                   \
@@ -247,33 +281,33 @@
     map->capacity = 0;                                                                  \
   }                                                                                     \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_free(                                    \
-      ref_Hashmap_##Key##_##Value map)                                                  \
+  static inline void Hashmap_free(Key, Value)(                                    \
+      ref_Hashmap(Key, Value) map)                                                  \
   {                                                                                     \
-    Hashmap_##Key##_##Value##_free_impl(map);                                           \
+    Hashmap_free_impl(Key, Value)(map);                                           \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void_ref_##Value Hashmap_##Key##_##Value##_get(                       \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline Result(ref_##Value, cref_Char) Hashmap_get(Key, Value)(                       \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
-    Size index = Hashmap_##Key##_##Value##_find_index(map, key);                        \
+    Size index = Hashmap_find_index(Key, Value)(map, key);                        \
     if (index < map->capacity)                                                          \
     {                                                                                   \
-      return Result_Void_ref_##Value##_ok(&map->data[index].value);                          \
+      return Result_ok(ref_##Value, cref_Char)(&map->data[index].value);                          \
     }                                                                                   \
-    return Result_Void_ref_##Value##_err("no existe elemento con esa Key");                  \
+    return Result_err(ref_##Value, cref_Char)("no existe elemento con esa Key");                  \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void_ref_##Value Hashmap_##Key##_##Value##_get_mut(                   \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline Result(ref_##Value, cref_Char) Hashmap_get_mut(Key, Value)(                   \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
-    return Hashmap_##Key##_##Value##_get(map, key);                                     \
+    return Hashmap_get(Key, Value)(map, key);                                     \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void_##Value Hashmap_##Key##_##Value##_pop(                           \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline Result(Value, cref_Char) Hashmap_pop(Key, Value)(                           \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
-    Size index = Hashmap_##Key##_##Value##_find_index(map, key);                        \
+    Size index = Hashmap_find_index(Key, Value)(map, key);                        \
     if (index < map->capacity)                                                          \
     {                                                                                   \
       Value value = map->data[index].value;                                             \
@@ -286,22 +320,22 @@
         Key##_free(&map->data[index].key);                                              \
       }                                                                                 \
       map->size--;                                                                      \
-      Hashmap_##Key##_##Value##_shift_delete(map, index);                               \
-      return Result_Void_##Value##_ok(value);                                                \
+      Hashmap_shift_delete(Key, Value)(map, index);                               \
+      return Result_ok(Value, cref_Char)(value);                                                \
     }                                                                                   \
-    return Result_Void_##Value##_err("no existe elemento con esa Key");                      \
+    return Result_err(Value, cref_Char)("no existe elemento con esa Key");                      \
   }                                                                                     \
                                                                                         \
-  static inline Bool Hashmap_##Key##_##Value##_contains(                                \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline Bool Hashmap_contains(Key, Value)(                                \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
-    return Hashmap_##Key##_##Value##_find_index(map, key) < map->capacity;              \
+    return Hashmap_find_index(Key, Value)(map, key) < map->capacity;              \
   }                                                                                     \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_remove(                                  \
-      ref_Hashmap_##Key##_##Value map, Key key)                                         \
+  static inline void Hashmap_remove(Key, Value)(                                  \
+      ref_Hashmap(Key, Value) map, Key key)                                         \
   {                                                                                     \
-    Size index = Hashmap_##Key##_##Value##_find_index(map, key);                        \
+    Size index = Hashmap_find_index(Key, Value)(map, key);                        \
     if (index < map->capacity)                                                          \
     {                                                                                   \
       if (map->key_free)                                                                \
@@ -321,12 +355,12 @@
         Value##_free(&map->data[index].value);                                          \
       }                                                                                 \
       map->size--;                                                                      \
-      Hashmap_##Key##_##Value##_shift_delete(map, index);                               \
+      Hashmap_shift_delete(Key, Value)(map, index);                               \
     }                                                                                   \
   }                                                                                     \
                                                                                         \
-  static inline HashmapStats Hashmap_##Key##_##Value##_stats(                           \
-      cref_Hashmap_##Key##_##Value map)                                                 \
+  static inline HashmapStats Hashmap_stats(Key, Value)(                           \
+      cref_Hashmap(Key, Value) map)                                                 \
   {                                                                                     \
     HashmapStats stats = {.size = map->size,                                            \
                           .capacity = map->capacity,                                    \
@@ -342,8 +376,8 @@
     return stats;                                                                       \
   }                                                                                     \
                                                                                         \
-  static inline Size Hashmap_##Key##_##Value##_seek_next(                               \
-      cref_Hashmap_##Key##_##Value map, Size start_index)                               \
+  static inline Size Hashmap_seek_next(Key, Value)(                               \
+      cref_Hashmap(Key, Value) map, Size start_index)                               \
   {                                                                                     \
     Size index = start_index;                                                           \
     while (index < map->capacity && !map->data[index].filled)                           \
@@ -353,10 +387,10 @@
     return index;                                                                       \
   }                                                                                     \
                                                                                         \
-  static inline void Hashmap_##Key##_##Value##_debug(                                   \
-      cref_Hashmap_##Key##_##Value map)                                                 \
+  static inline void Hashmap_debug(Key, Value)(                                   \
+      cref_Hashmap(Key, Value) map)                                                 \
   {                                                                                     \
-    HashmapStats stats = Hashmap_##Key##_##Value##_stats(map);                          \
+    HashmapStats stats = Hashmap_stats(Key, Value)(map);                          \
     printf("size: %zu, capacity: %zu, load factor: %f, collisions: %zu\n",              \
            stats.size, stats.capacity, stats.load_factor, stats.collisions);            \
     printf("{\n");                                                                      \
@@ -371,53 +405,52 @@
     printf("}\n");                                                                      \
   }                                                                                     \
                                                                                         \
-  static inline iter_Hashmap_##Key##_##Value                                            \
-  Hashmap_##Key##_##Value##_into_iter(                                                  \
-      cref_Hashmap_##Key##_##Value map)                                                 \
+  static inline iter_Hashmap(Key, Value)                                            \
+  Hashmap_into_iter(Key, Value)(                                                  \
+      cref_Hashmap(Key, Value) map)                                                 \
   {                                                                                     \
-    Size first_index = Hashmap_##Key##_##Value##_seek_next(map, 0);                     \
-    return (iter_Hashmap_##Key##_##Value){.map = map,                                   \
+    Size first_index = Hashmap_seek_next(Key, Value)(map, 0);                     \
+    return (iter_Hashmap(Key, Value)){.map = map,                                   \
                                             .current_index = first_index};              \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void_ref_##Value iter_Hashmap_##Key##_##Value##_deref(                \
-      cref_iter_Hashmap_##Key##_##Value iterator)                                       \
+  static inline Result(ref_##Value, cref_Char) iter_Hashmap_deref(Key, Value)(                \
+      cref_iter_Hashmap(Key, Value) iterator)                                       \
   {                                                                                     \
     if (iterator->current_index >= iterator->map->capacity ||                           \
         !iterator->map->data[iterator->current_index].filled)                           \
     {                                                                                   \
-      return Result_Void_ref_##Value##_err("Iterator out of bounds");                        \
+      return Result_err(ref_##Value, cref_Char)("Iterator out of bounds");                        \
     }                                                                                   \
-    return Result_Void_ref_##Value##_ok(                                                     \
+    return Result_ok(ref_##Value, cref_Char)(                                                     \
         &iterator->map->data[iterator->current_index].value);                           \
   }                                                                                     \
                                                                                         \
-  static inline Result_Void_ref_##Value iter_Hashmap_##Key##_##Value##_next(                 \
-      ref_iter_Hashmap_##Key##_##Value iterator)                                        \
+  static inline Result(ref_##Value, cref_Char) iter_Hashmap_next(Key, Value)(                 \
+      ref_iter_Hashmap(Key, Value) iterator)                                        \
   {                                                                                     \
     if (iterator->current_index >= iterator->map->capacity ||                           \
         !iterator->map->data[iterator->current_index].filled)                           \
     {                                                                                   \
-      return Result_Void_ref_##Value##_err("Iterator out of bounds");                        \
+      return Result_err(ref_##Value, cref_Char)("Iterator out of bounds");                        \
     }                                                                                   \
     Size cur = iterator->current_index;                                                 \
     iterator->current_index =                                                           \
-        Hashmap_##Key##_##Value##_seek_next(iterator->map,                              \
+        Hashmap_seek_next(Key, Value)(iterator->map,                              \
                                             iterator->current_index + 1);               \
-    return Result_Void_ref_##Value##_ok(&iterator->map->data[cur].value);                    \
+    return Result_ok(ref_##Value, cref_Char)(&iterator->map->data[cur].value);                    \
   }                                                                                     \
-                                                                                        \
-  RESULT_CONFIG(Hashmap_##Key##_##Value)                                                \
-  RESULT_CONFIG(ref_Hashmap_##Key##_##Value)                                            \
-  static inline Hashmap_##Key##_##Value Hashmap_##Key##_##Value##_clone(                \
-      const Hashmap_##Key##_##Value *src)                                               \
+  RESULT_CONFIG(Hashmap_##Key##_##Value, cref_Char)                                                \
+  RESULT_CONFIG(ref_Hashmap_##Key##_##Value, cref_Char)                                            \
+  static inline Hashmap_##Key##_##Value Hashmap_clone(Key, Value)(                \
+      const Hashmap(Key, Value) *src)                                               \
   {                                                                                     \
     if (!src)                                                                           \
     {                                                                                   \
       perror("Cannot clone NULL Hashmap pointer");                                      \
       exit(1);                                                                           \
     }                                                                                   \
-    Hashmap_##Key##_##Value dest = Hashmap_##Key##_##Value##_new(src->capacity);        \
+    Hashmap(Key, Value) dest = Hashmap_new(Key, Value)(src->capacity);        \
     dest.key_free = src->key_free;                                                       \
     dest.value_free = src->value_free;                                                   \
     for (Size i = 0; i < src->capacity; ++i)                                             \
@@ -426,10 +459,10 @@
         continue;                                                                       \
       Key key_clone = Key##_clone(&src->data[i].key);                                   \
       Value value_clone = Value##_clone(&src->data[i].value);                           \
-      Result_Void add_res = Hashmap_##Key##_##Value##_add(&dest, key_clone, value_clone);    \
-      if (Result_Void_is_err(&add_res))                                                      \
+      Result(Void, cref_Char) add_res = Hashmap_add(Key, Value)(&dest, key_clone, value_clone);    \
+      if (Result_is_err(Void, cref_Char)(&add_res))                                                      \
       {                                                                                 \
-        Hashmap_##Key##_##Value##_free(&dest);                                          \
+        Hashmap_free(Key, Value)(&dest);                                          \
         perror("Memory allocation failed during hashmap clone");                        \
         exit(1);                                                                        \
       }                                                                                 \

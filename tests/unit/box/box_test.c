@@ -4,56 +4,56 @@
 
 VECTOR_CONFIG(Int)
 BOX_CONFIG(Int)
-BOX_CONFIG(Vector_Int)
+BOX_CONFIG(Vector(Int))
 
 Int main(void)
 {
-  Box_Int number_box = Box_Int_new(7);
-  assert(*Box_Int_deref(&number_box) == 7);
+  Box(Int) number_box = Box_new(Int)(7);
+  assert(*Box_deref(Int)(&number_box) == 7);
 
-  *Box_Int_deref_mut(&number_box) = 9;
-  assert(*Box_Int_deref(&number_box) == 9);
+  *Box_deref_mut(Int)(&number_box) = 9;
+  assert(*Box_deref(Int)(&number_box) == 9);
 
-  Box_Int cloned_number = Box_Int_clone(&number_box);
-  assert(*Box_Int_deref(&cloned_number) == 9);
+  Box(Int) cloned_number = Box_clone(Int)(&number_box);
+  assert(*Box_deref(Int)(&cloned_number) == 9);
 
-  *Box_Int_deref_mut(&number_box) = 11;
-  assert(*Box_Int_deref(&cloned_number) == 9);
+  *Box_deref_mut(Int)(&number_box) = 11;
+  assert(*Box_deref(Int)(&cloned_number) == 9);
 
-  Box_Int_free(&number_box);
-  Box_Int_free(&cloned_number);
+  Box_free(Int)(&number_box);
+  Box_free(Int)(&cloned_number);
 
-  Vector_Int vector = Vector_Int_new();
-  Result_Void r1 = Vector_Int_push_back(&vector, 1);
-  assert(Result_Void_is_ok(&r1));
-  Result_Void r2 = Vector_Int_push_back(&vector, 2);
-  assert(Result_Void_is_ok(&r2));
+  Vector(Int) vector = Vector_new(Int)();
+  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 2);
+  assert(Result_is_ok(Void, cref_Char)(&r2));
 
-  Box_Vector_Int vector_box = Box_Vector_Int_new(vector);
-  vector = Vector_Int_new();
-  assert(Vector_Int_size(Box_Vector_Int_deref(&vector_box)) == 2);
+  Box(Vector(Int)) vector_box = Box_new(Vector(Int))(vector);
+  vector = Vector_new(Int)();
+  assert(Vector_size(Int)(Box_deref(Vector(Int))(&vector_box)) == 2);
 
-  Box_Vector_Int cloned_vector_box = Box_Vector_Int_clone(&vector_box);
-  assert(Vector_Int_size(Box_Vector_Int_deref(&cloned_vector_box)) == 2);
+  Box(Vector(Int)) cloned_vector_box = Box_clone(Vector(Int))(&vector_box);
+  assert(Vector_size(Int)(Box_deref(Vector(Int))(&cloned_vector_box)) == 2);
 
-  Result_Void_ref_Int original_first =
-      Vector_Int_at(Box_Vector_Int_deref(&vector_box), 0);
-  Result_Void_ref_Int cloned_first =
-      Vector_Int_at(Box_Vector_Int_deref(&cloned_vector_box), 0);
-  assert(Result_Void_ref_Int_is_ok(&original_first));
-  assert(Result_Void_ref_Int_is_ok(&cloned_first));
-  assert(*Result_Void_ref_Int_unwrap(original_first) == 1);
-  assert(*Result_Void_ref_Int_unwrap(cloned_first) == 1);
+  Result(ref_Int, cref_Char) original_first =
+      Vector_at(Int)(Box_deref(Vector(Int))(&vector_box), 0);
+  Result(ref_Int, cref_Char) cloned_first =
+      Vector_at(Int)(Box_deref(Vector(Int))(&cloned_vector_box), 0);
+  assert(Result_is_ok(ref_Int, cref_Char)(&original_first));
+  assert(Result_is_ok(ref_Int, cref_Char)(&cloned_first));
+  assert(*Result_unwrap(ref_Int, cref_Char)(original_first) == 1);
+  assert(*Result_unwrap(ref_Int, cref_Char)(cloned_first) == 1);
 
-  Result_Void r3 = Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99);
-  assert(Result_Void_is_ok(&r3));
-  Result_Void r4 = Vector_Int_set(Box_Vector_Int_deref_mut(&vector_box), 0, 99);
-  assert(Result_Void_is_ok(&r4));
-  assert(*Result_Void_ref_Int_unwrap(Vector_Int_at(Box_Vector_Int_deref(&vector_box), 0)) == 99);
-  assert(*Result_Void_ref_Int_unwrap(Vector_Int_at(Box_Vector_Int_deref(&cloned_vector_box), 0)) == 1);
+  Result(Void, cref_Char) r3 = Vector_set(Int)(Box_deref_mut(Vector(Int))(&vector_box), 0, 99);
+  assert(Result_is_ok(Void, cref_Char)(&r3));
+  Result(Void, cref_Char) r4 = Vector_set(Int)(Box_deref_mut(Vector(Int))(&vector_box), 0, 99);
+  assert(Result_is_ok(Void, cref_Char)(&r4));
+  assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(Box_deref(Vector(Int))(&vector_box), 0)) == 99);
+  assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(Box_deref(Vector(Int))(&cloned_vector_box), 0)) == 1);
 
-  Box_Vector_Int_free(&vector_box);
-  Box_Vector_Int_free(&cloned_vector_box);
-  Vector_Int_free(&vector);
+  Box_free(Vector(Int))(&vector_box);
+  Box_free(Vector(Int))(&cloned_vector_box);
+  Vector_free(Int)(&vector);
   return 0;
 }

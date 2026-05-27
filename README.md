@@ -24,8 +24,8 @@ Header-only C11 utilities for generic containers, typed result/option helpers, a
 - `Type_free(Type *value)` destroys owned elements.
 - `get` and `at` return borrowed references.
 - `pop` returns owned copies.
-- `for_each_ref` exposes borrowed pointers.
-- `for_each_copy` exposes copied values.
+- `for_each_ref(ContainerType, var_name, iterable)` exposes borrowed pointers (used as `for_each_ref(Vector(Int), item, &vector) { ... }`).
+- `for_each_copy(ContainerType, var_name, iterable)` exposes copied values (used as `for_each_copy(Vector(Int), item, &vector) { ... }`).
 - Mutable borrows use `ref_##Type`; immutable borrows use `cref_##Type`.
 - `STRUCT_CONFIG` is for user-defined data structs; container headers keep dedicated implementations when ownership rules need custom logic.
 

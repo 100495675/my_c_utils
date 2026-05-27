@@ -11,7 +11,31 @@
 #include "my_c_utils/result.h"
 #include "my_c_utils/primitives.h"
 
-#define LINKED_LIST_CONFIG(Type)                                                   \
+#define List(Type) MY_C_UTILS_CONCAT(List_, Type)
+#define ref_List(Type) MY_C_UTILS_CONCAT(ref_List_, Type)
+#define cref_List(Type) MY_C_UTILS_CONCAT(cref_List_, Type)
+
+#define iter_List(Type) MY_C_UTILS_CONCAT(iter_List_, Type)
+#define ref_iter_List(Type) MY_C_UTILS_CONCAT(ref_iter_List_, Type)
+#define cref_iter_List(Type) MY_C_UTILS_CONCAT(cref_iter_List_, Type)
+
+#define List_new(Type)          MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _new))
+#define List_push_back(Type)    MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _push_back))
+#define List_push_front(Type)   MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _push_front))
+#define List_pop_front(Type)    MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _pop_front))
+#define List_pop_back(Type)     MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _pop_back))
+#define List_free(Type)         MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _free))
+#define List_debug(Type)        MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _debug))
+#define List_size(Type)         MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _size))
+#define List_into_iter(Type)    MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _into_iter))
+#define List_clone(Type)        MY_C_UTILS_CONCAT(List_, MY_C_UTILS_CONCAT(Type, _clone))
+
+#define iter_List_deref(Type)   MY_C_UTILS_CONCAT(iter_List_, MY_C_UTILS_CONCAT(Type, _deref))
+#define iter_List_next(Type)    MY_C_UTILS_CONCAT(iter_List_, MY_C_UTILS_CONCAT(Type, _next))
+
+#define LINKED_LIST_CONFIG(Type) LINKED_LIST_CONFIG_IMPL(Type)
+
+#define LINKED_LIST_CONFIG_IMPL(Type)                                                   \
   typedef struct Node_##Type                                                       \
   {                                                                                \
     Type data;                                                                     \
@@ -35,17 +59,17 @@
   REF_EXPAND(iter_List_##Type)                                                     \
   TRIVIAL_FREE(iter_List_##Type, cref_iter_List_##Type value)                      \
                                                                                    \
-  static inline List_##Type List_##Type##_new()                                    \
+  static inline List_##Type List_new(Type)()                                    \
   {                                                                                \
     return (List_##Type){.head = NULL, .tail = NULL, .size = 0};                   \
   }                                                                                \
                                                                                    \
-  static inline Result_Void List_##Type##_push_back(ref_List_##Type self, Type value)   \
+  static inline Result(Void, cref_Char) List_push_back(Type)(ref_List(Type) self, Type value)   \
   {                                                                                \
     ref_Node_##Type new_node = MY_C_UTILS_MALLOC(sizeof(Node_##Type));             \
     if (!new_node)                                                                 \
     {                                                                              \
-      return Result_Void_err("Memory allocation failed");                               \
+      return Result_err(Void, cref_Char)("Memory allocation failed");                               \
     }                                                                              \
     new_node->data = value;                                                        \
     new_node->next = NULL;                                                         \
@@ -59,15 +83,15 @@
     }                                                                              \
     self->tail = new_node;                                                         \
     ++self->size;                                                                  \
-    return Result_Void_ok();                                                            \
+    return Result_ok(Void, cref_Char)((Void){});                                                            \
   }                                                                                \
                                                                                    \
-  static inline Result_Void List_##Type##_push_front(ref_List_##Type self, Type value)  \
+  static inline Result(Void, cref_Char) List_push_front(Type)(ref_List(Type) self, Type value)  \
   {                                                                                \
     ref_Node_##Type new_node = MY_C_UTILS_MALLOC(sizeof(Node_##Type));             \
     if (!new_node)                                                                 \
     {                                                                              \
-      return Result_Void_err("Memory allocation failed");                               \
+      return Result_err(Void, cref_Char)("Memory allocation failed");                               \
     }                                                                              \
     new_node->data = value;                                                        \
     new_node->next = self->head;                                                   \
@@ -77,14 +101,14 @@
       self->tail = new_node;                                                       \
     }                                                                              \
     ++self->size;                                                                  \
-    return Result_Void_ok();                                                            \
+    return Result_ok(Void, cref_Char)((Void){});                                                            \
   }                                                                                \
                                                                                    \
-  static inline Result_Void_##Type List_##Type##_pop_front(ref_List_##Type self)        \
+  static inline Result(Type, cref_Char) List_pop_front(Type)(ref_List(Type) self)        \
   {                                                                                \
     if (self->size == 0)                                                           \
     {                                                                              \
-      return Result_Void_##Type##_err("Pop on empty list");                             \
+      return Result_err(Type, cref_Char)("Pop on empty list");                             \
     }                                                                              \
     ref_Node_##Type temp = self->head;                                             \
     self->head = self->head->next;                                                 \
@@ -95,14 +119,14 @@
     Type data = temp->data;                                                        \
     MY_C_UTILS_FREE(temp);                                                         \
     --self->size;                                                                  \
-    return Result_Void_##Type##_ok(data);                                               \
+    return Result_ok(Type, cref_Char)(data);                                               \
   }                                                                                \
                                                                                    \
-  static inline Result_Void_##Type List_##Type##_pop_back(ref_List_##Type self)         \
+  static inline Result(Type, cref_Char) List_pop_back(Type)(ref_List(Type) self)         \
   {                                                                                \
     if (self->size == 0)                                                           \
     {                                                                              \
-      return Result_Void_##Type##_err("Pop on empty list");                             \
+      return Result_err(Type, cref_Char)("Pop on empty list");                             \
     }                                                                              \
     ref_Node_##Type current = self->head;                                          \
     ref_Node_##Type previous = NULL;                                               \
@@ -124,10 +148,10 @@
     Type data = current->data;                                                     \
     MY_C_UTILS_FREE(current);                                                      \
     --self->size;                                                                  \
-    return Result_Void_##Type##_ok(data);                                               \
+    return Result_ok(Type, cref_Char)(data);                                               \
   }                                                                                \
                                                                                    \
-  static inline void List_##Type##_free(ref_List_##Type self)                      \
+  static inline void List_free(Type)(ref_List(Type) self)                      \
   {                                                                                \
     ref_Node_##Type current = self->head;                                          \
     while (current != NULL)                                                        \
@@ -142,7 +166,7 @@
     self->size = 0;                                                                \
   }                                                                                \
                                                                                    \
-  static inline void List_##Type##_debug(cref_List_##Type self)                    \
+  static inline void List_debug(Type)(cref_List(Type) self)                    \
   {                                                                                \
     printf("Size: %zu\n", self->size);                                             \
     ref_Node_##Type current = self->head;                                          \
@@ -155,58 +179,57 @@
     }                                                                              \
   }                                                                                \
                                                                                    \
-  static inline Size List_##Type##_size(cref_List_##Type self)                     \
+  static inline Size List_size(Type)(cref_List(Type) self)                     \
   {                                                                                \
     return self->size;                                                             \
   }                                                                                \
                                                                                    \
-  static inline iter_List_##Type List_##Type##_into_iter(                          \
-      cref_List_##Type self)                                                       \
+  static inline iter_List(Type) List_into_iter(Type)(                          \
+      cref_List(Type) self)                                                       \
   {                                                                                \
-    return (iter_List_##Type){                                                     \
+    return (iter_List(Type)){                                                     \
         .list = self,                                                              \
         .node = self->head};                                                       \
   }                                                                                \
                                                                                    \
-  static inline Result_Void_ref_##Type iter_List_##Type##_deref(                        \
-      cref_iter_List_##Type it)                                                    \
+  static inline Result(ref_##Type, cref_Char) iter_List_deref(Type)(                        \
+      cref_iter_List(Type) it)                                                    \
   {                                                                                \
     if (it->node == NULL)                                                          \
     {                                                                              \
-      return Result_Void_ref_##Type##_err("Iterator out of bounds");                    \
+      return Result_err(ref_##Type, cref_Char)("Iterator out of bounds");                    \
     }                                                                              \
-    return Result_Void_ref_##Type##_ok(&it->node->data);                                \
+    return Result_ok(ref_##Type, cref_Char)(&it->node->data);                                \
   }                                                                                \
                                                                                    \
-  static inline Result_Void_ref_##Type iter_List_##Type##_next(ref_iter_List_##Type it) \
+  static inline Result(ref_##Type, cref_Char) iter_List_next(Type)(ref_iter_List(Type) it) \
   {                                                                                \
     if (it->node == NULL)                                                          \
     {                                                                              \
-      return Result_Void_ref_##Type##_err("Iterator out of bounds");                    \
+      return Result_err(ref_##Type, cref_Char)("Iterator out of bounds");                    \
     }                                                                              \
     ref_Node_##Type cur = it->node;                                                \
     it->node = it->node->next;                                                     \
-    return Result_Void_ref_##Type##_ok(&cur->data);                                     \
+    return Result_ok(ref_##Type, cref_Char)(&cur->data);                                     \
   }                                                                                \
-                                                                                   \
-  RESULT_CONFIG(List_##Type)                                                       \
-  RESULT_CONFIG(ref_List_##Type)                                                   \
-  static inline List_##Type List_##Type##_clone(cref_List_##Type src)              \
+  RESULT_CONFIG(List_##Type, cref_Char)                                                       \
+  RESULT_CONFIG(ref_List_##Type, cref_Char)                                                   \
+  static inline List_##Type List_clone(Type)(cref_List(Type) src)              \
   {                                                                                \
     if (!src)                                                                      \
     {                                                                              \
       perror("Cannot clone NULL List pointer");                                    \
       exit(1);                                                                     \
     }                                                                              \
-    List_##Type dest = List_##Type##_new();                                        \
+    List(Type) dest = List_new(Type)();                                        \
     ref_Node_##Type node = src->head;                                              \
     while (node != NULL)                                                           \
     {                                                                              \
       Type cloned_value = Type##_clone(&node->data);                               \
-      Result_Void push_res = List_##Type##_push_back(&dest, cloned_value);              \
-      if (Result_Void_is_err(&push_res))                                                \
+      Result(Void, cref_Char) push_res = List_push_back(Type)(&dest, cloned_value);              \
+      if (Result_is_err(Void, cref_Char)(&push_res))                                                \
       {                                                                            \
-        List_##Type##_free(&dest);                                                 \
+        List_free(Type)(&dest);                                                 \
         perror("Memory allocation failed during list clone");                      \
         exit(1);                                                                   \
       }                                                                            \

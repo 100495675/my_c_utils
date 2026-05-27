@@ -93,8 +93,8 @@
     } Type;                                                                       \
     REF_EXPAND(Type)                                                              \
     FREE_CONFIG(Type, __VA_ARGS__)                                                \
-    RESULT_CONFIG(Type)                                                           \
-    RESULT_CONFIG(ref_##Type)                                                     \
+    RESULT_CONFIG(Type, cref_Char)                                                           \
+    RESULT_CONFIG(ref_##Type, cref_Char)                                                     \
     CLONE_CONFIG(Type, __VA_ARGS__)
 
 #endif
