@@ -9,6 +9,14 @@ Functions the containes has to implement to be iterable:
     a Result_Void, or an error if the iterator is out of bounds
 */
 
+#define iter(Container) MY_C_UTILS_CONCAT(iter_, Container)
+#define ref_iter(Container) MY_C_UTILS_CONCAT(ref_iter_, Container)
+#define cref_iter(Container) MY_C_UTILS_CONCAT(cref_iter_, Container)
+
+#define into_iter(Container) MY_C_UTILS_CONCAT(Container, _into_iter)
+#define iter_next(Container) MY_C_UTILS_CONCAT(iter(Container), _next)
+#define iter_deref(Container) MY_C_UTILS_CONCAT(iter(Container), _deref)
+#define iter_free(Container) MY_C_UTILS_CONCAT(iter(Container), _free)
 
 // Reference version (borrowed pointer) - exposes immutable borrows.
 #define for_each_ref(ContainerType, var_name, iterable)                                                                                                 \
