@@ -213,7 +213,110 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 
 ---
 
-## 9. Interactive Example
+## 9. Functional Iterator Operators
+
+Modern C programming supports programming in a functional style using type-safe high-order iterator macros. These macros support the project's standard double-parenthesis notation and are fully compatible with static functions.
+
+To facilitate inline anonymous function declaration without verbose nested function syntax or name collisions, the library provides a utility **`lambda`** macro.
+
+### The `lambda` Utility Macro
+*Declares a type-safe inline anonymous function (lambda) with an explicit return, protected from variable collisions using `__COUNTER__`.*
+
+* **Syntax**: `lambda(return_type, (parameter_list), { body_with_explicit_return })`
+* **Features**:
+  * **Explicit Returns**: The user writes `return` explicitly inside the body block.
+  * **Any Number of Parameters**: Supports 0, 1, 2, or more parameters (e.g. `(Int x)` or `(Int acc, Int x)`).
+  * **Collision-Free**: Generates unique names at compile time using `__COUNTER__`.
+
+---
+
+### A. Functional Loop: `for_each_fn`
+*Iterates over a container and executes a callback function or inline lambda for each element.*
+
+* **Syntax**: `for_each_fn(ContainerT)(container_ptr, callback)`
+* **Example (with `lambda`)**:
+  ```c
+  Vector(Int) my_vec = ...;
+  for_each_fn(Vector(Int))(&my_vec, lambda(void, (Int x), {
+      printf("Value: %d\n", x);
+  }));
+  ```
+
+### B. Element Mapping: `map` and `map_new`
+*Maps elements of a source container using a callback function or lambda.*
+* `map` appends mapped elements to an existing destination container.
+* `map_new` creates and populates a new destination container inline.
+
+* **Syntax**:
+  * `map(DestContainerT, SrcContainerT)(dest_ptr, src_iter, mapping_func)`
+  * `map_new(DestContainerT, SrcContainerT)(src_iter, mapping_func)`
+* **Example (with `lambda`)**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  // Create a new vector where each element is doubled
+  Vector(Int) doubled = map_new(Vector(Int), Vector(Int))(
+      Vector_into_iter(Int)(&my_vec),
+      lambda(Int, (Int x), { return x * 2; })
+  );
+  ```
+
+### C. Element Filtering: `filter` and `filter_new`
+*Filters elements of a source container using a predicate function or lambda.*
+* `filter` appends matching elements to an existing destination container.
+* `filter_new` creates and populates a new destination container inline.
+
+* **Syntax**:
+  * `filter(DestContainerT, SrcContainerT)(dest_ptr, src_iter, predicate)`
+  * `filter_new(DestContainerT, SrcContainerT)(src_iter, predicate)`
+* **Example (with `lambda`)**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  // Filter even elements into a new vector
+  Vector(Int) evens = filter_new(Vector(Int), Vector(Int))(
+      Vector_into_iter(Int)(&my_vec),
+      lambda(bool, (Int x), { return x % 2 == 0; })
+  );
+  ```
+
+### D. Accumulator / Reduction: `fold`
+*Folds/reduces the elements of an iterator into a single accumulated value.*
+
+* **Syntax**: `fold(SrcContainerT, AccT)(acc_init, src_iter, fold_func)`
+* **Example (with `lambda`)**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  // Sum elements with a base value of 100
+  Int sum = fold(Vector(Int), Int)(
+      100, 
+      Vector_into_iter(Int)(&my_vec),
+      lambda(Int, (Int acc, Int x), { return acc + x; })
+  );
+  ```
+
+### E. Predicate Checks: `any` and `all`
+*Evaluates existential and universal predicates over the elements of an iterator.*
+* `any` returns true if at least one element matches the predicate.
+* `all` returns true if all elements match the predicate.
+
+* **Syntax**:
+  * `any(SrcContainerT)(src_iter, predicate)`
+  * `all(SrcContainerT)(src_iter, predicate)`
+* **Example (with `lambda`)**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  bool has_negative = any(Vector(Int))(
+      Vector_into_iter(Int)(&my_vec),
+      lambda(bool, (Int x), { return x < 0; })
+  );
+  ```
+
+---
+
+## 10. Interactive Example
 
 Below is a complete, working example using several templates together:
 

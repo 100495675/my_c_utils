@@ -15,7 +15,7 @@ my_c_utils is a header-only C11 library that provides reusable generic container
 - `include/my_c_utils/my_c_utils.h`: single public entry point that includes core helpers and containers.
 - `include/my_c_utils/result.h`: fallible operations with typed success values.
 - `include/my_c_utils/option.h`: optional values with typed payloads.
-- `include/my_c_utils/iterator.h`: `for_each_ref` and `for_each_copy` loop macros.
+- `include/my_c_utils/iterator.h`: loop control structures (`for_each`, `for_each_ref`), functional callbacks (`for_each_fn`), collection tools (`collect`, `collect_new`), and functional operators (`map`, `map_new`, `filter`, `filter_new`, `fold`, `any`, `all`).
 - `include/my_c_utils/box.h`: owning heap wrapper for a single value.
 - `include/my_c_utils/vector.h`: generic dynamic array.
 - `include/my_c_utils/linked_list.h`: generic singly linked list.
@@ -44,8 +44,10 @@ my_c_utils is a header-only C11 library that provides reusable generic container
 - `into_iter` creates a cursor.
 - `iter_next` returns the next borrowed element wrapped in `Result_Void_##Type##_ref` and advances the cursor.
 - Exhaustion is reported as an error result.
-- `for_each_ref(ContainerType, var_name, iterable)` exposes borrowed pointers (used as `for_each_ref(Vector(Int), item, &vector) { ... }`).
-- `for_each_copy(ContainerType, var_name, iterable)` exposes copied values (used as `for_each_copy(Vector(Int), item, &vector) { ... }`).
+- `for_each_ref(ContainerType, var_name, iterable)` exposes borrowed pointers (used as `for_each_ref(Vector(Int), item_ref, &vector) { ... }`).
+- `for_each(ContainerType, var_name, iterable)` exposes copied values (used as `for_each(Vector(Int), item, &vector) { ... }`).
+- `for_each_fn(SrcContainerT)(&container, callback)` iterates using a functional callback.
+- `map`, `map_new`, `filter`, `filter_new`, `fold`, `any`, `all` provide container-agnostic functional operations using lambdas/functions.
 
 ## Type aliases
 

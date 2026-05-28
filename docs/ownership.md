@@ -41,14 +41,15 @@ This project uses a simple rule:
 
 - Containers that support iteration expose `into_iter` and `iter_next`.
 - `iter_next` returns the next element wrapped in `Result_Void_##Type##_ref` and advances the iterator. When the iterator is exhausted it returns an error result.
-- The library provides two loop macros:
-  - `for_each_ref(ContainerType, var_name, iterable)` (exposes a borrowed reference to `ContainerType`'s elements).
-  - `for_each_copy(ContainerType, var_name, iterable)` (exposes a copied value of `ContainerType`'s elements).
+- The library provides loop macros and functional iterator operations:
+  - `for_each_ref(ContainerType, var_name, iterable)` (exposes a borrowed reference pointer to `ContainerType`'s elements).
+  - `for_each(ContainerType, var_name, iterable)` (exposes a copied value of `ContainerType`'s elements).
+  - `for_each_fn(ContainerType)(&container, callback)` (iterates using a callback function or lambda).
 
   For example:
   ```c
-  for_each_ref(Vector(Int), item, &vector) {
-    printf("%d\n", *item);
+  for_each_ref(Vector(Int), item_ref, &vector) {
+    printf("%d\n", ref_deref(Int)(item_ref));
   }
   ```
 
