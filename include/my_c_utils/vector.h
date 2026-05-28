@@ -229,9 +229,11 @@
     static inline void TEMPLATE_METHOD(ref_Vector, free, T)(ref_Vector(T) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_Vector, free, T)(cref_Vector(T) *value) { (void)value; } \
     \
+    static inline void TEMPLATE_METHOD(Vector, free, T)(ref_Vector(T) self); \
+    \
     typedef struct \
     { \
-        cref_Vector(T) vector; \
+        Vector(T) vector; \
         Size index; \
     } iter_Vector(T); \
     typedef iter_Vector(T) *ref_iter_Vector(T); \
@@ -240,7 +242,7 @@
     static inline void TEMPLATE_METHOD(cref_iter_Vector, free, T)(cref_iter_Vector(T) *value) { (void)value; } \
     static inline void iter_Vector_free(T)(cref_iter_Vector(T) value) \
     { \
-        (void)value; \
+        TEMPLATE_METHOD(Vector, free, T)((ref_Vector(T))&value->vector); \
     } \
     \
     static inline Vector(T) Vector_new(T)() \
@@ -424,7 +426,7 @@
     } \
     \
     static inline iter_Vector(T) Vector_into_iter(T)( \
-        cref_Vector(T) self) \
+        Vector(T) self) \
     { \
         return (iter_Vector(T)){.vector = self, .index = 0}; \
     } \
@@ -432,20 +434,20 @@
     static inline Result(ref(T), cref(Char)) iter_Vector_deref(T)( \
         cref_iter_Vector(T) self) \
     { \
-        if (self->index >= self->vector->size) \
+        if (self->index >= self->vector.size) \
         { \
             return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
         } \
-        return Result_ok(ref(T), cref(Char))(&(self->vector->data[self->index])); \
+        return Result_ok(ref(T), cref(Char))((ref(T))&(self->vector.data[self->index])); \
     } \
     \
     static inline Result(ref(T), cref(Char)) iter_Vector_next(T)(ref_iter_Vector(T) self) \
     { \
-        if (self->index >= self->vector->size) \
+        if (self->index >= self->vector.size) \
         { \
             return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
         } \
-        return Result_ok(ref(T), cref(Char))(&self->vector->data[self->index++]); \
+        return Result_ok(ref(T), cref(Char))(&self->vector.data[self->index++]); \
     } \
     RESULT_CONFIG(Vector(T), cref(Char)) \
     RESULT_CONFIG(ref(Vector(T)), cref(Char)) \

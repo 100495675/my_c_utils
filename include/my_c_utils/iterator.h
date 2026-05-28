@@ -41,10 +41,12 @@ Functions the containes has to implement to be iterable:
 // due to standard C preprocessor syntax limitations for control structures (cannot define macros inside macros or paste unclosed parentheses without compiler errors).
 
 #define for_each_ref_impl(ContainerT, var_name, iterable, state_var) \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable)) it; \
+    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable)) it; \
                   __typeof__(iter_next(ContainerT)(NULL)) res; \
-                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable), .active = true}; \
-         (state_var.active = true) && (state_var.res = iter_next(ContainerT)(&state_var.it), !state_var.res.is_error);) \
+                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable), .active = true}; \
+         (state_var.active = true) && \
+         (state_var.res = iter_next(ContainerT)(&state_var.it), \
+          !state_var.res.is_error ? true : (iter_free(ContainerT)(&state_var.it), false));) \
         for (__typeof__(state_var.res.value) var_name = state_var.res.value; \
              state_var.active; \
              state_var.active = false)
@@ -60,10 +62,12 @@ Functions the containes has to implement to be iterable:
     for_each_ref_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
 
 #define for_each_impl(ContainerT, var_name, iterable, state_var) \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable)) it; \
+    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable)) it; \
                   __typeof__(iter_next(ContainerT)(NULL)) res; \
-                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable), .active = true}; \
-         (state_var.active = true) && (state_var.res = iter_next(ContainerT)(&state_var.it), !state_var.res.is_error);) \
+                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable), .active = true}; \
+         (state_var.active = true) && \
+         (state_var.res = iter_next(ContainerT)(&state_var.it), \
+          !state_var.res.is_error ? true : (iter_free(ContainerT)(&state_var.it), false));) \
         for (__typeof__(*(state_var.res.value)) var_name = *(state_var.res.value); \
              state_var.active; \
              state_var.active = false)
@@ -94,6 +98,7 @@ Functions the containes has to implement to be iterable:
                 (void)MY_C_UTILS_CONCAT(DestContainerT, _push_back)(_d, _item); \
                 _res = iter_next(SrcContainerT)(&_s); \
             } \
+            iter_free(SrcContainerT)(&_s); \
         } \
         _collect_impl; \
     })
@@ -124,12 +129,13 @@ Functions the containes has to implement to be iterable:
     ({ \
         typedef __typeof__(*(iter_next(SrcContainerT)((iter(SrcContainerT)*)0).value)) _SrcT; \
         void _for_each_fn_impl(SrcContainerT* _c, void (*_f)(const _SrcT*)) { \
-            iter(SrcContainerT) _s = MY_C_UTILS_CONCAT(SrcContainerT, _into_iter)(_c); \
+            iter(SrcContainerT) _s = MY_C_UTILS_CONCAT(SrcContainerT, _into_iter)(*_c); \
             __typeof__(iter_next(SrcContainerT)(&_s)) _res = iter_next(SrcContainerT)(&_s); \
             while (!_res.is_error) { \
                 _f(_res.value); \
                 _res = iter_next(SrcContainerT)(&_s); \
             } \
+            iter_free(SrcContainerT)(&_s); \
         } \
         _for_each_fn_impl; \
     })
@@ -150,7 +156,7 @@ Functions the containes has to implement to be iterable:
     } iter_Mapped(SrcContainer, DestT); \
     \
     static inline void TEMPLATE_METHOD(iter_Mapped, free, SrcContainer, DestT)(const iter_Mapped(SrcContainer, DestT)* self) { \
-        (void)self; \
+        iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
     static inline Result(ref(DestT), cref(Char)) TEMPLATE_METHOD(iter_Mapped, next, SrcContainer, DestT)(iter_Mapped(SrcContainer, DestT)* self) { \
@@ -172,6 +178,43 @@ Functions the containes has to implement to be iterable:
         return Result_ok(ref(DestT), cref(Char))(&self_mut->current_value); \
     }
 
+#define Filtered(...) TEMPLATE_TYPE(Filtered, __VA_ARGS__)
+#define iter_Filtered(...) TEMPLATE_TYPE(iter_Filtered, __VA_ARGS__)
+
+/**
+ * @brief Configuration macro to instantiate a type-safe lazy filtering iterator.
+ * @param SrcContainer The source container type (e.g. Vector(Int)).
+ * @param T The element type of the container (e.g. Int).
+ */
+#define FILTERED_CONFIG(SrcContainer, T) \
+    typedef struct { \
+        iter(SrcContainer) source; \
+        bool (*predicate)(const T*); \
+    } iter_Filtered(SrcContainer); \
+    \
+    static inline void TEMPLATE_METHOD(iter_Filtered, free, SrcContainer)(const iter_Filtered(SrcContainer)* self) { \
+        iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Filtered, next, SrcContainer)(iter_Filtered(SrcContainer)* self) { \
+        __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
+        while (!res.is_error) { \
+            if (self->predicate(res.value)) { \
+                return Result_ok(ref(T), cref(Char))(res.value); \
+            } \
+            res = iter_next(SrcContainer)(&self->source); \
+        } \
+        return Result_err(ref(T), cref(Char))(res.error); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Filtered, deref, SrcContainer)(const iter_Filtered(SrcContainer)* self) { \
+        __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(T), cref(Char))(res.error); \
+        } \
+        return Result_ok(ref(T), cref(Char))(res.value); \
+    }
+
 /**
  * @brief Maps each element of an iterator lazily using a mapping function, returning a new Mapped iterator.
  * @param SrcContainer The source container type (e.g. Vector(Int)).
@@ -188,22 +231,15 @@ Functions the containes has to implement to be iterable:
     })
 
 /**
- * @brief Filters elements of a source iterator using a predicate and appends those that match to a destination container.
- * @param DestContainerT The destination container type (e.g. Vector(Int), List(Int)).
- * @param SrcContainerT The source container/iterator type (e.g. Vector(Int), List(Int)).
- * @usage filter(Vector(Int), List(Int))(&my_vec, my_list_iter, is_even)
+ * @brief Filters elements of an iterator lazily using a predicate function, returning a new Filtered iterator.
+ * @param SrcContainer The source container type (e.g. Vector(Int)).
+ * @usage filter(Vector(Int))(my_iter, predicate_func)
  */
-#define filter(DestContainerT, SrcContainerT) \
+#define filter(SrcContainer) \
     ({ \
-        typedef __typeof__(*(iter_next(SrcContainerT)((iter(SrcContainerT)*)0).value)) _SrcT; \
-        void _filter_impl(DestContainerT* _d, iter(SrcContainerT) _s, bool (*_predicate)(const _SrcT*)) { \
-            __typeof__(iter_next(SrcContainerT)(&_s)) _res = iter_next(SrcContainerT)(&_s); \
-            while (!_res.is_error) { \
-                if (_predicate(_res.value)) { \
-                    (void)MY_C_UTILS_CONCAT(DestContainerT, _push_back)(_d, *(_res.value)); \
-                } \
-                _res = iter_next(SrcContainerT)(&_s); \
-            } \
+        typedef __typeof__(*(iter_next(SrcContainer)((iter(SrcContainer)*)0).value)) _SrcT; \
+        iter_Filtered(SrcContainer) _filter_impl(iter(SrcContainer) _s, bool (*_predicate)(const _SrcT*)) { \
+            return (iter_Filtered(SrcContainer)){.source = _s, .predicate = _predicate}; \
         } \
         _filter_impl; \
     })
@@ -219,9 +255,7 @@ Functions the containes has to implement to be iterable:
     ({ \
         typedef __typeof__(*(iter_next(SrcContainerT)((iter(SrcContainerT)*)0).value)) _SrcT; \
         DestContainerT _filter_new_impl(iter(SrcContainerT) _s, bool (*_predicate)(const _SrcT*)) { \
-            DestContainerT _dest = MY_C_UTILS_CONCAT(DestContainerT, _new)(); \
-            filter(DestContainerT, SrcContainerT)(&_dest, _s, _predicate); \
-            return _dest; \
+            return collect_new(DestContainerT, Filtered(SrcContainerT))(filter(SrcContainerT)(_s, _predicate)); \
         } \
         _filter_new_impl; \
     })
@@ -242,6 +276,7 @@ Functions the containes has to implement to be iterable:
                 _acc = _f(_acc, _res.value); \
                 _res = iter_next(SrcContainerT)(&_s); \
             } \
+            iter_free(SrcContainerT)(&_s); \
             return _acc; \
         } \
         _fold_impl; \
@@ -259,10 +294,12 @@ Functions the containes has to implement to be iterable:
             __typeof__(iter_next(SrcContainerT)(&_s)) _res = iter_next(SrcContainerT)(&_s); \
             while (!_res.is_error) { \
                 if (_predicate(_res.value)) { \
+                    iter_free(SrcContainerT)(&_s); \
                     return true; \
                 } \
                 _res = iter_next(SrcContainerT)(&_s); \
             } \
+            iter_free(SrcContainerT)(&_s); \
             return false; \
         } \
         _any_impl; \
@@ -280,10 +317,12 @@ Functions the containes has to implement to be iterable:
             __typeof__(iter_next(SrcContainerT)(&_s)) _res = iter_next(SrcContainerT)(&_s); \
             while (!_res.is_error) { \
                 if (!_predicate(_res.value)) { \
+                    iter_free(SrcContainerT)(&_s); \
                     return false; \
                 } \
                 _res = iter_next(SrcContainerT)(&_s); \
             } \
+            iter_free(SrcContainerT)(&_s); \
             return true; \
         } \
         _all_impl; \

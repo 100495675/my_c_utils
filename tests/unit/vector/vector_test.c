@@ -27,7 +27,7 @@ Int main(void)
   assert(Result_is_ok(Void, cref(Char))(&r3));
 
   assert(Vector_size(Char)(&vector) == 3);
-  assert(char_count(vector) == 3);
+  assert(char_count(Vector_clone(Char)(&vector)) == 3);
 
   Result(ref_Char, cref(Char)) first = Vector_at(Char)(&vector, 0);
   assert(Result_is_ok(ref_Char, cref(Char))(&first));

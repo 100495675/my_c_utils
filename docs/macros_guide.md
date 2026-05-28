@@ -242,41 +242,50 @@ To facilitate inline anonymous function declaration without verbose nested funct
   }));
   ```
 
-### B. Element Mapping: `map` and `map_new`
-*Maps elements of a source container using a callback function or lambda.*
-* `map` appends mapped elements to an existing destination container.
-* `map_new` creates and populates a new destination container inline.
+### B. Element Mapping: `map`
+*Maps elements of a source iterator lazily using a mapping function or lambda, returning a lazy `Mapped` iterator.*
 
-* **Syntax**:
-  * `map(DestContainerT, SrcContainerT)(dest_ptr, src_iter, mapping_func)`
-  * `map_new(DestContainerT, SrcContainerT)(src_iter, mapping_func)`
-* **Example (with `lambda`)**:
+* **Syntax**: `map(SrcContainer, DestT)(src_iter, mapping_func)`
+* **Example (with lazy evaluation & collection)**:
   ```c
-  Vector(Int) my_vec = ...;
+  Vector(Int) my_vec = ...; // [10, 20, 30, 40]
   
-  // Create a new vector where each element is doubled
-  Vector(Int) doubled = map_new(Vector(Int), Vector(Int))(
-      Vector_into_iter(Int)(&my_vec),
-      lambda(Int, (const Int* x), { return *x * 2; })
+  // Create a lazy mapped iterator doubling each element
+  iter_Mapped(Vector(Int), Int) doubled_iter = map(Vector(Int), Int)(
+      Vector_into_iter(Int)(my_vec),
+      lambda(Int, (cref(Int) x), { return cref_deref(Int)(x) * 2; })
   );
+  
+  // Eagerly collect mapped elements into a new vector
+  Vector(Int) doubled = collect_new(Vector(Int), Mapped(Vector(Int), Int))(doubled_iter);
   ```
 
 ### C. Element Filtering: `filter` and `filter_new`
-*Filters elements of a source container using a predicate function or lambda.*
-* `filter` appends matching elements to an existing destination container.
-* `filter_new` creates and populates a new destination container inline.
+*Filters elements of an iterator lazily using a predicate function or lambda, returning a lazy `Filtered` iterator.*
+* `filter` returns a lazy `Filtered` iterator wrapper.
+* `filter_new` is an eager helper that constructs a new destination container, lazily filters, and populates it inline using `collect_new` under the hood.
 
 * **Syntax**:
-  * `filter(DestContainerT, SrcContainerT)(dest_ptr, src_iter, predicate)`
+  * `filter(SrcContainerT)(src_iter, predicate)`
   * `filter_new(DestContainerT, SrcContainerT)(src_iter, predicate)`
 * **Example (with `lambda`)**:
   ```c
-  Vector(Int) my_vec = ...;
+  Vector(Int) my_vec = ...; // [1, 2, 3, 4]
   
-  // Filter even elements into a new vector
+  // Filter even elements lazily
+  iter_Filtered(Vector(Int)) evens_iter = filter(Vector(Int))(
+      Vector_into_iter(Int)(Vector_clone(Int)(&my_vec)),
+      lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; })
+  );
+  
+  // Eagerly collect filtered elements into an existing vector
+  Vector(Int) filtered = Vector_new(Int)();
+  collect(Vector(Int), Filtered(Vector(Int)))(&filtered, evens_iter);
+  
+  // Alternatively, filter and collect inline using the eager filter_new helper
   Vector(Int) evens = filter_new(Vector(Int), Vector(Int))(
-      Vector_into_iter(Int)(&my_vec),
-      lambda(bool, (const Int* x), { return *x % 2 == 0; })
+      Vector_into_iter(Int)(my_vec),
+      lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; })
   );
   ```
 

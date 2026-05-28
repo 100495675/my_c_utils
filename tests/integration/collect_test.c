@@ -4,6 +4,7 @@
 VECTOR_CONFIG(Int)
 LINKED_LIST_CONFIG(Int)
 MAPPED_CONFIG(Vector(Int), Int)
+FILTERED_CONFIG(Vector(Int), Int)
 
 static Int fn_sum = 0;
 
@@ -31,7 +32,7 @@ int main(void)
     Result_free(Void, cref(Char))(&r3);
 
     Vector(Int) vec = Vector_new(Int)();
-    iter_List(Int) it = List_into_iter(Int)(&list);
+    iter_List(Int) it = List_into_iter(Int)(list);
 
     collect(Vector(Int), List(Int))(&vec, it);
 
@@ -50,7 +51,6 @@ int main(void)
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(v2)) == 30);
 
     Vector_free(Int)(&vec);
-    List_free(Int)(&list);
     printf("✓\n");
   }
 
@@ -69,7 +69,7 @@ int main(void)
     assert(Result_is_ok(Void, cref(Char))(&r2));
     Result_free(Void, cref(Char))(&r2);
 
-    iter_List(Int) it = List_into_iter(Int)(&list);
+    iter_List(Int) it = List_into_iter(Int)(list);
     Vector(Int) vec = collect_new(Vector(Int), List(Int))(it);
 
     assert(Vector_size(Int)(&vec) == 2);
@@ -83,7 +83,6 @@ int main(void)
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(v1)) == 25);
 
     Vector_free(Int)(&vec);
-    List_free(Int)(&list);
     printf("✓\n");
   }
 
@@ -103,20 +102,20 @@ int main(void)
     Result_free(Void, cref(Char))(&r2);
 
     List(Int) list = List_new(Int)();
-    iter_Vector(Int) it = Vector_into_iter(Int)(&vec);
+    iter_Vector(Int) it = Vector_into_iter(Int)(vec);
 
     collect(List(Int), Vector(Int))(&list, it);
 
     assert(List_size(Int)(&list) == 2);
 
     Int sum = 0;
-    for_each(List(Int), item, &list) {
+    List(Int) list_clone = List_clone(Int)(&list);
+    for_each(List(Int), item, &list_clone) {
       sum += item;
     }
     assert(sum == 300);
 
     List_free(Int)(&list);
-    Vector_free(Int)(&vec);
     printf("✓\n");
   }
 
@@ -135,19 +134,19 @@ int main(void)
     assert(Result_is_ok(Void, cref(Char))(&r2));
     Result_free(Void, cref(Char))(&r2);
 
-    iter_Vector(Int) it = Vector_into_iter(Int)(&vec);
+    iter_Vector(Int) it = Vector_into_iter(Int)(vec);
     List(Int) list = collect_new(List(Int), Vector(Int))(it);
 
     assert(List_size(Int)(&list) == 2);
 
     Int sum = 0;
-    for_each(List(Int), item, &list) {
+    List(Int) list_clone = List_clone(Int)(&list);
+    for_each(List(Int), item, &list_clone) {
       sum += item;
     }
     assert(sum == 3000);
 
     List_free(Int)(&list);
-    Vector_free(Int)(&vec);
     printf("✓\n");
   }
 
@@ -167,7 +166,7 @@ int main(void)
     Result_free(Void, cref(Char))(&r2);
 
     // Call collect_new passing List_into_iter directly!
-    Vector(Int) vec = collect_new(Vector(Int), List(Int))(List_into_iter(Int)(&list));
+    Vector(Int) vec = collect_new(Vector(Int), List(Int))(List_into_iter(Int)(list));
 
     assert(Vector_size(Int)(&vec) == 2);
     
@@ -180,7 +179,6 @@ int main(void)
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(v1)) == 80);
 
     Vector_free(Int)(&vec);
-    List_free(Int)(&list);
     printf("✓\n");
   }
 
@@ -200,7 +198,8 @@ int main(void)
     Result_free(Void, cref(Char))(&r2);
 
     Int sum = 0;
-    for_each(Vector(Int), item, &vec) {
+    Vector(Int) vec_clone = Vector_clone(Int)(&vec);
+    for_each(Vector(Int), item, &vec_clone) {
       sum += item;
     }
     assert(sum == 900);
@@ -211,7 +210,6 @@ int main(void)
     }
     assert(sum_ref == 900);
 
-    Vector_free(Int)(&vec);
     printf("✓\n");
   }
 
@@ -245,7 +243,7 @@ int main(void)
     (void)Vector_push_back(Int)(&vec_map, 3);
     (void)Vector_push_back(Int)(&vec_map, 4);
 
-    iter_Vector(Int) map_it = Vector_into_iter(Int)(&vec_map);
+    iter_Vector(Int) map_it = Vector_into_iter(Int)(vec_map);
     iter_Mapped(Vector(Int), Int) lazy_mapped = map(Vector(Int), Int)(map_it, lambda(Int, (cref(Int) x), { return cref_deref(Int)(x) * 2; }));
     
     // Original vector must be completely unchanged
@@ -257,11 +255,10 @@ int main(void)
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&vec_collected, 3))) == 8);
 
     Vector_free(Int)(&vec_collected);
-    Vector_free(Int)(&vec_map);
 
     // 3. Test filter
     Vector(Int) filtered_vec = Vector_new(Int)();
-    filter(Vector(Int), Vector(Int))(&filtered_vec, Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
+    collect(Vector(Int), Filtered(Vector(Int)))(&filtered_vec, filter(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; })));
     assert(Vector_size(Int)(&filtered_vec) == 2);
     Result(ref(Int), cref(Char)) fv0 = Vector_at(Int)(&filtered_vec, 0);
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(fv0)) == 2);
@@ -270,24 +267,24 @@ int main(void)
     Vector_free(Int)(&filtered_vec);
 
     // 4. Test filter_new
-    Vector(Int) filtered_vec_new = filter_new(Vector(Int), Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
+    Vector(Int) filtered_vec_new = filter_new(Vector(Int), Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
     assert(Vector_size(Int)(&filtered_vec_new) == 2);
     Vector_free(Int)(&filtered_vec_new);
 
     // 5. Test fold
-    Int sum = fold(Vector(Int), Int)(10, Vector_into_iter(Int)(&vec), lambda(Int, (Int acc, cref(Int) x), { return acc + cref_deref(Int)(x); }));
+    Int sum = fold(Vector(Int), Int)(10, Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(Int, (Int acc, cref(Int) x), { return acc + cref_deref(Int)(x); }));
     assert(sum == 20); // 10 + 1 + 2 + 3 + 4 = 20
 
     // 6. Test any
-    bool has_neg = any(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) < 0; }));
+    bool has_neg = any(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) < 0; }));
     assert(!has_neg);
-    bool has_even_val = any(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
+    bool has_even_val = any(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
     assert(has_even_val);
 
     // 7. Test all
-    bool all_pos = all(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 0; }));
+    bool all_pos = all(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 0; }));
     assert(all_pos);
-    bool all_even_val = all(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
+    bool all_even_val = all(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) % 2 == 0; }));
     assert(!all_even_val);
 
     // 8. Test for_each_fn
@@ -295,7 +292,6 @@ int main(void)
     for_each_fn(Vector(Int))(&vec, lambda(void, (cref(Int) x), { fn_sum += cref_deref(Int)(x); }));
     assert(fn_sum == 10); // 1 + 2 + 3 + 4 = 10
 
-    Vector_free(Int)(&vec);
     printf("✓\n");
   }
 

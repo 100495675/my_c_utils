@@ -180,9 +180,11 @@
   static inline void TEMPLATE_METHOD(ref_List, free, T)(ref_List(T) *value) { (void)value; } \
   static inline void TEMPLATE_METHOD(cref_List, free, T)(cref_List(T) *value) { (void)value; } \
   \
+  static inline void TEMPLATE_METHOD(List, free, T)(ref_List(T) self); \
+  \
   typedef struct \
   { \
-    cref_List(T) list; \
+    List(T) list; \
     TEMPLATE_TYPE(ref_Node, T) node; \
   } iter_List(T); \
   typedef iter_List(T) *ref_iter_List(T); \
@@ -191,7 +193,7 @@
   static inline void TEMPLATE_METHOD(cref_iter_List, free, T)(cref_iter_List(T) *value) { (void)value; } \
   static inline void iter_List_free(T)(cref_iter_List(T) value) \
   { \
-    (void)value; \
+    TEMPLATE_METHOD(List, free, T)((ref_List(T))&value->list); \
   } \
   \
   static inline List(T) List_new(T)() \
@@ -320,11 +322,11 @@
   } \
   \
   static inline iter_List(T) List_into_iter(T)( \
-      cref_List(T) self) \
+      List(T) self) \
   { \
     return (iter_List(T)){ \
         .list = self, \
-        .node = self->head}; \
+        .node = self.head}; \
   } \
   \
   static inline Result(ref(T), cref(Char)) iter_List_deref(T)( \

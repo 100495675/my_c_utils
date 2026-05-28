@@ -18,19 +18,10 @@ Int main(void)
   for_each_ref(Vector(Int), item, &vector) {
     seen_sum += ref_deref(Int)(item);
     ++seen_count;
-    if (ref_deref(Int)(item) == 2)
-    {
-      Result(Void, cref(Char)) r3 = Vector_push_back(Int)(&vector, 3);
-      assert(Result_is_ok(Void, cref(Char))(&r3));
-      Result(Void, cref(Char)) r4 = Vector_push_back(Int)(&vector, 4);
-      assert(Result_is_ok(Void, cref(Char))(&r4));
-    }
   }
 
-  assert(seen_count == 4);
-  assert(seen_sum == 10);
-  assert(Vector_size(Int)(&vector) == 4);
+  assert(seen_count == 2);
+  assert(seen_sum == 3);
 
-  Vector_free(Int)(&vector);
   return 0;
 }

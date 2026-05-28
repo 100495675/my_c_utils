@@ -21,14 +21,16 @@ Int main(void)
 
 
   Int sum_ref = 0;
-  for_each_ref(Vector(Int), item, &vector) {
+  Vector(Int) clone1 = Vector_clone(Int)(&vector);
+  for_each_ref(Vector(Int), item, &clone1) {
     sum_ref += ref_deref(Int)(item);
   }
   assert(sum_ref == 60);
   Int_free(&sum_ref);
 
   Int sum_copy = 0;
-  for_each(Vector(Int), item, &vector) {
+  Vector(Int) clone2 = Vector_clone(Int)(&vector);
+  for_each(Vector(Int), item, &clone2) {
     sum_copy += item;
   }
   assert(sum_copy == 60);
@@ -39,6 +41,5 @@ Int main(void)
   }
   assert(sum_compat == 60);
 
-  Vector_free(Int)(&vector);
   return 0;
 }

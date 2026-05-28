@@ -41,6 +41,5 @@ Int main(void)
   assert(count == 3);
   assert(sum == 6);
 
-  List_free(Int)(&ll);
   return 0;
 }

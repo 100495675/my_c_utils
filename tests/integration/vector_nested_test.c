@@ -12,8 +12,10 @@ static void assert_nested_iteration(const Vector(Vector(Int)) *outer,
   Size count = 0;
   Int sum = 0;
 
-  for_each_ref(Vector(Vector(Int)), inner, outer) {
-    for_each_ref(Vector(Int), item, inner) {
+  Vector(Vector(Int)) outer_clone = Vector_clone(Vector(Int))(outer);
+  for_each_ref(Vector(Vector(Int)), inner, &outer_clone) {
+    Vector(Int) inner_clone = Vector_clone(Int)(inner);
+    for_each_ref(Vector(Int), item, &inner_clone) {
       sum += ref_deref(Int)(item);
       ++count;
     }

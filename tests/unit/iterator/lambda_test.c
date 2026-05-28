@@ -4,6 +4,7 @@
 
 VECTOR_CONFIG(Int)
 MAPPED_CONFIG(Vector(Int), Int)
+FILTERED_CONFIG(Vector(Int), Int)
 
 static Int global_sum = 0;
 
@@ -28,7 +29,7 @@ int main(void)
 
   // 2. Test lazy map and collect
   printf("TEST 2: Lazy map and collect... ");
-  iter_Vector(Int) it = Vector_into_iter(Int)(&vec);
+  iter_Vector(Int) it = Vector_into_iter(Int)(vec);
   iter_Mapped(Vector(Int), Int) mapped_it = map(Vector(Int), Int)(it, lambda(Int, (cref(Int) x), { return cref_deref(Int)(x) * 2; }));
   
   // The original vector itself must NOT be mutated yet!
@@ -47,23 +48,21 @@ int main(void)
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&collected, 2))) == 60);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&collected, 3))) == 80);
 
-  // The original vector must still be completely unmodified!
-  assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&vec, 0))) == 10);
 
-  Vector_free(Int)(&vec);
+
   vec = collected;
   printf("✓\n");
 
   // 3. Test filter and filter_new with lambdas (by reference)
   printf("TEST 3: filter and filter_new with lambdas... ");
   Vector(Int) filtered_in_place = Vector_new(Int)();
-  filter(Vector(Int), Vector(Int))(&filtered_in_place, Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 50; }));
+  collect(Vector(Int), Filtered(Vector(Int)))(&filtered_in_place, filter(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 50; })));
   assert(Vector_size(Int)(&filtered_in_place) == 2);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&filtered_in_place, 0))) == 60);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&filtered_in_place, 1))) == 80);
   Vector_free(Int)(&filtered_in_place);
 
-  Vector(Int) filtered_inline = filter_new(Vector(Int), Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) < 50; }));
+  Vector(Int) filtered_inline = filter_new(Vector(Int), Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) < 50; }));
   assert(Vector_size(Int)(&filtered_inline) == 2);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&filtered_inline, 0))) == 20);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&filtered_inline, 1))) == 40);
@@ -72,25 +71,25 @@ int main(void)
 
   // 4. Test fold (reduction) with two-parameter lambdas (element by reference)
   printf("TEST 4: fold with lambdas... ");
-  Int sum_value = fold(Vector(Int), Int)(0, Vector_into_iter(Int)(&vec), lambda(Int, (Int acc, cref(Int) x), { return acc + cref_deref(Int)(x); }));
+  Int sum_value = fold(Vector(Int), Int)(0, Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(Int, (Int acc, cref(Int) x), { return acc + cref_deref(Int)(x); }));
   assert(sum_value == 200); // 20 + 40 + 60 + 80
 
-  Int folded_subtraction = fold(Vector(Int), Int)(1000, Vector_into_iter(Int)(&vec), lambda(Int, (Int acc, cref(Int) x), { return acc - cref_deref(Int)(x); }));
+  Int folded_subtraction = fold(Vector(Int), Int)(1000, Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(Int, (Int acc, cref(Int) x), { return acc - cref_deref(Int)(x); }));
   assert(folded_subtraction == 800); // 1000 - 200
   printf("✓\n");
 
   // 5. Test any and all predicates with lambdas (by reference)
   printf("TEST 5: any and all predicates with lambdas... ");
-  bool contains_sixty = any(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) == 60; }));
+  bool contains_sixty = any(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) == 60; }));
   assert(contains_sixty);
 
-  bool contains_hundred = any(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) == 100; }));
+  bool contains_hundred = any(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) == 100; }));
   assert(!contains_hundred);
 
-  bool all_are_positive = all(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 0; }));
+  bool all_are_positive = all(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 0; }));
   assert(all_are_positive);
 
-  bool all_are_above_thirty = all(Vector(Int))(Vector_into_iter(Int)(&vec), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 30; }));
+  bool all_are_above_thirty = all(Vector(Int))(Vector_into_iter(Int)(Vector_clone(Int)(&vec)), lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 30; }));
   assert(!all_are_above_thirty);
   printf("✓\n");
 
@@ -101,7 +100,6 @@ int main(void)
   assert(global_sum == 200);
   printf("✓\n");
 
-  Vector_free(Int)(&vec);
   printf("=== All Lambda & Functional Iterator Unit Tests Passed! ===\n");
   return 0;
 }

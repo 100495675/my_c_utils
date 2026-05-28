@@ -232,9 +232,11 @@
   static inline void TEMPLATE_METHOD(ref_Hashmap, free, K, V)(ref_Hashmap(K, V) * value) { (void)value; }             \
   static inline void TEMPLATE_METHOD(cref_Hashmap, free, K, V)(cref_Hashmap(K, V) * value) { (void)value; }           \
                                                                                                                       \
+  static inline void TEMPLATE_METHOD(Hashmap, free, K, V)(ref_Hashmap(K, V) self); \
+  \
   typedef struct                                                                                                      \
   {                                                                                                                   \
-    cref_Hashmap(K, V) map;                                                                                           \
+    Hashmap(K, V) map;                                                                                                \
     Size current_index;                                                                                               \
   } iter_Hashmap(K, V);                                                                                               \
   typedef iter_Hashmap(K, V) * ref_iter_Hashmap(K, V);                                                                \
@@ -243,7 +245,7 @@
   static inline void TEMPLATE_METHOD(cref_iter_Hashmap, free, K, V)(cref_iter_Hashmap(K, V) * value) { (void)value; } \
   static inline void iter_Hashmap_free(K, V)(cref_iter_Hashmap(K, V) value)                                           \
   {                                                                                                                   \
-    (void)value;                                                                                                      \
+    TEMPLATE_METHOD(Hashmap, free, K, V)((ref_Hashmap(K, V))&value->map);                                             \
   }                                                                                                                   \
                                                                                                                       \
   typedef struct                                                                                                      \
@@ -522,38 +524,38 @@
                                                                                                                       \
   static inline iter_Hashmap(K, V)                                                                                    \
       Hashmap_into_iter(K, V)(                                                                                        \
-          cref_Hashmap(K, V) self)                                                                                    \
+          Hashmap(K, V) self)                                                                                          \
   {                                                                                                                   \
-    Size first_index = Hashmap_seek_next(K, V)(self, 0);                                                              \
+    Size first_index = Hashmap_seek_next(K, V)(&self, 0);                                                             \
     return (iter_Hashmap(K, V)){.map = self,                                                                          \
                                 .current_index = first_index};                                                        \
   }                                                                                                                   \
-                                                                                                                      \
+                                                                                                                       \
   static inline Result(ref(V), cref(Char)) iter_Hashmap_deref(K, V)(                                                  \
       cref_iter_Hashmap(K, V) self)                                                                                   \
   {                                                                                                                   \
-    if (self->current_index >= self->map->capacity ||                                                                 \
-        !self->map->data[self->current_index].filled)                                                                 \
+    if (self->current_index >= self->map.capacity ||                                                                  \
+        !self->map.data[self->current_index].filled)                                                                  \
     {                                                                                                                 \
       return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
     }                                                                                                                 \
     return Result_ok(ref(V), cref(Char))(                                                                             \
-        &self->map->data[self->current_index].value);                                                                 \
+        (ref(V))&self->map.data[self->current_index].value);                                                           \
   }                                                                                                                   \
                                                                                                                        \
   static inline Result(ref(V), cref(Char)) iter_Hashmap_next(K, V)(                                                   \
       ref_iter_Hashmap(K, V) self)                                                                                    \
   {                                                                                                                   \
-    if (self->current_index >= self->map->capacity ||                                                                 \
-        !self->map->data[self->current_index].filled)                                                                 \
+    if (self->current_index >= self->map.capacity ||                                                                  \
+        !self->map.data[self->current_index].filled)                                                                  \
     {                                                                                                                 \
       return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
     }                                                                                                                 \
     Size cur = self->current_index;                                                                                   \
     self->current_index =                                                                                             \
-        Hashmap_seek_next(K, V)(self->map,                                                                            \
+        Hashmap_seek_next(K, V)(&self->map,                                                                           \
                                 self->current_index + 1);                                                             \
-    return Result_ok(ref(V), cref(Char))(&self->map->data[cur].value);                                                \
+    return Result_ok(ref(V), cref(Char))(&self->map.data[cur].value);                                                 \
   }                                                                                                                   \
   RESULT_CONFIG(Hashmap(K, V), cref(Char))                                                                             \
   RESULT_CONFIG(ref(Hashmap(K, V)), cref(Char)) \

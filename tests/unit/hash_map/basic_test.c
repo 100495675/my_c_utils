@@ -12,7 +12,8 @@ static void assert_map_iteration(Hashmap(String, Int) *hm,
   Size count = 0;
   Int sum = 0;
 
-  for_each_ref(Hashmap(String, Int), item, hm) {
+  Hashmap(String, Int) hm_clone = Hashmap_clone(String, Int)(hm);
+  for_each_ref(Hashmap(String, Int), item, &hm_clone) {
     sum += ref_deref(Int)(item);
     ++count;
   }
