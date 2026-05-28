@@ -237,8 +237,8 @@ To facilitate inline anonymous function declaration without verbose nested funct
 * **Example (with `lambda`)**:
   ```c
   Vector(Int) my_vec = ...;
-  for_each_fn(Vector(Int))(&my_vec, lambda(void, (Int x), {
-      printf("Value: %d\n", x);
+  for_each_fn(Vector(Int))(&my_vec, lambda(void, (const Int* x), {
+      printf("Value: %d\n", *x);
   }));
   ```
 
@@ -257,7 +257,7 @@ To facilitate inline anonymous function declaration without verbose nested funct
   // Create a new vector where each element is doubled
   Vector(Int) doubled = map_new(Vector(Int), Vector(Int))(
       Vector_into_iter(Int)(&my_vec),
-      lambda(Int, (Int x), { return x * 2; })
+      lambda(Int, (const Int* x), { return *x * 2; })
   );
   ```
 
@@ -276,7 +276,7 @@ To facilitate inline anonymous function declaration without verbose nested funct
   // Filter even elements into a new vector
   Vector(Int) evens = filter_new(Vector(Int), Vector(Int))(
       Vector_into_iter(Int)(&my_vec),
-      lambda(bool, (Int x), { return x % 2 == 0; })
+      lambda(bool, (const Int* x), { return *x % 2 == 0; })
   );
   ```
 
@@ -292,7 +292,7 @@ To facilitate inline anonymous function declaration without verbose nested funct
   Int sum = fold(Vector(Int), Int)(
       100, 
       Vector_into_iter(Int)(&my_vec),
-      lambda(Int, (Int acc, Int x), { return acc + x; })
+      lambda(Int, (Int acc, const Int* x), { return acc + *x; })
   );
   ```
 
@@ -310,7 +310,7 @@ To facilitate inline anonymous function declaration without verbose nested funct
   
   bool has_negative = any(Vector(Int))(
       Vector_into_iter(Int)(&my_vec),
-      lambda(bool, (Int x), { return x < 0; })
+      lambda(bool, (const Int* x), { return *x < 0; })
   );
   ```
 
