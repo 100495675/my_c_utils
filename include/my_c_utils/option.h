@@ -77,6 +77,38 @@
  */
 #define Option_free(...)    TEMPLATE_METHOD(Option, free, __VA_ARGS__)
 
+/**
+ * @brief Maps an Option(T) to Option(U) by applying a function to the contained value.
+ * @param T Source type.
+ * @param U Destination type.
+ * @param self The Option(T) instance.
+ * @param fn Mapping function U (*fn)(T).
+ * @returns Option(U)
+ * @usage Option_map(Int, Double)(opt, int_to_double)
+ */
+#define Option_map(...)      TEMPLATE_METHOD(Option, map, __VA_ARGS__)
+
+/**
+ * @brief Applies a function returning Option(U) to the contained value of Option(T).
+ * @param T Source type.
+ * @param U Destination type.
+ * @param self The Option(T) instance.
+ * @param fn Monadic function Option(U) (*fn)(T).
+ * @returns Option(U)
+ * @usage Option_and_then(Int, Double)(opt, int_to_opt_double)
+ */
+#define Option_and_then(...) TEMPLATE_METHOD(Option, and_then, __VA_ARGS__)
+
+/**
+ * @brief Returns the contained value or a default value.
+ * @param T Element type.
+ * @param self The Option(T) instance.
+ * @param default_value Default value to return if empty.
+ * @returns T
+ * @usage Int val = Option_unwrap_or(Int)(opt, 0)
+ */
+#define Option_unwrap_or(...) TEMPLATE_METHOD(Option, unwrap_or, __VA_ARGS__)
+
 // Backward compatibility alias for the manual OPTION_CONFIG
 #define OPTION_CONFIG(T) TEMPLATE_Option(T)
 
@@ -128,6 +160,29 @@
         { \
             MY_C_UTILS_CONCAT(T, _free)(&self->value); \
         } \
+    } \
+    \
+    static inline T Option_unwrap_or(T)(Option(T) self, T default_value) \
+    { \
+        return self.filled ? self.value : default_value; \
+    }
+
+#define OPTION_MAP_CONFIG(T, U) \
+    static inline Option(U) TEMPLATE_METHOD(Option, map, T, U)(Option(T) self, U (*fn)(T)) \
+    { \
+        if (self.filled) { \
+            return Option_some(U)(fn(self.value)); \
+        } \
+        return Option_none(U)(); \
+    }
+
+#define OPTION_AND_THEN_CONFIG(T, U) \
+    static inline Option(U) TEMPLATE_METHOD(Option, and_then, T, U)(Option(T) self, Option(U) (*fn)(T)) \
+    { \
+        if (self.filled) { \
+            return fn(self.value); \
+        } \
+        return Option_none(U)(); \
     }
 
 #endif

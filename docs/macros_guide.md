@@ -108,6 +108,11 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 * **Is Some**: `Option_is_some(T)(&opt)` (returns `Bool`)
 * **Is None**: `Option_is_none(T)(&opt)` (returns `Bool`)
 * **Unwrap**: `Option_unwrap(T)(opt)` (returns `T` or aborts with panic if None)
+* **Unwrap Or (Default)**: `Option_unwrap_or(T)(opt, default_value)` (returns `T`)
+* **Map**: `Option_map(T, U)(opt, mapping_fn)` (returns `Option(U)`)
+  * *Note: Requires `OPTION_MAP_CONFIG(T, U)` instantiation.*
+* **And Then (Flat Map)**: `Option_and_then(T, U)(opt, monadic_fn)` (returns `Option(U)`)
+  * *Note: Requires `OPTION_AND_THEN_CONFIG(T, U)` instantiation.*
 * **Free**: `Option_free(T)(&opt)`
 
 ### B. Result (`Result_##T_##E`)
@@ -120,6 +125,11 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 * **Is Err**: `Result_is_err(T, E)(&res)` (returns `Bool`)
 * **Unwrap**: `Result_unwrap(T, E)(res)` (returns `T` or panics if Err)
 * **Unwrap Error**: `Result_unwrap_err(T, E)(res)` (returns `E` or panics if Ok)
+* **Unwrap Or (Default)**: `Result_unwrap_or(T, E)(res, default_value)` (returns `T`)
+* **Map**: `Result_map(T, E, U)(res, mapping_fn)` (returns `Result(U, E)`)
+  * *Note: Requires `RESULT_MAP_CONFIG(T, E, U)` instantiation.*
+* **And Then (Flat Map)**: `Result_and_then(T, E, U)(res, monadic_fn)` (returns `Result(U, E)`)
+  * *Note: Requires `RESULT_AND_THEN_CONFIG(T, E, U)` instantiation.*
 * **Free**: `Result_free(T, E)(&res)`
 
 ---
