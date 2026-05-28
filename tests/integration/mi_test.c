@@ -9,10 +9,6 @@ STRUCT_CONFIG(Sub_dato,
               Int, numero,
               Vector(Char), texto)
 
-Sub_dato Sub_dato_new(Int numero, Vector(Char) texto)
-{
-  return (Sub_dato){.numero = numero, .texto = texto};
-}
 
 BOX_CONFIG(Sub_dato)
 
@@ -20,10 +16,6 @@ STRUCT_CONFIG(Mi_struct,
               Box(Sub_dato), dato,
               Int, otro_numero)
 
-Mi_struct Mi_struct_new(Box(Sub_dato) dato, Int otro_numero)
-{
-  return (Mi_struct){.dato = dato, .otro_numero = otro_numero};
-}
 
 VECTOR_CONFIG(Mi_struct)
 

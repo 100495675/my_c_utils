@@ -8,6 +8,7 @@
 #define cref_Point(...) TEMPLATE_TYPE(cref_Point, __VA_ARGS__)
 #define Point_free(...) TEMPLATE_METHOD(Point, free, __VA_ARGS__)
 #define Point_clone(...) TEMPLATE_METHOD(Point, clone, __VA_ARGS__)
+#define Point_new(...) TEMPLATE_METHOD(Point, new, __VA_ARGS__)
 
 // 2. Definimos la plantilla genérica usando STRUCT_CONFIG
 #define TEMPLATE_Point(T)   \
@@ -20,8 +21,8 @@ TEMPLATE_CONFIG(Point, Int);
 TEMPLATE_CONFIG(Point, Double);
 
 Int main(){
-    Point(Int) p1 = {.x = 3, .y = 4};
-    Point(Double) p2 = {.x = 1.5, .y = 2.5};
+    Point(Int) p1 = Point_new(Int)(3, 4);
+    Point(Double) p2 = Point_new(Double)(1.5, 2.5);
 
     printf("Point<Int>: (%d, %d)\n", p1.x, p1.y);
     printf("Point<Double>: (%.2f, %.2f)\n", p2.x, p2.y);

@@ -61,9 +61,38 @@
                             Macro(T7, N7)                                                                     \
                                 Macro(T8, N8)
 
+#define MY_C_UTILS_FOR_EACH_PARAM_0(Macro, ...)
+#define MY_C_UTILS_FOR_EACH_PARAM_2(Macro, T1, N1) Macro(T1, N1)
+#define MY_C_UTILS_FOR_EACH_PARAM_4(Macro, T1, N1, T2, N2) \
+    Macro(T1, N1), Macro(T2, N2)
+#define MY_C_UTILS_FOR_EACH_PARAM_6(Macro, T1, N1, T2, N2, T3, N3) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3)
+#define MY_C_UTILS_FOR_EACH_PARAM_8(Macro, T1, N1, T2, N2, T3, N3, T4, N4) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3), Macro(T4, N4)
+#define MY_C_UTILS_FOR_EACH_PARAM_10(Macro, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3), Macro(T4, N4), Macro(T5, N5)
+#define MY_C_UTILS_FOR_EACH_PARAM_12(Macro, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3), Macro(T4, N4), Macro(T5, N5), Macro(T6, N6)
+#define MY_C_UTILS_FOR_EACH_PARAM_14(Macro, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3), Macro(T4, N4), Macro(T5, N5), Macro(T6, N6), Macro(T7, N7)
+#define MY_C_UTILS_FOR_EACH_PARAM_16(Macro, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) \
+    Macro(T1, N1), Macro(T2, N2), Macro(T3, N3), Macro(T4, N4), Macro(T5, N5), Macro(T6, N6), Macro(T7, N7), Macro(T8, N8)
+
+#define MY_C_UTILS_FOR_EACH_PARAM(Macro, ...) \
+    MY_C_UTILS_PP_CAT(MY_C_UTILS_FOR_EACH_PARAM_, MY_C_UTILS_NARGS(__VA_ARGS__))(Macro, __VA_ARGS__)
+
+#define MY_C_UTILS_STRUCT_PARAM_DECLARE(FieldT, FieldName) FieldT FieldName
+#define MY_C_UTILS_STRUCT_MEMBER_ASSIGN(FieldT, FieldName) .FieldName = FieldName
+
 #define MY_C_UTILS_STRUCT_FIELD_DECLARE(FieldT, FieldName) FieldT FieldName;
 #define MY_C_UTILS_STRUCT_FIELD_FREE(FieldT, FieldName) MY_C_UTILS_CONCAT(FieldT, _free)(&self->FieldName);
 #define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldT, FieldName) dest.FieldName = MY_C_UTILS_CONCAT(FieldT, _clone)(&src->FieldName);
+
+#define NEW_CONFIG(T, ...) \
+    static inline T MY_C_UTILS_CONCAT(T, _new)(MY_C_UTILS_FOR_EACH_PARAM(MY_C_UTILS_STRUCT_PARAM_DECLARE, __VA_ARGS__)) \
+    { \
+        return (T){ MY_C_UTILS_FOR_EACH_PARAM(MY_C_UTILS_STRUCT_MEMBER_ASSIGN, __VA_ARGS__) }; \
+    }
 
 #define FREE_CONFIG(T, ...)                                                 \
     static inline void MY_C_UTILS_CONCAT(T, _free)(ref(T) self)         \
@@ -95,6 +124,7 @@
     FREE_CONFIG(T, __VA_ARGS__)                                                \
     RESULT_CONFIG(T, cref(Char))                                                \
     RESULT_CONFIG(ref(T), cref(Char))                                          \
-    CLONE_CONFIG(T, __VA_ARGS__)
+    CLONE_CONFIG(T, __VA_ARGS__)                                               \
+    NEW_CONFIG(T, __VA_ARGS__)
 
 #endif

@@ -20,9 +20,6 @@ VECTOR_CONFIG(Int)
 #define TEMPLATE_Stack(T) \
     STRUCT_CONFIG(Stack(T), \
                   Vector(T), items) \
-    static inline Stack(T) Stack_new(T)() { \
-        return (Stack(T)){.items = Vector_new(T)()}; \
-    } \
     static inline Result(Void, cref_Char) Stack_push(T)(ref_Stack(T) self, T value) { \
         return Vector_push_back(T)(&self->items, value); \
     } \
@@ -37,7 +34,7 @@ int main(void) {
     printf("=== Template Engine Unit Tests ===\n\n");
 
     // Test 1: Stack<Int> wrapping Vector<Int>
-    Stack(Int) stack = Stack_new(Int)();
+    Stack(Int) stack = Stack_new(Int)(Vector_new(Int)());
     
     Result(Void, cref_Char) r_push1 = Stack_push(Int)(&stack, 100);
     assert(Result_is_ok(Void, cref_Char)(&r_push1));
