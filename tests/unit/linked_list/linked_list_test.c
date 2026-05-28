@@ -34,7 +34,7 @@ Int main(void)
   Int sum = 0;
   Size count = 0;
   for_each_ref(List(Int), item, &ll) {
-    sum += *item;
+    sum += ref_deref(Int)(item);
     ++count;
   }
 

@@ -9,8 +9,8 @@
 
 #define PRIMITIVE_CONFIG(T)           \
 	TRIVIAL_FREE(T) \
-	RESULT_CONFIG(T, cref_Char)                  \
-	RESULT_CONFIG(ref_##T, cref_Char)            \
+	RESULT_CONFIG(T, cref(Char))                  \
+	RESULT_CONFIG(ref(T), cref(Char))            \
 	TRIVIAL_CLONE(T)                  \
 	PRIMITIVE_HASH_EQUALS(T)
 

@@ -14,34 +14,185 @@
 
 #define DEFAULT_LOAD_FACTOR 0.75
 
-// 1. User-Facing Macros (Prefix-free, template-compatible)
+/**
+ * @brief Represents a generic owning hash map using open addressing and Robin Hood collision resolution.
+ * @usage Hashmap(K, V)
+ */
 #define Hashmap(...) TEMPLATE_TYPE(Hashmap, __VA_ARGS__)
+
+/**
+ * @brief Mutable borrowed pointer reference to Hashmap(K, V).
+ * @usage ref_Hashmap(K, V)
+ */
 #define ref_Hashmap(...) TEMPLATE_TYPE(ref_Hashmap, __VA_ARGS__)
+
+/**
+ * @brief Immutable borrowed pointer reference to Hashmap(K, V).
+ * @usage cref_Hashmap(K, V)
+ */
 #define cref_Hashmap(...) TEMPLATE_TYPE(cref_Hashmap, __VA_ARGS__)
 
+/**
+ * @brief Represents a generic iterator for Hashmap(K, V).
+ * @usage iter_Hashmap(K, V)
+ */
 #define iter_Hashmap(...) TEMPLATE_TYPE(iter_Hashmap, __VA_ARGS__)
+
+/**
+ * @brief Mutable reference to a hash map iterator.
+ */
 #define ref_iter_Hashmap(...) TEMPLATE_TYPE(ref_iter_Hashmap, __VA_ARGS__)
+
+/**
+ * @brief Immutable reference to a hash map iterator.
+ */
 #define cref_iter_Hashmap(...) TEMPLATE_TYPE(cref_iter_Hashmap, __VA_ARGS__)
 
+/**
+ * @brief Represents an internal key-value entry in Hashmap.
+ * @usage Entry(K, V)
+ */
 #define Entry(...) TEMPLATE_TYPE(Entry, __VA_ARGS__)
+
+/**
+ * @brief Mutable reference to a hash map entry.
+ */
 #define ref_Entry(...) TEMPLATE_TYPE(ref_Entry, __VA_ARGS__)
+
+/**
+ * @brief Immutable reference to a hash map entry.
+ */
 #define cref_Entry(...) TEMPLATE_TYPE(cref_Entry, __VA_ARGS__)
 
+/**
+ * @brief Constructs a new, empty Hashmap with the specified initial bucket count.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param initial_capacity The initial number of buckets (e.g. 4, 8, 16).
+ * @returns Hashmap(K, V)
+ * @usage Hashmap(String, Int) map = Hashmap_new(String, Int)(4);
+ */
 #define Hashmap_new(...) TEMPLATE_METHOD(Hashmap, new, __VA_ARGS__)
+
+/**
+ * @brief Inserts or updates a key-value pair in the Hashmap.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance (&my_map).
+ * @param key The key of type K to add (ownership is transferred to map).
+ * @param value The value of type V to add (copied into map).
+ * @returns Result(Void, cref_Char)
+ * @usage Hashmap_add(String, Int)(&my_map, string_dup("key"), 100);
+ */
 #define Hashmap_add(...) TEMPLATE_METHOD(Hashmap, add, __VA_ARGS__)
+
+/**
+ * @brief Destroys the Hashmap, freeing all populated keys, values, and bucket storage.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @usage Hashmap_free(String, Int)(&my_map);
+ */
 #define Hashmap_free(...) TEMPLATE_METHOD(Hashmap, free, __VA_ARGS__)
+
+/**
+ * @brief Retrieves a borrowed pointer (ref(V)) to the value associated with the key.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @param key The search key of type K.
+ * @returns Result(ref(V), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&my_map, "key");
+ */
 #define Hashmap_get(...) TEMPLATE_METHOD(Hashmap, get, __VA_ARGS__)
+
+/**
+ * @brief Retrieves a mutable borrowed pointer (ref(V)) to the value associated with the key.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @param key The search key of type K.
+ * @returns Result(ref(V), cref_Char)
+ * @usage *Result_unwrap(ref_Int, ...)(Hashmap_get_mut(String, Int)(&my_map, "key")) = 999;
+ */
 #define Hashmap_get_mut(...) TEMPLATE_METHOD(Hashmap, get_mut, __VA_ARGS__)
+
+/**
+ * @brief Removes the entry for the key, and returns its owned value.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @param key The key to pop.
+ * @returns Result(V, cref_Char)
+ * @usage Result(Int, cref_Char) popped = Hashmap_pop(String, Int)(&my_map, "key");
+ */
 #define Hashmap_pop(...) TEMPLATE_METHOD(Hashmap, pop, __VA_ARGS__)
+
+/**
+ * @brief Checks if the Hashmap contains the specified key.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @param key The search key of type K.
+ * @returns Bool
+ * @usage Bool exists = Hashmap_contains(String, Int)(&my_map, "key");
+ */
 #define Hashmap_contains(...) TEMPLATE_METHOD(Hashmap, contains, __VA_ARGS__)
+
+/**
+ * @brief Removes the entry associated with the key, destroying its key and value.
+ * @param K The Key type.
+ * @param V The Value type.
+ * @param self Pointer to the Hashmap instance.
+ * @param key The key to remove.
+ * @usage Hashmap_remove(String, Int)(&my_map, "key");
+ */
 #define Hashmap_remove(...) TEMPLATE_METHOD(Hashmap, remove, __VA_ARGS__)
+
+/**
+ * @brief Returns map statistics (size, capacity, load factor).
+ * @returns HashmapStats
+ * @usage HashmapStats stats = Hashmap_stats(String, Int)(&my_map);
+ */
 #define Hashmap_stats(...) TEMPLATE_METHOD(Hashmap, stats, __VA_ARGS__)
+
+/**
+ * @brief Prints debug information about the Hashmap buckets.
+ */
 #define Hashmap_debug(...) TEMPLATE_METHOD(Hashmap, debug, __VA_ARGS__)
+
+/**
+ * @brief Creates an iterator starting at the first bucket of the map.
+ * @returns iter_Hashmap(K, V)
+ * @usage iter_Hashmap(String, Int) it = Hashmap_into_iter(String, Int)(&my_map);
+ */
 #define Hashmap_into_iter(...) TEMPLATE_METHOD(Hashmap, into_iter, __VA_ARGS__)
+
+/**
+ * @brief Clones the Hashmap, creating a completely independent deep copy.
+ * @returns Hashmap(K, V)
+ * @usage Hashmap(String, Int) cloned = Hashmap_clone(String, Int)(&my_map);
+ */
 #define Hashmap_clone(...) TEMPLATE_METHOD(Hashmap, clone, __VA_ARGS__)
 
+/**
+ * @brief Returns the value (ref(V)) of the current populated entry in the iterator.
+ * @returns Result(ref(V), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_Hashmap_deref(String, Int)(&it);
+ */
 #define iter_Hashmap_deref(...) TEMPLATE_METHOD(iter_Hashmap, deref, __VA_ARGS__)
+
+/**
+ * @brief Advances the iterator to the next populated entry.
+ * @returns Result(ref(V), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_Hashmap_next(String, Int)(&it);
+ */
 #define iter_Hashmap_next(...) TEMPLATE_METHOD(iter_Hashmap, next, __VA_ARGS__)
+
+/**
+ * @brief Destroys and cleans up the iterator.
+ * @usage iter_Hashmap_free(String, Int)(&it);
+ */
 #define iter_Hashmap_free(...) TEMPLATE_METHOD(iter_Hashmap, free, __VA_ARGS__)
 
 #define Hashmap_insert_entry(...) TEMPLATE_METHOD(Hashmap, insert_entry, __VA_ARGS__)
@@ -272,25 +423,25 @@
     self->capacity = 0;                                                                                               \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(ref_##V, cref_Char) Hashmap_get(K, V)(                                                         \
+  static inline Result(ref(V), cref(Char)) Hashmap_get(K, V)(                                                         \
       ref_Hashmap(K, V) self, K key)                                                                                  \
   {                                                                                                                   \
     Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
     if (index < self->capacity)                                                                                       \
     {                                                                                                                 \
-      return Result_ok(ref_##V, cref_Char)(&self->data[index].value);                                                 \
+      return Result_ok(ref(V), cref(Char))(&self->data[index].value);                                                 \
     }                                                                                                                 \
-    return Result_err(ref_##V, cref_Char)("no existe elemento con esa Key");                                          \
+    return Result_err(ref(V), cref(Char))("no existe elemento con esa Key");                                          \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(ref_##V, cref_Char) Hashmap_get_mut(K, V)(                                                     \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
+  static inline Result(ref(V), cref_Char) Hashmap_get_mut(K, V)(                                                      \
+      ref(Hashmap(K, V)) self, K key)                                                                                  \
   {                                                                                                                   \
     return Hashmap_get(K, V)(self, key);                                                                              \
   }                                                                                                                   \
                                                                                                                       \
   static inline Result(V, cref_Char) Hashmap_pop(K, V)(                                                               \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
+      ref(Hashmap(K, V)) self, K key)                                                                                  \
   {                                                                                                                   \
     Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
     if (index < self->capacity)                                                                                       \
@@ -378,34 +529,34 @@
                                 .current_index = first_index};                                                        \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(ref_##V, cref_Char) iter_Hashmap_deref(K, V)(                                                  \
+  static inline Result(ref(V), cref(Char)) iter_Hashmap_deref(K, V)(                                                  \
       cref_iter_Hashmap(K, V) self)                                                                                   \
   {                                                                                                                   \
     if (self->current_index >= self->map->capacity ||                                                                 \
         !self->map->data[self->current_index].filled)                                                                 \
     {                                                                                                                 \
-      return Result_err(ref_##V, cref_Char)("Iterator out of bounds");                                                \
+      return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
     }                                                                                                                 \
-    return Result_ok(ref_##V, cref_Char)(                                                                             \
+    return Result_ok(ref(V), cref(Char))(                                                                             \
         &self->map->data[self->current_index].value);                                                                 \
   }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(ref_##V, cref_Char) iter_Hashmap_next(K, V)(                                                   \
+                                                                                                                       \
+  static inline Result(ref(V), cref(Char)) iter_Hashmap_next(K, V)(                                                   \
       ref_iter_Hashmap(K, V) self)                                                                                    \
   {                                                                                                                   \
     if (self->current_index >= self->map->capacity ||                                                                 \
         !self->map->data[self->current_index].filled)                                                                 \
     {                                                                                                                 \
-      return Result_err(ref_##V, cref_Char)("Iterator out of bounds");                                                \
+      return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
     }                                                                                                                 \
     Size cur = self->current_index;                                                                                   \
     self->current_index =                                                                                             \
         Hashmap_seek_next(K, V)(self->map,                                                                            \
                                 self->current_index + 1);                                                             \
-    return Result_ok(ref_##V, cref_Char)(&self->map->data[cur].value);                                                \
+    return Result_ok(ref(V), cref(Char))(&self->map->data[cur].value);                                                \
   }                                                                                                                   \
-  RESULT_CONFIG(Hashmap(K, V), cref_Char)                                                                             \
-  RESULT_CONFIG(ref_Hashmap(K, V), cref_Char)                                                                         \
+  RESULT_CONFIG(Hashmap(K, V), cref(Char))                                                                             \
+  RESULT_CONFIG(ref(Hashmap(K, V)), cref(Char)) \
   static inline Hashmap(K, V) Hashmap_clone(K, V)(                                                                    \
       cref_Hashmap(K, V) self)                                                                                        \
   {                                                                                                                   \

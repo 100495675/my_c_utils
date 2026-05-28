@@ -12,34 +12,205 @@
 #include "my_c_utils/primitives.h"
 #include "my_c_utils/template.h"
 
-// 1. User-Facing Macros (Prefix-free, template-engine compatible)
+/**
+ * @brief Represents a generic, owning dynamic array that grows automatically.
+ * @usage Vector(T)
+ */
 #define Vector(...) TEMPLATE_TYPE(Vector, __VA_ARGS__)
+
+/**
+ * @brief Mutable borrowed pointer reference to Vector(T).
+ * @usage ref_Vector(T)
+ */
 #define ref_Vector(...) TEMPLATE_TYPE(ref_Vector, __VA_ARGS__)
+
+/**
+ * @brief Immutable borrowed pointer reference to Vector(T).
+ * @usage cref_Vector(T)
+ */
 #define cref_Vector(...) TEMPLATE_TYPE(cref_Vector, __VA_ARGS__)
 
+/**
+ * @brief Represents a generic iterator for Vector(T).
+ * @usage iter_Vector(T)
+ */
 #define iter_Vector(...) TEMPLATE_TYPE(iter_Vector, __VA_ARGS__)
+
+/**
+ * @brief Mutable reference to a vector iterator.
+ */
 #define ref_iter_Vector(...) TEMPLATE_TYPE(ref_iter_Vector, __VA_ARGS__)
+
+/**
+ * @brief Immutable reference to a vector iterator.
+ */
 #define cref_iter_Vector(...) TEMPLATE_TYPE(cref_iter_Vector, __VA_ARGS__)
 
+/**
+ * @brief Constructs a new, empty dynamic Vector.
+ * @param T The type of the elements.
+ * @returns Vector(T)
+ * @usage Vector(Int) vec = Vector_new(Int)();
+ */
 #define Vector_new(...)          TEMPLATE_METHOD(Vector, new, __VA_ARGS__)
+
+/**
+ * @brief Appends an element to the end of the Vector.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param value The value of type T to append (copied into Vector).
+ * @returns Result(Void, cref_Char)
+ * @usage Result(Void, cref_Char) r = Vector_push_back(Int)(&my_vec, 42);
+ */
 #define Vector_push_back(...)    TEMPLATE_METHOD(Vector, push_back, __VA_ARGS__)
+
+/**
+ * @brief Borrows an element at the specified index.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param index The target index.
+ * @returns Result(ref(T), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = Vector_at(Int)(&my_vec, 0);
+ */
 #define Vector_at(...)           TEMPLATE_METHOD(Vector, at, __VA_ARGS__)
+
+/**
+ * @brief Returns the current number of elements stored in the Vector.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @returns Size
+ * @usage Size size = Vector_size(Int)(&my_vec);
+ */
 #define Vector_size(...)         TEMPLATE_METHOD(Vector, size, __VA_ARGS__)
+
+/**
+ * @brief Updates/replaces the element at the specified index.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param index The target index.
+ * @param value The new value of type T to assign (overwriting the old one).
+ * @returns Result(Void, cref_Char)
+ * @usage Vector_set(Int)(&my_vec, 0, 999);
+ */
 #define Vector_set(...)          TEMPLATE_METHOD(Vector, set, __VA_ARGS__)
+
+/**
+ * @brief Clears the Vector, destroying all elements and setting size to 0.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @usage Vector_clear(Int)(&my_vec);
+ */
 #define Vector_clear(...)        TEMPLATE_METHOD(Vector, clear, __VA_ARGS__)
+
+/**
+ * @brief Destroys the Vector, freeing its underlying memory and destroying all elements.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @usage Vector_free(Int)(&my_vec);
+ */
 #define Vector_free(...)         TEMPLATE_METHOD(Vector, free, __VA_ARGS__)
+
+/**
+ * @brief Reserves memory to guarantee a minimum capacity.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param capacity The desired minimum capacity.
+ * @returns Result(Void, cref_Char)
+ * @usage Vector_reserve(Int)(&my_vec, 100);
+ */
 #define Vector_reserve(...)      TEMPLATE_METHOD(Vector, reserve, __VA_ARGS__)
+
+/**
+ * @brief Removes and returns the last element of the Vector.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @returns Result(T, cref_Char)
+ * @usage Result(Int, cref_Char) popped = Vector_pop_back(Int)(&my_vec);
+ */
 #define Vector_pop_back(...)     TEMPLATE_METHOD(Vector, pop_back, __VA_ARGS__)
+
+/**
+ * @brief Inserts an element at a specific index, shifting subsequent elements.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param index The target index to insert at.
+ * @param value The value to insert.
+ * @returns Result(Void, cref_Char)
+ * @usage Vector_insert_at(Int)(&my_vec, 0, 5);
+ */
 #define Vector_insert_at(...)    TEMPLATE_METHOD(Vector, insert_at, __VA_ARGS__)
+
+/**
+ * @brief Removes the element at the specified index, shifting subsequent elements.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param index The target index to remove.
+ * @returns Result(Void, cref_Char)
+ * @usage Vector_remove_at(Int)(&my_vec, 1);
+ */
 #define Vector_remove_at(...)    TEMPLATE_METHOD(Vector, remove_at, __VA_ARGS__)
+
+/**
+ * @brief Reallocates the Vector storage to match exactly its current size.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @returns Result(Void, cref_Char)
+ * @usage Vector_shrink_to_fit(Int)(&my_vec);
+ */
 #define Vector_shrink_to_fit(...) TEMPLATE_METHOD(Vector, shrink_to_fit, __VA_ARGS__)
+
+/**
+ * @brief Sorts the Vector elements using a comparison function.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ * @param compare The comparison function pointer.
+ * @usage Vector_sort(Int)(&my_vec, compare_ints);
+ */
 #define Vector_sort(...)         TEMPLATE_METHOD(Vector, sort, __VA_ARGS__)
+
+/**
+ * @brief Prints a debug representation of the Vector.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance (&my_vec).
+ */
 #define Vector_debug(...)        TEMPLATE_METHOD(Vector, debug, __VA_ARGS__)
+
+/**
+ * @brief Creates an iterator starting at the first element.
+ * @param T The element type.
+ * @param self Pointer to the Vector instance.
+ * @returns iter_Vector(T)
+ * @usage iter_Vector(Int) it = Vector_into_iter(Int)(&my_vec);
+ */
 #define Vector_into_iter(...)    TEMPLATE_METHOD(Vector, into_iter, __VA_ARGS__)
+
+/**
+ * @brief Clones the Vector, returning an independent deep copy of it.
+ * @param T The element type.
+ * @param self Pointer to the Vector to clone.
+ * @returns Vector(T)
+ * @usage Vector(Int) cloned = Vector_clone(Int)(&my_vec);
+ */
 #define Vector_clone(...)        TEMPLATE_METHOD(Vector, clone, __VA_ARGS__)
 
+/**
+ * @brief Returns the current element of the iterator without advancing.
+ * @returns Result(ref(T), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_Vector_deref(Int)(&it);
+ */
 #define iter_Vector_deref(...)   TEMPLATE_METHOD(iter_Vector, deref, __VA_ARGS__)
+
+/**
+ * @brief Advances the iterator and returns the next element.
+ * @returns Result(ref(T), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_Vector_next(Int)(&it);
+ */
 #define iter_Vector_next(...)    TEMPLATE_METHOD(iter_Vector, next, __VA_ARGS__)
+
+/**
+ * @brief Destroys and cleans up the iterator.
+ * @usage iter_Vector_free(Int)(&it);
+ */
 #define iter_Vector_free(...)    TEMPLATE_METHOD(iter_Vector, free, __VA_ARGS__)
 
 // Backward compatibility alias for the manual VECTOR_CONFIG
@@ -49,7 +220,7 @@
 #define TEMPLATE_Vector(T) \
     typedef struct \
     { \
-        ref_##T data; \
+        ref(T) data; \
         Size size; \
         Size capacity; \
     } Vector(T); \
@@ -83,7 +254,7 @@
         if (self->size == self->capacity) \
         { \
             self->capacity = self->capacity == 0 ? 1 : self->capacity * 2; \
-            ref_##T new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T)); \
+            ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T)); \
             if (!new_data) \
             { \
                 return Result_err(Void, cref_Char)("Memory allocation failed"); \
@@ -94,14 +265,14 @@
         return Result_ok(Void, cref_Char)((Void){}); \
     } \
     \
-    static inline Result(ref_##T, cref_Char) Vector_at(T)( \
+    static inline Result(ref(T), cref(Char)) Vector_at(T)( \
         cref_Vector(T) self, const Size index) \
     { \
         if (index >= self->size) \
         { \
-            return Result_err(ref_##T, cref_Char)("Index out of bounds"); \
+            return Result_err(ref(T), cref(Char))("Index out of bounds"); \
         } \
-        return Result_ok(ref_##T, cref_Char)(&self->data[index]); \
+        return Result_ok(ref(T), cref(Char))(&self->data[index]); \
     } \
     \
     static inline Size Vector_size(T)(cref_Vector(T) self) \
@@ -147,7 +318,7 @@
     { \
         if (capacity > self->capacity) \
         { \
-            ref_##T new_data = MY_C_UTILS_REALLOC(self->data, capacity * sizeof(T)); \
+            ref(T) new_data = MY_C_UTILS_REALLOC(self->data, capacity * sizeof(T)); \
             if (!new_data) \
             { \
                 return Result_err(Void, cref_Char)("Memory allocation failed"); \
@@ -178,7 +349,7 @@
         if (self->size == self->capacity) \
         { \
             self->capacity = self->capacity == 0 ? 1 : self->capacity * 2; \
-            ref_##T new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T));\
+            ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T));\
             if (!new_data) \
             { \
                 return Result_err(Void, cref_Char)("Memory allocation failed"); \
@@ -221,7 +392,7 @@
             } \
             else \
             { \
-                ref_##T new_data = MY_C_UTILS_REALLOC(self->data, self->size * sizeof(T));\
+                ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->size * sizeof(T));\
                 if (!new_data) \
                 { \
                     return Result_err(Void, cref_Char)("Memory allocation failed"); \
@@ -258,26 +429,26 @@
         return (iter_Vector(T)){.vector = self, .index = 0}; \
     } \
     \
-    static inline Result(ref_##T, cref_Char) iter_Vector_deref(T)( \
+    static inline Result(ref(T), cref(Char)) iter_Vector_deref(T)( \
         cref_iter_Vector(T) self) \
     { \
         if (self->index >= self->vector->size) \
         { \
-            return Result_err(ref_##T, cref_Char)("Iterator out of bounds"); \
+            return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
         } \
-        return Result_ok(ref_##T, cref_Char)(&(self->vector->data[self->index])); \
+        return Result_ok(ref(T), cref(Char))(&(self->vector->data[self->index])); \
     } \
     \
-    static inline Result(ref_##T, cref_Char) iter_Vector_next(T)(ref_iter_Vector(T) self) \
+    static inline Result(ref(T), cref(Char)) iter_Vector_next(T)(ref_iter_Vector(T) self) \
     { \
         if (self->index >= self->vector->size) \
         { \
-            return Result_err(ref_##T, cref_Char)("Iterator out of bounds"); \
+            return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
         } \
-        return Result_ok(ref_##T, cref_Char)(&self->vector->data[self->index++]); \
+        return Result_ok(ref(T), cref(Char))(&self->vector->data[self->index++]); \
     } \
-    RESULT_CONFIG(Vector(T), cref_Char) \
-    RESULT_CONFIG(ref_Vector(T), cref_Char) \
+    RESULT_CONFIG(Vector(T), cref(Char)) \
+    RESULT_CONFIG(ref(Vector(T)), cref(Char)) \
     static inline Vector(T) Vector_clone(T)(cref_Vector(T) self) \
     { \
         if (!self) \

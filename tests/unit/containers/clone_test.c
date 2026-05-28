@@ -65,14 +65,14 @@ void test_clone_Vector_Int_simple(void)
     Result(ref_Int, cref_Char) v0 = Vector_at(Int)(&result, 0);
     Result(ref_Int, cref_Char) v1 = Vector_at(Int)(&result, 1);
     Result(ref_Int, cref_Char) v2 = Vector_at(Int)(&result, 2);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v0) && *Result_unwrap(ref_Int, cref_Char)(v0) == 10);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v1) && *Result_unwrap(ref_Int, cref_Char)(v1) == 20);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v2) && *Result_unwrap(ref_Int, cref_Char)(v2) == 30);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v0) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v0)) == 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v1)) == 20);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v2)) == 30);
 
     /* Verify clone is independent: modify original */
     Vector_set(Int)(&original, 0, 999);
     Result(ref_Int, cref_Char) cloned_v0 = Vector_at(Int)(&result, 0);
-    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_v0) && *Result_unwrap(ref_Int, cref_Char)(cloned_v0) == 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_v0) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(cloned_v0)) == 10);
 
     Vector_free(Int)(&original);
     Vector_free(Int)(&result);
@@ -122,9 +122,9 @@ void test_clone_vector_of_vectors_nested(void)
     Result(ref_Int, cref_Char) v1_0 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 0);
     Result(ref_Int, cref_Char) v1_1 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 1);
     Result(ref_Int, cref_Char) v1_2 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref1), 2);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v1_0) && *Result_unwrap(ref_Int, cref_Char)(v1_0) == 1);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v1_1) && *Result_unwrap(ref_Int, cref_Char)(v1_1) == 2);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v1_2) && *Result_unwrap(ref_Int, cref_Char)(v1_2) == 3);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_0) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v1_0)) == 1);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_1) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v1_1)) == 2);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v1_2) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v1_2)) == 3);
 
     /* Verify second nested vector */
     Result(ref_Vector(Int), cref_Char) ref2 = Vector_at(Vector(Int))(&result, 1);
@@ -132,8 +132,8 @@ void test_clone_vector_of_vectors_nested(void)
     assert(Result_unwrap(ref_Vector(Int), cref_Char)(ref2)->size == 2);
     Result(ref_Int, cref_Char) v2_0 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref2), 0);
     Result(ref_Int, cref_Char) v2_1 = Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(ref2), 1);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v2_0) && *Result_unwrap(ref_Int, cref_Char)(v2_0) == 10);
-    assert(Result_is_ok(ref_Int, cref_Char)(&v2_1) && *Result_unwrap(ref_Int, cref_Char)(v2_1) == 20);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2_0) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v2_0)) == 10);
+    assert(Result_is_ok(ref_Int, cref_Char)(&v2_1) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(v2_1)) == 20);
 
     /* Verify independence: modify original's nested vector */
     Result(ref_Vector(Int), cref_Char) orig_ref1 = Vector_at(Vector(Int))(&original, 0);
@@ -143,7 +143,7 @@ void test_clone_vector_of_vectors_nested(void)
     /* Cloned version should be unchanged */
     Result(ref_Int, cref_Char) cloned_check =
         Vector_at(Int)(Result_unwrap(ref_Vector(Int), cref_Char)(Vector_at(Vector(Int))(&result, 0)), 0);
-    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_check) && *Result_unwrap(ref_Int, cref_Char)(cloned_check) == 1);
+    assert(Result_is_ok(ref_Int, cref_Char)(&cloned_check) && ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(cloned_check)) == 1);
 
     Vector_free(Vector(Int))(&original);
     Vector_free(Vector(Int))(&result);

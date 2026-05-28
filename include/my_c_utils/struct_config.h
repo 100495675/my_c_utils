@@ -66,7 +66,7 @@
 #define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldT, FieldName) dest.FieldName = MY_C_UTILS_CONCAT(FieldT, _clone)(&src->FieldName);
 
 #define FREE_CONFIG(T, ...)                                                 \
-    static inline void MY_C_UTILS_CONCAT(T, _free)(ref_##T self)         \
+    static inline void MY_C_UTILS_CONCAT(T, _free)(ref(T) self)         \
     {                                                                          \
         if (!self)                                                             \
             return;                                                            \
@@ -74,13 +74,13 @@
     }
 
 #define CLONE_CONFIG(T, ...)                                                 \
-    static inline T MY_C_UTILS_CONCAT(T, _clone)(cref_##T src)         \
+    static inline T MY_C_UTILS_CONCAT(T, _clone)(cref(T) src)         \
     {                                                                           \
         if (!src)                                                               \
         {                                                                       \
             perror("Cannot clone NULL pointer");                                \
-            exit(1);                                                            \
-        }                                                                       \
+            exit(1); \
+        } \
         T dest = {0};                                                        \
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_CLONE, __VA_ARGS__) \
         return dest;                                                            \
@@ -93,8 +93,8 @@
     } T;                                                                       \
     REF_EXPAND(T)                                                              \
     FREE_CONFIG(T, __VA_ARGS__)                                                \
-    RESULT_CONFIG(T, cref_Char)                                                \
-    RESULT_CONFIG(ref_##T, cref_Char)                                          \
+    RESULT_CONFIG(T, cref(Char))                                                \
+    RESULT_CONFIG(ref(T), cref(Char))                                          \
     CLONE_CONFIG(T, __VA_ARGS__)
 
 #endif

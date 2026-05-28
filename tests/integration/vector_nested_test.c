@@ -14,7 +14,7 @@ static void assert_nested_iteration(const Vector(Vector(Int)) *outer,
 
   for_each_ref(Vector(Vector(Int)), inner, outer) {
     for_each_ref(Vector(Int), item, inner) {
-      sum += *item;
+      sum += ref_deref(Int)(item);
       ++count;
     }
   }

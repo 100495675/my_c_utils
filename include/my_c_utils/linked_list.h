@@ -12,28 +12,146 @@
 #include "my_c_utils/primitives.h"
 #include "my_c_utils/template.h"
 
-// 1. User-Facing Macros (Prefix-free, template-compatible)
+/**
+ * @brief Represents a generic, owning singly linked list with constant-time tail insertion.
+ * @usage List(T)
+ */
 #define List(...) TEMPLATE_TYPE(List, __VA_ARGS__)
+
+/**
+ * @brief Mutable borrowed pointer reference to List(T).
+ * @usage ref_List(T)
+ */
 #define ref_List(...) TEMPLATE_TYPE(ref_List, __VA_ARGS__)
+
+/**
+ * @brief Immutable borrowed pointer reference to List(T).
+ * @usage cref_List(T)
+ */
 #define cref_List(...) TEMPLATE_TYPE(cref_List, __VA_ARGS__)
 
+/**
+ * @brief Represents a generic iterator for List(T).
+ * @usage iter_List(T)
+ */
 #define iter_List(...) TEMPLATE_TYPE(iter_List, __VA_ARGS__)
+
+/**
+ * @brief Mutable reference to a list iterator.
+ */
 #define ref_iter_List(...) TEMPLATE_TYPE(ref_iter_List, __VA_ARGS__)
+
+/**
+ * @brief Immutable reference to a list iterator.
+ */
 #define cref_iter_List(...) TEMPLATE_TYPE(cref_iter_List, __VA_ARGS__)
 
+/**
+ * @brief Constructs a new, empty generic singly linked List.
+ * @param T The type of elements.
+ * @returns List(T)
+ * @usage List(Int) list = List_new(Int)();
+ */
 #define List_new(...)          TEMPLATE_METHOD(List, new, __VA_ARGS__)
+
+/**
+ * @brief Appends an element to the end of the List (constant time).
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @param value The value of type T to append (copied into list).
+ * @returns Result(Void, cref_Char)
+ * @usage List_push_back(Int)(&my_list, 42);
+ */
 #define List_push_back(...)    TEMPLATE_METHOD(List, push_back, __VA_ARGS__)
+
+/**
+ * @brief Prepends an element to the beginning of the List (constant time).
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @param value The value of type T to prepend.
+ * @returns Result(Void, cref_Char)
+ * @usage List_push_front(Int)(&my_list, 10);
+ */
 #define List_push_front(...)   TEMPLATE_METHOD(List, push_front, __VA_ARGS__)
+
+/**
+ * @brief Removes and returns the first element of the List (constant time).
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @returns Result(T, cref_Char)
+ * @usage Result(Int, cref_Char) popped = List_pop_front(Int)(&my_list);
+ */
 #define List_pop_front(...)    TEMPLATE_METHOD(List, pop_front, __VA_ARGS__)
+
+/**
+ * @brief Removes and returns the last element of the List (linear time).
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @returns Result(T, cref_Char)
+ * @usage Result(Int, cref_Char) popped = List_pop_back(Int)(&my_list);
+ */
 #define List_pop_back(...)     TEMPLATE_METHOD(List, pop_back, __VA_ARGS__)
+
+/**
+ * @brief Destroys the List, freeing all nodes and their stored elements.
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @usage List_free(Int)(&my_list);
+ */
 #define List_free(...)         TEMPLATE_METHOD(List, free, __VA_ARGS__)
+
+/**
+ * @brief Prints a debug representation of the List.
+ * @param T The element type.
+ * @param self Pointer to the List instance.
+ */
 #define List_debug(...)        TEMPLATE_METHOD(List, debug, __VA_ARGS__)
+
+/**
+ * @brief Returns the current number of nodes in the List.
+ * @param T The element type.
+ * @param self Pointer to the List instance (&my_list).
+ * @returns Size
+ * @usage Size size = List_size(Int)(&my_list);
+ */
 #define List_size(...)         TEMPLATE_METHOD(List, size, __VA_ARGS__)
+
+/**
+ * @brief Creates a new iterator starting at the head of the List.
+ * @param T The element type.
+ * @param self Pointer to the List instance.
+ * @returns iter_List(T)
+ * @usage iter_List(Int) it = List_into_iter(Int)(&my_list);
+ */
 #define List_into_iter(...)    TEMPLATE_METHOD(List, into_iter, __VA_ARGS__)
+
+/**
+ * @brief Clones the List, returning an independent deep copy of it.
+ * @param T The element type.
+ * @param self Pointer to the List to clone.
+ * @returns List(T)
+ * @usage List(Int) cloned = List_clone(Int)(&my_list);
+ */
 #define List_clone(...)        TEMPLATE_METHOD(List, clone, __VA_ARGS__)
 
+/**
+ * @brief Returns the current element of the iterator without advancing.
+ * @returns Result(ref(T), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_List_deref(Int)(&it);
+ */
 #define iter_List_deref(...)   TEMPLATE_METHOD(iter_List, deref, __VA_ARGS__)
+
+/**
+ * @brief Advances the iterator to the next node and returns its element.
+ * @returns Result(ref(T), cref_Char)
+ * @usage Result(ref_Int, cref_Char) r = iter_List_next(Int)(&it);
+ */
 #define iter_List_next(...)    TEMPLATE_METHOD(iter_List, next, __VA_ARGS__)
+
+/**
+ * @brief Destroys and cleans up the iterator.
+ * @usage iter_List_free(Int)(&it);
+ */
 #define iter_List_free(...)    TEMPLATE_METHOD(iter_List, free, __VA_ARGS__)
 
 // Backward compatibility alias for the manual LINKED_LIST_CONFIG
@@ -209,28 +327,28 @@
         .node = self->head}; \
   } \
   \
-  static inline Result(ref_##T, cref_Char) iter_List_deref(T)( \
+  static inline Result(ref(T), cref(Char)) iter_List_deref(T)( \
       cref_iter_List(T) self) \
   { \
     if (self->node == NULL) \
     { \
-      return Result_err(ref_##T, cref_Char)("Iterator out of bounds"); \
+      return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
     } \
-    return Result_ok(ref_##T, cref_Char)(&self->node->data); \
+    return Result_ok(ref(T), cref(Char))(&self->node->data); \
   } \
   \
-  static inline Result(ref_##T, cref_Char) iter_List_next(T)(ref_iter_List(T) self) \
+  static inline Result(ref(T), cref(Char)) iter_List_next(T)(ref_iter_List(T) self) \
   { \
     if (self->node == NULL) \
     { \
-      return Result_err(ref_##T, cref_Char)("Iterator out of bounds"); \
+      return Result_err(ref(T), cref(Char))("Iterator out of bounds"); \
     } \
     TEMPLATE_TYPE(ref_Node, T) cur = self->node; \
     self->node = self->node->next; \
-    return Result_ok(ref_##T, cref_Char)(&cur->data); \
+    return Result_ok(ref(T), cref(Char))(&cur->data); \
   } \
-  RESULT_CONFIG(List(T), cref_Char) \
-  RESULT_CONFIG(ref_List(T), cref_Char) \
+  RESULT_CONFIG(List(T), cref(Char)) \
+  RESULT_CONFIG(ref(List(T)), cref(Char)) \
   static inline List(T) List_clone(T)(cref_List(T) self) \
   { \
     if (!self) \

@@ -16,9 +16,9 @@ Int main(void)
   Size seen_count = 0;
 
   for_each_ref(Vector(Int), item, &vector) {
-    seen_sum += *item;
+    seen_sum += ref_deref(Int)(item);
     ++seen_count;
-    if (*item == 2)
+    if (ref_deref(Int)(item) == 2)
     {
       Result(Void, cref_Char) r3 = Vector_push_back(Int)(&vector, 3);
       assert(Result_is_ok(Void, cref_Char)(&r3));

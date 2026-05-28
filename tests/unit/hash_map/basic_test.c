@@ -13,7 +13,7 @@ static void assert_map_iteration(Hashmap(String, Int) *hm,
   Int sum = 0;
 
   for_each_ref(Hashmap(String, Int), item, hm) {
-    sum += *item;
+    sum += ref_deref(Int)(item);
     ++count;
   }
 
@@ -41,7 +41,7 @@ Int main(void)
 
   Result(ref_Int, cref_Char) two_result = Hashmap_get(String, Int)(&hm, "two");
   assert(Result_is_ok(ref_Int, cref_Char)(&two_result));
-  assert(*Result_unwrap(ref_Int, cref_Char)(two_result) == 20);
+  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(two_result)) == 20);
 
   Hashmap_remove(String, Int)(&hm, "two");
   assert(!Hashmap_contains(String, Int)(&hm, "two"));

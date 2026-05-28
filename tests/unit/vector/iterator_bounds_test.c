@@ -17,7 +17,7 @@ Int main(void)
   iter(Vector(Int)) it2 = into_iter(Vector(Int))(&vector);
   Result(ref_Int, cref_Char) out2 = iter_next(Vector(Int))(&it2);
   assert(Result_is_ok(ref_Int, cref_Char)(&out2));
-  assert(*Result_unwrap(ref_Int, cref_Char)(out2) == 1);
+  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(out2)) == 1);
   Result(ref_Int, cref_Char) out3 = iter_next(Vector(Int))(&it2);
   assert(Result_is_err(ref_Int, cref_Char)(&out3));
 

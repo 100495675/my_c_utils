@@ -21,7 +21,7 @@ Int main(void)
     assert(Hashmap_contains(Int, Int)(&hm, i));
     Result(ref_Int, cref_Char) r = Hashmap_get(Int, Int)(&hm, i);
     assert(Result_is_ok(ref_Int, cref_Char)(&r));
-    assert(*Result_unwrap(ref_Int, cref_Char)(r) == i * 2);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(r)) == i * 2);
   }
 
   for (Int i = 0; i < N; i += 3)

@@ -22,7 +22,7 @@ Int main(void)
 
   Int sum_ref = 0;
   for_each_ref(Vector(Int), item, &vector) {
-    sum_ref += *item;
+    sum_ref += ref_deref(Int)(item);
   }
   assert(sum_ref == 60);
   Int_free(&sum_ref);
@@ -35,7 +35,7 @@ Int main(void)
 
   Int sum_compat = 0;
   for_each_ref(Vector(Int), item, &vector) {
-    sum_compat += *item;
+    sum_compat += ref_deref(Int)(item);
   }
   assert(sum_compat == 60);
 

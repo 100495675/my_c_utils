@@ -54,10 +54,10 @@ void test_vector_insert_at(void)
     assert(vec.size == 4);
     
     // Verify values: 5, 10, 20, 30
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 5);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 10);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 20);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3)) == 30);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 5);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1))) == 10);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2))) == 20);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3))) == 30);
     
     // Bounds check
     r = Vector_insert_at(Int)(&vec, 5, 99);
@@ -80,21 +80,21 @@ void test_vector_remove_at(void)
     Result(Void, cref_Char) r = Vector_remove_at(Int)(&vec, 1);
     assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 3);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 30);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 40);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 10);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1))) == 30);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2))) == 40);
     
     // Remove from beginning (index 0) -> 30, 40
     r = Vector_remove_at(Int)(&vec, 0);
     assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 2);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 30);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 30);
     
     // Remove from end (index 1) -> 30
     r = Vector_remove_at(Int)(&vec, 1);
     assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.size == 1);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 30);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 30);
     
     // Bounds check
     r = Vector_remove_at(Int)(&vec, 1);
@@ -124,8 +124,8 @@ void test_vector_shrink_to_fit(void)
     r = Vector_shrink_to_fit(Int)(&vec);
     assert(Result_is_ok(Void, cref_Char)(&r));
     assert(vec.capacity == vec.size);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 20);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 10);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1))) == 20);
     
     Vector_free(Int)(&vec);
     printf("✓\n");
@@ -142,10 +142,10 @@ void test_vector_sort(void)
     
     Vector_sort(Int)(&vec, compare_ints);
     
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0)) == 10);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1)) == 20);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2)) == 30);
-    assert(*Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3)) == 40);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 0))) == 10);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 1))) == 20);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 2))) == 30);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(Vector_at(Int)(&vec, 3))) == 40);
     
     Vector_free(Int)(&vec);
     printf("✓\n");
@@ -221,7 +221,7 @@ void test_hash_map_get_mut(void)
     // Retrieve mutable pointer and modify value
     Result(ref_Int, cref_Char) get_res = Hashmap_get_mut(Int, Int)(&map, 10);
     assert(Result_is_ok(ref_Int, cref_Char)(&get_res));
-    assert(*Result_unwrap(ref_Int, cref_Char)(get_res) == 100);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(get_res)) == 100);
     
     // Modify through the returned pointer
     *Result_unwrap(ref_Int, cref_Char)(get_res) = 999;
@@ -229,7 +229,7 @@ void test_hash_map_get_mut(void)
     // Get again to verify modification
     get_res = Hashmap_get(Int, Int)(&map, 10);
     assert(Result_is_ok(ref_Int, cref_Char)(&get_res));
-    assert(*Result_unwrap(ref_Int, cref_Char)(get_res) == 999);
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(get_res)) == 999);
     
     Hashmap_free(Int, Int)(&map);
     printf("✓\n");

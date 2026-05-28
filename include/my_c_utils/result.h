@@ -7,17 +7,91 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// 1. User-Facing Macros (Prefix-free, template-compatible)
+/**
+ * @brief Represents a typed monad for fallible operations containing either a success (T) or error (E).
+ * @usage Result(T, E)
+ */
 #define Result(...) TEMPLATE_TYPE(Result, __VA_ARGS__)
+
+/**
+ * @brief Mutable borrowed pointer reference to Result(T, E).
+ * @usage ref_Result(T, E)
+ */
 #define ref_Result(...) TEMPLATE_TYPE(ref_Result, __VA_ARGS__)
+
+/**
+ * @brief Immutable borrowed pointer reference to Result(T, E).
+ * @usage cref_Result(T, E)
+ */
 #define cref_Result(...) TEMPLATE_TYPE(cref_Result, __VA_ARGS__)
 
+/**
+ * @brief Checks if the Result contains a success value (is Ok).
+ * @param T Success type.
+ * @param E Error type.
+ * @param self Pointer to the Result instance (&res).
+ * @returns Bool
+ * @usage Bool success = Result_is_ok(Int, cref_Char)(&res);
+ */
 #define Result_is_ok(...)      TEMPLATE_METHOD(Result, is_ok, __VA_ARGS__)
+
+/**
+ * @brief Checks if the Result contains a failure error (is Err).
+ * @param T Success type.
+ * @param E Error type.
+ * @param self Pointer to the Result instance (&res).
+ * @returns Bool
+ * @usage Bool failure = Result_is_err(Int, cref_Char)(&res);
+ */
 #define Result_is_err(...)     TEMPLATE_METHOD(Result, is_err, __VA_ARGS__)
+
+/**
+ * @brief Unwraps a successful Result, returning its T value. Panics and aborts if it is Err.
+ * @param T Success type.
+ * @param E Error type.
+ * @param self The Result instance.
+ * @returns T
+ * @usage Int value = Result_unwrap(Int, cref_Char)(res);
+ */
 #define Result_unwrap(...)     TEMPLATE_METHOD(Result, unwrap, __VA_ARGS__)
+
+/**
+ * @brief Unwraps a failed Result, returning its error E value. Panics and aborts if it is Ok.
+ * @param T Success type.
+ * @param E Error type.
+ * @param self The Result instance.
+ * @returns E
+ * @usage cref_Char err = Result_unwrap_err(Int, cref_Char)(res);
+ */
 #define Result_unwrap_err(...) TEMPLATE_METHOD(Result, unwrap_err, __VA_ARGS__)
+
+/**
+ * @brief Frees the inner success or error value depending on the Result status.
+ * @param T Success type.
+ * @param E Error type.
+ * @param self Pointer to the Result instance (&res).
+ * @usage Result_free(Int, cref_Char)(&res);
+ */
 #define Result_free(...)       TEMPLATE_METHOD(Result, free, __VA_ARGS__)
+
+/**
+ * @brief Constructs a successful Result containing a T value.
+ * @param T Success type.
+ * @param E Error type.
+ * @param value The success value of type T to store.
+ * @returns Result(T, E)
+ * @usage Result(Int, cref_Char) res = Result_ok(Int, cref_Char)(42);
+ */
 #define Result_ok(...)         TEMPLATE_METHOD(Result, ok, __VA_ARGS__)
+
+/**
+ * @brief Constructs a failed Result containing an error E value.
+ * @param T Success type.
+ * @param E Error type.
+ * @param error The error value of type E to store.
+ * @returns Result(T, E)
+ * @usage Result(Int, cref_Char) res = Result_err(Int, cref_Char)("An error occurred");
+ */
 #define Result_err(...)        TEMPLATE_METHOD(Result, err, __VA_ARGS__)
 
 // Backward compatibility alias for the manual RESULT_CONFIG
