@@ -145,7 +145,75 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 
 ---
 
-## 7. Interactive Example
+## 7. Iterator Collect System
+
+*Provides modern, container-agnostic mechanisms to collect elements from any standard iterator into any linear container (e.g., Vector, List).*
+
+### A. In-Place Collection: `collect`
+*Populates an existing destination container with elements drawn from an active iterator.*
+
+* **Syntax**: `collect(DestContainerT, SrcContainerT)(dest_ptr, src_iter)`
+* **Example**:
+  ```c
+  List(Int) my_list = ...;
+  Vector(Int) my_vec = Vector_new(Int)();
+  
+  iter_List(Int) it = List_into_iter(Int)(&my_list);
+  collect(Vector(Int), List(Int))(&my_vec, it);
+  ```
+
+### B. Inline Expression Collection: `collect_new`
+*Constructs, populates, and returns a new container inline from an active iterator.*
+
+* **Syntax**: `collect_new(DestContainerT, SrcContainerT)(src_iter)`
+* **Example**:
+  ```c
+  List(Int) my_list = ...;
+  
+  // We can pass the iterator directly by value, even inline!
+  Vector(Int) my_vec = collect_new(Vector(Int), List(Int))(List_into_iter(Int)(&my_list));
+  ```
+
+---
+
+## 8. Iterator Loop Macros
+
+> [!IMPORTANT]
+> **Notation Exception**: These loop macros use a single-parenthesis calling syntax (e.g., `for_each(Vector(Int), item, &vec)`). This is a necessary and intentional exception to the project's standard double-parentheses generic notation (like `collect(Vector(Int), List(Int))(...)`) due to standard C preprocessor syntax limitations for control structures (since C cannot define macros inside other macros or cleanly parse unclosed parentheses for loops without compilation errors).
+
+*Provides highly ergonomic, type-safe loop control structures that automatically generate iterators from containers under a single-parenthesis calling syntax.*
+
+### A. Copy Loop: `for_each`
+*Loops over a container, automatically creating an iterator and exposing each element by copy (value).*
+
+* **Syntax**: `for_each(ContainerT, var_name, iterable) { ... }`
+* **Example**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  Int sum = 0;
+  for_each(Vector(Int), item, &my_vec) {
+      sum += item;
+  }
+  ```
+
+### B. Reference Loop: `for_each_ref`
+*Loops over a container, automatically creating an iterator and exposing each element as a borrowed reference pointer (`ref(T)`).*
+
+* **Syntax**: `for_each_ref(ContainerT, var_name, iterable) { ... }`
+* **Example**:
+  ```c
+  Vector(Int) my_vec = ...;
+  
+  Int sum_ref = 0;
+  for_each_ref(Vector(Int), item_ref, &my_vec) {
+      sum_ref += ref_deref(Int)(item_ref);
+  }
+  ```
+
+---
+
+## 9. Interactive Example
 
 Below is a complete, working example using several templates together:
 

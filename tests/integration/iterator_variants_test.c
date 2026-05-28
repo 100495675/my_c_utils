@@ -28,7 +28,7 @@ Int main(void)
   Int_free(&sum_ref);
 
   Int sum_copy = 0;
-  for_each_copy(Vector(Int), item, &vector) {
+  for_each(Vector(Int), item, &vector) {
     sum_copy += item;
   }
   assert(sum_copy == 60);
