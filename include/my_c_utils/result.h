@@ -2,83 +2,90 @@
 #define MY_C_UTILS_RESULT_H
 
 #include "my_c_utils/tipos.h"
+#include "my_c_utils/template.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define Result(Type, Err) MY_C_UTILS_CONCAT(Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
-#define ref_Result(Type, Err) MY_C_UTILS_CONCAT(ref_Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
-#define cref_Result(Type, Err) MY_C_UTILS_CONCAT(cref_Result_, MY_C_UTILS_CONCAT(Type, MY_C_UTILS_CONCAT(_, Err)))
+// 1. User-Facing Macros (Prefix-free, template-compatible)
+#define Result(...) TEMPLATE_TYPE(Result, __VA_ARGS__)
+#define ref_Result(...) TEMPLATE_TYPE(ref_Result, __VA_ARGS__)
+#define cref_Result(...) TEMPLATE_TYPE(cref_Result, __VA_ARGS__)
 
-#define Result_is_ok(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _is_ok)
-#define Result_is_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _is_err)
-#define Result_unwrap(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _unwrap)
-#define Result_unwrap_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _unwrap_err)
-#define Result_free(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _free)
-#define Result_ok(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _ok)
-#define Result_err(Type, Err) MY_C_UTILS_CONCAT(Result(Type, Err), _err)
+#define Result_is_ok(...)      TEMPLATE_METHOD(Result, is_ok, __VA_ARGS__)
+#define Result_is_err(...)     TEMPLATE_METHOD(Result, is_err, __VA_ARGS__)
+#define Result_unwrap(...)     TEMPLATE_METHOD(Result, unwrap, __VA_ARGS__)
+#define Result_unwrap_err(...) TEMPLATE_METHOD(Result, unwrap_err, __VA_ARGS__)
+#define Result_free(...)       TEMPLATE_METHOD(Result, free, __VA_ARGS__)
+#define Result_ok(...)         TEMPLATE_METHOD(Result, ok, __VA_ARGS__)
+#define Result_err(...)        TEMPLATE_METHOD(Result, err, __VA_ARGS__)
 
-#define RESULT_CONFIG(Type, Err) RESULT_CONFIG_IMPL(Type, Err)
+// Backward compatibility alias for the manual RESULT_CONFIG
+#define RESULT_CONFIG(T, E) TEMPLATE_Result(T, E)
 
-#define RESULT_CONFIG_IMPL(Type, Err)                                             \
-    typedef struct                                                                \
-    {                                                                             \
-        union                                                                     \
-        {                                                                         \
-            Type value;                                                           \
-            Err error;                                                            \
-        };                                                                        \
-        Bool is_error;                                                            \
-    } Result_##Type##_##Err;                                                      \
-    REF_EXPAND(Result_##Type##_##Err)                                             \
-                                                                                  \
-    static inline Result_##Type##_##Err Result_##Type##_##Err##_ok(Type value)    \
-    {                                                                             \
-        return (Result_##Type##_##Err){.value = value, .is_error = false};        \
-    }                                                                             \
-                                                                                  \
-    static inline Result_##Type##_##Err Result_##Type##_##Err##_err(Err error)    \
-    {                                                                             \
-        return (Result_##Type##_##Err){.error = error, .is_error = true};         \
-    }                                                                             \
-                                                                                  \
-    static inline Type Result_##Type##_##Err##_unwrap(Result_##Type##_##Err result)\
-    {                                                                             \
-        if (result.is_error)                                                      \
-        {                                                                         \
-            fputs("Unwrap on error\n", stderr);                                   \
-            exit(1);                                                              \
-        }                                                                         \
-        return result.value;                                                      \
-    }                                                                             \
-                                                                                  \
-    static inline Bool Result_##Type##_##Err##_is_err(cref_Result_##Type##_##Err result)\
-    {                                                                             \
-        return result->is_error;                                                  \
-    }                                                                             \
-                                                                                  \
-    static inline Bool Result_##Type##_##Err##_is_ok(cref_Result_##Type##_##Err result)\
-    {                                                                             \
-        return !(result->is_error);                                               \
-    }                                                                             \
-                                                                                  \
-    static inline Err Result_##Type##_##Err##_unwrap_err(Result_##Type##_##Err result)\
-    {                                                                             \
-        if (!result.is_error)                                                     \
-        {                                                                         \
-            perror("Result is ok");                                               \
-            exit(1);                                                              \
-        }                                                                         \
-        return result.error;                                                      \
-    }                                                                             \
-                                                                                  \
-    static inline void Result_##Type##_##Err##_free(ref_Result_##Type##_##Err result)\
-    {                                                                             \
-        if (!result->is_error)                                                    \
-        {                                                                         \
-            Type##_free(&result->value);                                          \
-        }                                                                             \
-    }                                                                             \
+// 2. Template Definition Macro
+#define TEMPLATE_Result(T, E) \
+    typedef struct \
+    { \
+        union \
+        { \
+            T value; \
+            E error; \
+        }; \
+        Bool is_error; \
+    } Result(T, E); \
+    typedef Result(T, E) *ref_Result(T, E); \
+    typedef const Result(T, E) *cref_Result(T, E); \
+    static inline void TEMPLATE_METHOD(ref_Result, free, T, E)(ref_Result(T, E) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_Result, free, T, E)(cref_Result(T, E) *value) { (void)value; } \
+    \
+    static inline Result(T, E) Result_ok(T, E)(T value) \
+    { \
+        return (Result(T, E)){.value = value, .is_error = false}; \
+    } \
+    \
+    static inline Result(T, E) Result_err(T, E)(E error) \
+    { \
+        return (Result(T, E)){.error = error, .is_error = true}; \
+    } \
+    \
+    static inline T Result_unwrap(T, E)(Result(T, E) self) \
+    { \
+        if (self.is_error) \
+        { \
+            fputs("Unwrap on error\n", stderr); \
+            exit(1); \
+        } \
+        return self.value; \
+    } \
+    \
+    static inline Bool Result_is_err(T, E)(cref_Result(T, E) self) \
+    { \
+        return self->is_error; \
+    } \
+    \
+    static inline Bool Result_is_ok(T, E)(cref_Result(T, E) self) \
+    { \
+        return !(self->is_error); \
+    } \
+    \
+    static inline E Result_unwrap_err(T, E)(Result(T, E) self) \
+    { \
+        if (!self.is_error) \
+        { \
+            perror("Result is ok"); \
+            exit(1); \
+        } \
+        return self.error; \
+    } \
+    \
+    static inline void Result_free(T, E)(ref_Result(T, E) self) \
+    { \
+        if (!self->is_error) \
+        { \
+            MY_C_UTILS_CONCAT(T, _free)(&self->value); \
+        } \
+    }
 
 typedef struct {} Void;
 static inline void Void_free(Void *value)

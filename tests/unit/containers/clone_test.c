@@ -17,7 +17,7 @@ VECTOR_CONFIG(Int)
 /* Vector<Vector<Int>> - nested deep cloning */
 VECTOR_CONFIG(Vector(Int))
 
-/* ========== Test: Clone Primitive Types ========== */
+/* ========== Test: Clone Primitive Ts ========== */
 
 void test_clone_primitive_int(void)
 {

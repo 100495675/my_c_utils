@@ -61,40 +61,40 @@
                             Macro(T7, N7)                                                                     \
                                 Macro(T8, N8)
 
-#define MY_C_UTILS_STRUCT_FIELD_DECLARE(FieldType, FieldName) FieldType FieldName;
-#define MY_C_UTILS_STRUCT_FIELD_FREE(FieldType, FieldName) FieldType##_free(&self->FieldName);
-#define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldType, FieldName) dest.FieldName = FieldType##_clone(&src->FieldName);
+#define MY_C_UTILS_STRUCT_FIELD_DECLARE(FieldT, FieldName) FieldT FieldName;
+#define MY_C_UTILS_STRUCT_FIELD_FREE(FieldT, FieldName) MY_C_UTILS_CONCAT(FieldT, _free)(&self->FieldName);
+#define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldT, FieldName) dest.FieldName = MY_C_UTILS_CONCAT(FieldT, _clone)(&src->FieldName);
 
-#define FREE_CONFIG(Type, ...)                                                 \
-    static inline void Type##_free(ref_##Type self)                            \
+#define FREE_CONFIG(T, ...)                                                 \
+    static inline void MY_C_UTILS_CONCAT(T, _free)(ref_##T self)         \
     {                                                                          \
         if (!self)                                                             \
             return;                                                            \
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_FREE, __VA_ARGS__) \
     }
 
-#define CLONE_CONFIG(Type, ...)                                                 \
-    static inline Type Type##_clone(cref_##Type src)                            \
+#define CLONE_CONFIG(T, ...)                                                 \
+    static inline T MY_C_UTILS_CONCAT(T, _clone)(cref_##T src)         \
     {                                                                           \
         if (!src)                                                               \
         {                                                                       \
             perror("Cannot clone NULL pointer");                                \
             exit(1);                                                            \
         }                                                                       \
-        Type dest = {0};                                                        \
+        T dest = {0};                                                        \
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_CLONE, __VA_ARGS__) \
         return dest;                                                            \
     }
 
-#define STRUCT_CONFIG(Type, ...)                                                  \
+#define STRUCT_CONFIG(T, ...)                                                  \
     typedef struct                                                                \
     {                                                                             \
         MY_C_UTILS_FOR_EACH_FIELD_2(MY_C_UTILS_STRUCT_FIELD_DECLARE, __VA_ARGS__) \
-    } Type;                                                                       \
-    REF_EXPAND(Type)                                                              \
-    FREE_CONFIG(Type, __VA_ARGS__)                                                \
-    RESULT_CONFIG(Type, cref_Char)                                                           \
-    RESULT_CONFIG(ref_##Type, cref_Char)                                                     \
-    CLONE_CONFIG(Type, __VA_ARGS__)
+    } T;                                                                       \
+    REF_EXPAND(T)                                                              \
+    FREE_CONFIG(T, __VA_ARGS__)                                                \
+    RESULT_CONFIG(T, cref_Char)                                                \
+    RESULT_CONFIG(ref_##T, cref_Char)                                          \
+    CLONE_CONFIG(T, __VA_ARGS__)
 
 #endif

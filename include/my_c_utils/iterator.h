@@ -19,21 +19,21 @@ Functions the containes has to implement to be iterable:
 #define iter_free(Container) MY_C_UTILS_CONCAT(iter(Container), _free)
 
 // Reference version (borrowed pointer) - exposes immutable borrows.
-#define for_each_ref(ContainerType, var_name, iterable)                                                                                                 \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerType, _into_iter)(iterable)) it; \
-                  __typeof__(MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerType, _next))(NULL)) res; \
-                  bool active; } _state = {.it = MY_C_UTILS_CONCAT(ContainerType, _into_iter)(iterable), .active = true};                                            \
-         (_state.active = true) && (_state.res = MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerType, _next))(&_state.it), !_state.res.is_error);) \
+#define for_each_ref(ContainerT, var_name, iterable)                                                                                                 \
+    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable)) it; \
+                  __typeof__(MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerT, _next))(NULL)) res; \
+                  bool active; } _state = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable), .active = true};                                            \
+         (_state.active = true) && (_state.res = MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerT, _next))(&_state.it), !_state.res.is_error);) \
         for (__typeof__(_state.res.value) var_name = _state.res.value;                                                                                  \
              _state.active;                                                                                                                             \
              _state.active = false)
 
 // Copy version (value by-copy)
-#define for_each_copy(ContainerType, var_name, iterable)                                                                                                \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerType, _into_iter)(iterable)) it; \
-                  __typeof__(MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerType, _next))(NULL)) res; \
-                  bool active; } _state = {.it = MY_C_UTILS_CONCAT(ContainerType, _into_iter)(iterable), .active = true};                                            \
-         (_state.active = true) && (_state.res = MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerType, _next))(&_state.it), !_state.res.is_error);) \
+#define for_each_copy(ContainerT, var_name, iterable)                                                                                                \
+    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable)) it; \
+                  __typeof__(MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerT, _next))(NULL)) res; \
+                  bool active; } _state = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(iterable), .active = true};                                            \
+         (_state.active = true) && (_state.res = MY_C_UTILS_CONCAT(iter_, MY_C_UTILS_CONCAT(ContainerT, _next))(&_state.it), !_state.res.is_error);) \
         for (__typeof__(*_state.res.value) var_name = *_state.res.value;                                                                                \
              _state.active;                                                                                                                             \
              _state.active = false)

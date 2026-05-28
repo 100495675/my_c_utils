@@ -9,6 +9,7 @@
 #include "my_c_utils/string_type.h"
 #include "my_c_utils/option.h"
 #include "my_c_utils/iterator.h"
+#include "my_c_utils/template.h"
 #include "my_c_utils/struct_config.h"
 
 #endif

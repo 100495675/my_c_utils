@@ -21,7 +21,7 @@ Header-only C11 utilities for generic containers, typed result/option helpers, a
 ## Core contracts
 
 - Containers own stored values.
-- `Type_free(Type *value)` destroys owned elements.
+- `Type_free(ref_Type self)` destroys owned elements.
 - `get` and `at` return borrowed references.
 - `pop` returns owned copies.
 - `for_each_ref(ContainerType, var_name, iterable)` exposes borrowed pointers (used as `for_each_ref(Vector(Int), item, &vector) { ... }`).

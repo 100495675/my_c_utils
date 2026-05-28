@@ -7,80 +7,71 @@
 #include "my_c_utils/allocator.h"
 #include "my_c_utils/result.h"
 #include "my_c_utils/primitives.h"
+#include "my_c_utils/template.h"
 
-#define Box(Type) MY_C_UTILS_CONCAT(Box_, Type)
-#define ref_Box(Type) MY_C_UTILS_CONCAT(ref_Box_, Type)
-#define cref_Box(Type) MY_C_UTILS_CONCAT(cref_Box_, Type)
+// 1. User-Facing Macros (Prefix-free, fully template-compatible)
+#define Box(...) TEMPLATE_TYPE(Box, __VA_ARGS__)
+#define ref_Box(...) TEMPLATE_TYPE(ref_Box, __VA_ARGS__)
+#define cref_Box(...) TEMPLATE_TYPE(cref_Box, __VA_ARGS__)
 
-#define Box_new(Type)          MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _new))
-#define Box_free(Type)         MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _free))
-#define Box_deref(Type)        MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _deref))
-#define Box_deref_mut(Type)    MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _deref_mut))
-#define Box_into_inner(Type)   MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _into_inner))
-#define Box_clone(Type)        MY_C_UTILS_CONCAT(Box_, MY_C_UTILS_CONCAT(Type, _clone))
+#define Box_new(...) TEMPLATE_METHOD(Box, new, __VA_ARGS__)
+#define Box_free(...) TEMPLATE_METHOD(Box, free, __VA_ARGS__)
+#define Box_deref(...) TEMPLATE_METHOD(Box, deref, __VA_ARGS__)
+#define Box_deref_mut(...) TEMPLATE_METHOD(Box, deref_mut, __VA_ARGS__)
+#define Box_into_inner(...) TEMPLATE_METHOD(Box, into_inner, __VA_ARGS__)
+#define Box_clone(...) TEMPLATE_METHOD(Box, clone, __VA_ARGS__)
 
-#define BOX_CONFIG(Type) BOX_CONFIG_IMPL(Type)
+// Backward compatibility alias for the manual BOX_CONFIG
+#define BOX_CONFIG(T) TEMPLATE_Box(T)
 
-#define BOX_CONFIG_IMPL(Type)                                                                      \
-    typedef struct                                                                            \
-    {                                                                                         \
-        ref_##Type value;                                                                     \
-    } Box_##Type;                                                                             \
-    REF_EXPAND(Box_##Type)                                                                    \
-    static inline void Box_free(Type)(ref_Box(Type) self)                                 \
-    {                                                                                         \
-        if (self->value)                                                                      \
-        {                                                                                     \
-            Type##_free(self->value);                                                         \
-            MY_C_UTILS_FREE(self->value);                                                     \
-            self->value = NULL;                                                               \
-        }                                                                                     \
-    }                                                                                         \
-    RESULT_CONFIG(Box_##Type, cref_Char)                                                                 \
-                                                                                              \
-    static inline Box_##Type Box_new(Type)(Type value)                                     \
-    {                                                                                         \
-        ref_##Type boxed_value = MY_C_UTILS_MALLOC(sizeof(Type));                             \
-        if (!boxed_value)                                                                     \
-        {                                                                                     \
-            perror("Memory allocation failed");                                              \
-            exit(1);                                                                          \
-        }                                                                                     \
-        *boxed_value = value;                                                                 \
-        return (Box_##Type){.value = boxed_value};                                            \
-    }                                                                                         \
-                                                                                              \
-    static inline cref_##Type Box_deref(Type)(cref_Box(Type) self)                        \
-    {                                                                                         \
-        return self->value;                                                                   \
-    }                                                                                         \
-                                                                                              \
-    static inline ref_##Type Box_deref_mut(Type)(ref_Box(Type) self)                     \
-    {                                                                                         \
-        return self->value;                                                                   \
-    }                                                                                         \
-                                                                                              \
-    static inline Type Box_into_inner(Type)(ref_Box(Type) self)                           \
-    {                                                                                         \
-        if (!self->value)                                                                     \
-        {                                                                                     \
-            fputs("Box is empty\n", stderr);                                                \
-            exit(1);                                                                          \
-        }                                                                                     \
-        Type value = *self->value;                                                            \
-        MY_C_UTILS_FREE(self->value);                                                         \
-        self->value = NULL;                                                                   \
-        return value;                                                                         \
-    }                                                                                         \
-                                                                                              \
-    static inline Box_##Type Box_clone(Type)(cref_Box(Type) src)                          \
-    {                                                                                         \
-        if (!src)                                                                             \
-        {                                                                                     \
-            perror("Cannot clone NULL Box pointer");                                        \
-            exit(1);                                                                          \
-        }                                                                                     \
-        return Box_new(Type)(Type##_clone(src->value));                                    \
+// 2. Template Definition Macro
+#define TEMPLATE_Box(T) \
+    typedef struct { \
+        ref_##T value; \
+    } Box(T); \
+    typedef Box(T) *ref_Box(T); \
+    typedef const Box(T) *cref_Box(T); \
+    static inline void TEMPLATE_METHOD(ref_Box, free, T)(ref_Box(T) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_Box, free, T)(cref_Box(T) *value) { (void)value; } \
+    static inline void Box_free(T)(ref_Box(T) self) { \
+        if (self->value) { \
+            T##_free(self->value); \
+            MY_C_UTILS_FREE(self->value); \
+            self->value = NULL; \
+        } \
+    } \
+    RESULT_CONFIG(Box(T), cref_Char) \
+    static inline Box(T) Box_new(T)(T value) { \
+        ref_##T boxed_value = MY_C_UTILS_MALLOC(sizeof(T)); \
+        if (!boxed_value) { \
+            perror("Memory allocation failed"); \
+            exit(1); \
+        } \
+        *boxed_value = value; \
+        return (Box(T)){.value = boxed_value}; \
+    } \
+    static inline cref_##T Box_deref(T)(cref_Box(T) self) { \
+        return self->value; \
+    } \
+    static inline ref_##T Box_deref_mut(T)(ref_Box(T) self) { \
+        return self->value; \
+    } \
+    static inline T Box_into_inner(T)(ref_Box(T) self) { \
+        if (!self->value) { \
+            fputs("Box is empty\n", stderr); \
+            exit(1); \
+        } \
+        T value = *self->value; \
+        MY_C_UTILS_FREE(self->value); \
+        self->value = NULL; \
+        return value; \
+    } \
+    static inline Box(T) Box_clone(T)(cref_Box(T) src) { \
+        if (!src) { \
+            perror("Cannot clone NULL Box pointer"); \
+            exit(1); \
+        } \
+        return Box_new(T)(T##_clone(src->value)); \
     }
 
 #endif

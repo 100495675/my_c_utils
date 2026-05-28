@@ -7,12 +7,12 @@
 #include "my_c_utils/tipos.h"
 #include "my_c_utils/hash_defaults.h"
 
-#define PRIMITIVE_CONFIG(Type)           \
-	TRIVIAL_FREE(Type, ref_##Type value) \
-	RESULT_CONFIG(Type, cref_Char)                  \
-	RESULT_CONFIG(ref_##Type, cref_Char)            \
-	TRIVIAL_CLONE(Type)                  \
-	PRIMITIVE_HASH_EQUALS(Type)
+#define PRIMITIVE_CONFIG(T)           \
+	TRIVIAL_FREE(T) \
+	RESULT_CONFIG(T, cref_Char)                  \
+	RESULT_CONFIG(ref_##T, cref_Char)            \
+	TRIVIAL_CLONE(T)                  \
+	PRIMITIVE_HASH_EQUALS(T)
 
 /* Instantiate the primitive helpers in a safe order. */
 PRIMITIVE_CONFIG(Bool)

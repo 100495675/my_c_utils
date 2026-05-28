@@ -15,12 +15,12 @@ static inline Size my_c_utils_fnv1a(const void *data, Size size)
     return hash;
 }
 
-#define PRIMITIVE_HASH_EQUALS(Type) \
-    static inline Size Type##_hash(Type value) \
+#define PRIMITIVE_HASH_EQUALS(T) \
+    static inline Size T##_hash(T value) \
     { \
-        return my_c_utils_fnv1a(&value, sizeof(Type)); \
+        return my_c_utils_fnv1a(&value, sizeof(T)); \
     } \
-    static inline Bool Type##_equals(Type a, Type b) \
+    static inline Bool T##_equals(T a, T b) \
     { \
         return a == b; \
     }

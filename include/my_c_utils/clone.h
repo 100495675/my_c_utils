@@ -23,13 +23,13 @@
  */
 
 /**
- * TRIVIAL_CLONE(Type)
+ * TRIVIAL_CLONE(T)
  *
  * Generates a trivial clone function for primitive types.
  * Clone functions return the cloned value directly.
  *
  * Generated function:
- *   Type Type_clone(const Type *src)
+ *   T T_clone(const T *self)
  *
  * Usage:
  *   TRIVIAL_CLONE(Int)
@@ -37,15 +37,15 @@
  *   TRIVIAL_CLONE(Bool)
  *   etc.
  */
-#define TRIVIAL_CLONE(Type)                           \
-    static inline Type Type##_clone(const Type *src)  \
+#define TRIVIAL_CLONE(T)                              \
+    static inline T MY_C_UTILS_CONCAT(T, _clone)(const T *self)          \
     {                                                 \
-        if (!src)                                     \
+        if (!self)                                    \
         {                                             \
             perror("Cannot clone NULL pointer");     \
             exit(1);                                  \
         }                                             \
-        return *src;                                  \
+        return *self;                                 \
     }
 
 /* TRIVIAL_CLONE only defines the macro; primitive instantiations live in
