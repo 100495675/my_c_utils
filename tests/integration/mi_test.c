@@ -29,14 +29,14 @@ Int main()
   Mi_struct mi_struct = Mi_struct_new(Box_new(Sub_dato)(Sub_dato_new(42, texto)), 7);
   Vector(Mi_struct) vector = Vector_new(Mi_struct)();
 
-  Result(Void, cref_Char) r1 = Vector_push_back(Mi_struct)(&vector, mi_struct);
-  assert(Result_is_ok(Void, cref_Char)(&r1));
-  Result_free(Void, cref_Char)(&r1);
+  Result(Void, cref(Char)) r1 = Vector_push_back(Mi_struct)(&vector, mi_struct);
+  assert(Result_is_ok(Void, cref(Char))(&r1));
+  Result_free(Void, cref(Char))(&r1);
 
-  Result(ref_Mi_struct, cref_Char) result = Vector_at(Mi_struct)(&vector, 0);
-  assert(Result_is_ok(ref_Mi_struct, cref_Char)(&result));
-  Mi_struct *retrieved = Result_unwrap(ref_Mi_struct, cref_Char)(result);
-  Result_free(ref_Mi_struct, cref_Char)(&result);
+  Result(ref_Mi_struct, cref(Char)) result = Vector_at(Mi_struct)(&vector, 0);
+  assert(Result_is_ok(ref_Mi_struct, cref(Char))(&result));
+  Mi_struct *retrieved = Result_unwrap(ref_Mi_struct, cref(Char))(result);
+  Result_free(ref_Mi_struct, cref(Char))(&result);
 
   assert(retrieved->otro_numero == 7);
   assert(Box_deref(Sub_dato)(&retrieved->dato)->numero == 42);

@@ -7,10 +7,10 @@ VECTOR_CONFIG(Int)
 Int main(void)
 {
   Vector(Int) vector = Vector_new(Int)();
-  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
-  assert(Result_is_ok(Void, cref_Char)(&r1));
-  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 2);
-  assert(Result_is_ok(Void, cref_Char)(&r2));
+  Result(Void, cref(Char)) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref(Char))(&r1));
+  Result(Void, cref(Char)) r2 = Vector_push_back(Int)(&vector, 2);
+  assert(Result_is_ok(Void, cref(Char))(&r2));
 
   Int seen_sum = 0;
   Size seen_count = 0;
@@ -20,10 +20,10 @@ Int main(void)
     ++seen_count;
     if (ref_deref(Int)(item) == 2)
     {
-      Result(Void, cref_Char) r3 = Vector_push_back(Int)(&vector, 3);
-      assert(Result_is_ok(Void, cref_Char)(&r3));
-      Result(Void, cref_Char) r4 = Vector_push_back(Int)(&vector, 4);
-      assert(Result_is_ok(Void, cref_Char)(&r4));
+      Result(Void, cref(Char)) r3 = Vector_push_back(Int)(&vector, 3);
+      assert(Result_is_ok(Void, cref(Char))(&r3));
+      Result(Void, cref(Char)) r4 = Vector_push_back(Int)(&vector, 4);
+      assert(Result_is_ok(Void, cref(Char))(&r4));
     }
   }
 

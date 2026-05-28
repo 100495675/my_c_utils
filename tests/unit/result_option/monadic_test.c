@@ -21,10 +21,10 @@ OPTION_CONFIG(Double)
 OPTION_MAP_CONFIG(Int, Double)
 OPTION_AND_THEN_CONFIG(Int, Double)
 
-RESULT_CONFIG(Int, cref_Char)
-RESULT_CONFIG(Double, cref_Char)
-RESULT_MAP_CONFIG(Int, cref_Char, Double)
-RESULT_AND_THEN_CONFIG(Int, cref_Char, Double)
+RESULT_CONFIG(Int, cref(Char))
+RESULT_CONFIG(Double, cref(Char))
+RESULT_MAP_CONFIG(Int, cref(Char), Double)
+RESULT_AND_THEN_CONFIG(Int, cref(Char), Double)
 
 // 2. Helper mapping functions for Option
 static inline Double int_to_double(Int x)
@@ -47,13 +47,13 @@ static inline Double res_int_to_double(Int x)
     return (Double)x * 2.5;
 }
 
-static inline Result(Double, cref_Char) res_int_to_res_double(Int x)
+static inline Result(Double, cref(Char)) res_int_to_res_double(Int x)
 {
     if (x == 0)
     {
-        return Result_err(Double, cref_Char)("Cannot map zero");
+        return Result_err(Double, cref(Char))("Cannot map zero");
     }
-    return Result_ok(Double, cref_Char)((Double)x * 2.5);
+    return Result_ok(Double, cref(Char))((Double)x * 2.5);
 }
 
 // 4. Test Functions
@@ -125,68 +125,68 @@ void test_option_and_then(void)
 void test_result_unwrap_or(void)
 {
     printf("TEST: Result_unwrap_or... ");
-    Result(Int, cref_Char) ok = Result_ok(Int, cref_Char)(42);
-    Result(Int, cref_Char) err = Result_err(Int, cref_Char)("oops");
+    Result(Int, cref(Char)) ok = Result_ok(Int, cref(Char))(42);
+    Result(Int, cref(Char)) err = Result_err(Int, cref(Char))("oops");
 
-    assert(Result_unwrap_or(Int, cref_Char)(ok, 100) == 42);
-    assert(Result_unwrap_or(Int, cref_Char)(err, 100) == 100);
+    assert(Result_unwrap_or(Int, cref(Char))(ok, 100) == 42);
+    assert(Result_unwrap_or(Int, cref(Char))(err, 100) == 100);
 
-    Result_free(Int, cref_Char)(&ok);
-    Result_free(Int, cref_Char)(&err);
+    Result_free(Int, cref(Char))(&ok);
+    Result_free(Int, cref(Char))(&err);
     printf("✓\n");
 }
 
 void test_result_map(void)
 {
     printf("TEST: Result_map... ");
-    Result(Int, cref_Char) ok = Result_ok(Int, cref_Char)(10);
-    Result(Int, cref_Char) err = Result_err(Int, cref_Char)("oops");
+    Result(Int, cref(Char)) ok = Result_ok(Int, cref(Char))(10);
+    Result(Int, cref(Char)) err = Result_err(Int, cref(Char))("oops");
 
     // Map Ok: 10 * 2.5 = 25.0
-    Result(Double, cref_Char) mapped_ok = Result_map(Int, cref_Char, Double)(ok, res_int_to_double);
-    assert(Result_is_ok(Double, cref_Char)(&mapped_ok));
-    assert(fabs(Result_unwrap(Double, cref_Char)(mapped_ok) - 25.0) < 1e-9);
+    Result(Double, cref(Char)) mapped_ok = Result_map(Int, cref(Char), Double)(ok, res_int_to_double);
+    assert(Result_is_ok(Double, cref(Char))(&mapped_ok));
+    assert(fabs(Result_unwrap(Double, cref(Char))(mapped_ok) - 25.0) < 1e-9);
 
     // Map Err
-    Result(Double, cref_Char) mapped_err = Result_map(Int, cref_Char, Double)(err, res_int_to_double);
-    assert(Result_is_err(Double, cref_Char)(&mapped_err));
-    assert(strcmp(Result_unwrap_err(Double, cref_Char)(mapped_err), "oops") == 0);
+    Result(Double, cref(Char)) mapped_err = Result_map(Int, cref(Char), Double)(err, res_int_to_double);
+    assert(Result_is_err(Double, cref(Char))(&mapped_err));
+    assert(strcmp(Result_unwrap_err(Double, cref(Char))(mapped_err), "oops") == 0);
 
-    Result_free(Int, cref_Char)(&ok);
-    Result_free(Int, cref_Char)(&err);
-    Result_free(Double, cref_Char)(&mapped_ok);
-    Result_free(Double, cref_Char)(&mapped_err);
+    Result_free(Int, cref(Char))(&ok);
+    Result_free(Int, cref(Char))(&err);
+    Result_free(Double, cref(Char))(&mapped_ok);
+    Result_free(Double, cref(Char))(&mapped_err);
     printf("✓\n");
 }
 
 void test_result_and_then(void)
 {
     printf("TEST: Result_and_then... ");
-    Result(Int, cref_Char) ok_non_zero = Result_ok(Int, cref_Char)(10);
-    Result(Int, cref_Char) ok_zero = Result_ok(Int, cref_Char)(0);
-    Result(Int, cref_Char) err = Result_err(Int, cref_Char)("oops");
+    Result(Int, cref(Char)) ok_non_zero = Result_ok(Int, cref(Char))(10);
+    Result(Int, cref(Char)) ok_zero = Result_ok(Int, cref(Char))(0);
+    Result(Int, cref(Char)) err = Result_err(Int, cref(Char))("oops");
 
     // non-zero map: 10 * 2.5 = 25.0
-    Result(Double, cref_Char) mapped_ok = Result_and_then(Int, cref_Char, Double)(ok_non_zero, res_int_to_res_double);
-    assert(Result_is_ok(Double, cref_Char)(&mapped_ok));
-    assert(fabs(Result_unwrap(Double, cref_Char)(mapped_ok) - 25.0) < 1e-9);
+    Result(Double, cref(Char)) mapped_ok = Result_and_then(Int, cref(Char), Double)(ok_non_zero, res_int_to_res_double);
+    assert(Result_is_ok(Double, cref(Char))(&mapped_ok));
+    assert(fabs(Result_unwrap(Double, cref(Char))(mapped_ok) - 25.0) < 1e-9);
 
     // zero map (returns Err)
-    Result(Double, cref_Char) mapped_zero = Result_and_then(Int, cref_Char, Double)(ok_zero, res_int_to_res_double);
-    assert(Result_is_err(Double, cref_Char)(&mapped_zero));
-    assert(strcmp(Result_unwrap_err(Double, cref_Char)(mapped_zero), "Cannot map zero") == 0);
+    Result(Double, cref(Char)) mapped_zero = Result_and_then(Int, cref(Char), Double)(ok_zero, res_int_to_res_double);
+    assert(Result_is_err(Double, cref(Char))(&mapped_zero));
+    assert(strcmp(Result_unwrap_err(Double, cref(Char))(mapped_zero), "Cannot map zero") == 0);
 
     // err map
-    Result(Double, cref_Char) mapped_err = Result_and_then(Int, cref_Char, Double)(err, res_int_to_res_double);
-    assert(Result_is_err(Double, cref_Char)(&mapped_err));
-    assert(strcmp(Result_unwrap_err(Double, cref_Char)(mapped_err), "oops") == 0);
+    Result(Double, cref(Char)) mapped_err = Result_and_then(Int, cref(Char), Double)(err, res_int_to_res_double);
+    assert(Result_is_err(Double, cref(Char))(&mapped_err));
+    assert(strcmp(Result_unwrap_err(Double, cref(Char))(mapped_err), "oops") == 0);
 
-    Result_free(Int, cref_Char)(&ok_non_zero);
-    Result_free(Int, cref_Char)(&ok_zero);
-    Result_free(Int, cref_Char)(&err);
-    Result_free(Double, cref_Char)(&mapped_ok);
-    Result_free(Double, cref_Char)(&mapped_zero);
-    Result_free(Double, cref_Char)(&mapped_err);
+    Result_free(Int, cref(Char))(&ok_non_zero);
+    Result_free(Int, cref(Char))(&ok_zero);
+    Result_free(Int, cref(Char))(&err);
+    Result_free(Double, cref(Char))(&mapped_ok);
+    Result_free(Double, cref(Char))(&mapped_zero);
+    Result_free(Double, cref(Char))(&mapped_err);
     printf("✓\n");
 }
 

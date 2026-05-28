@@ -39,18 +39,18 @@ Int main(void)
   assert(Hashmap_contains(String, Int)(&hm, "two"));
   assert(Hashmap_contains(String, Int)(&hm, "three"));
 
-  Result(ref_Int, cref_Char) two_result = Hashmap_get(String, Int)(&hm, "two");
-  assert(Result_is_ok(ref_Int, cref_Char)(&two_result));
-  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(two_result)) == 20);
+  Result(ref_Int, cref(Char)) two_result = Hashmap_get(String, Int)(&hm, "two");
+  assert(Result_is_ok(ref_Int, cref(Char))(&two_result));
+  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref(Char))(two_result)) == 20);
 
   Hashmap_remove(String, Int)(&hm, "two");
   assert(!Hashmap_contains(String, Int)(&hm, "two"));
-  Result(ref_Int, cref_Char) two_result_after_removal = Hashmap_get(String, Int)(&hm, "two");
-  assert(Result_is_err(ref_Int, cref_Char)(&two_result_after_removal));
+  Result(ref_Int, cref(Char)) two_result_after_removal = Hashmap_get(String, Int)(&hm, "two");
+  assert(Result_is_err(ref_Int, cref(Char))(&two_result_after_removal));
 
-  Result(Int, cref_Char) popped_three = Hashmap_pop(String, Int)(&hm, "three");
-  assert(Result_is_ok(Int, cref_Char)(&popped_three));
-  assert(Result_unwrap(Int, cref_Char)(popped_three) == 30);
+  Result(Int, cref(Char)) popped_three = Hashmap_pop(String, Int)(&hm, "three");
+  assert(Result_is_ok(Int, cref(Char))(&popped_three));
+  assert(Result_unwrap(Int, cref(Char))(popped_three) == 30);
   assert(!Hashmap_contains(String, Int)(&hm, "three"));
 
   Hashmap_add(String, Int)(&hm, string_dup("four"), 40);

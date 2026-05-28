@@ -24,7 +24,7 @@ Because macros resolve to the function name itself, you invoke them by passing *
 Vector_push_back(Int)(&my_vec, 42);
 
 // Example: Retrieve a value from a Hashmap
-Result(ref_Int, cref_Char) res = Hashmap_get(String, Int)(&my_map, "key");
+Result(ref_Int, cref(Char)) res = Hashmap_get(String, Int)(&my_map, "key");
 ```
 
 This syntax is highly consistent across all generic containers and utilities in the library.
@@ -65,10 +65,10 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 * **Type**: `Vector(T)`
 * **Create**: `Vector_new(T)()` (returns `Vector(T)`)
 * **Size**: `Vector_size(T)(&my_vec)` (returns `Size`)
-* **Push back**: `Vector_push_back(T)(&my_vec, value)` (returns `Result(Void, cref_Char)`)
-* **Pop back**: `Vector_pop_back(T)(&my_vec)` (returns `Result(T, cref_Char)`)
-* **Get element**: `Vector_at(T)(&my_vec, index)` (returns `Result(ref(T), cref_Char)`)
-* **Set element**: `Vector_set(T)(&my_vec, index, value)` (returns `Result(Void, cref_Char)`)
+* **Push back**: `Vector_push_back(T)(&my_vec, value)` (returns `Result(Void, cref(Char))`)
+* **Pop back**: `Vector_pop_back(T)(&my_vec)` (returns `Result(T, cref(Char))`)
+* **Get element**: `Vector_at(T)(&my_vec, index)` (returns `Result(ref(T), cref(Char))`)
+* **Set element**: `Vector_set(T)(&my_vec, index, value)` (returns `Result(Void, cref(Char))`)
 * **Sort**: `Vector_sort(T)(&my_vec, compare_fn)`
 * **Free vector**: `Vector_free(T)(&my_vec)`
 
@@ -78,9 +78,9 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 * **Type**: `List(T)`
 * **Create**: `List_new(T)()` (returns `List(T)`)
 * **Size**: `List_size(T)(&my_list)` (returns `Size`)
-* **Push front**: `List_push_front(T)(&my_list, value)` (returns `Result(Void, cref_Char)`)
-* **Push back**: `List_push_back(T)(&my_list, value)` (returns `Result(Void, cref_Char)`)
-* **Pop front**: `List_pop_front(T)(&my_list)` (returns `Result(T, cref_Char)`)
+* **Push front**: `List_push_front(T)(&my_list, value)` (returns `Result(Void, cref(Char))`)
+* **Push back**: `List_push_back(T)(&my_list, value)` (returns `Result(Void, cref(Char))`)
+* **Pop front**: `List_pop_front(T)(&my_list)` (returns `Result(T, cref(Char))`)
 * **Free list**: `List_free(T)(&my_list)`
 
 ### D. Hashmap (`Hashmap_##K_##V`)
@@ -88,11 +88,11 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
 
 * **Type**: `Hashmap(K, V)`
 * **Create**: `Hashmap_new(K, V)(initial_capacity)` (returns `Hashmap(K, V)`)
-* **Insert/Add**: `Hashmap_add(K, V)(&my_map, key, value)` (returns `Result(Void, cref_Char)`)
-* **Retrieve (Borrowed)**: `Hashmap_get(K, V)(&my_map, key)` (returns `Result(ref(V), cref_Char)`)
-* **Retrieve (Mutable)**: `Hashmap_get_mut(K, V)(&my_map, key)` (returns `Result(ref(V), cref_Char)`)
+* **Insert/Add**: `Hashmap_add(K, V)(&my_map, key, value)` (returns `Result(Void, cref(Char))`)
+* **Retrieve (Borrowed)**: `Hashmap_get(K, V)(&my_map, key)` (returns `Result(ref(V), cref(Char))`)
+* **Retrieve (Mutable)**: `Hashmap_get_mut(K, V)(&my_map, key)` (returns `Result(ref(V), cref(Char))`)
 * **Remove/Delete**: `Hashmap_remove(K, V)(&my_map, key)`
-* **Pop (Extract)**: `Hashmap_pop(K, V)(&my_map, key)` (returns `Result(V, cref_Char)`)
+* **Pop (Extract)**: `Hashmap_pop(K, V)(&my_map, key)` (returns `Result(V, cref(Char))`)
 * **Free map**: `Hashmap_free(K, V)(&my_map)`
 
 ---
@@ -163,11 +163,11 @@ int main() {
     Vector_push_back(Option(Int))(&vec, Option_none(Int)());
 
     // 3. Inspect and unwrap
-    Result(ref(Option(Int)), cref_Char) item_res = Vector_at(Option(Int))(&vec, 0);
-    assert(Result_is_ok(ref(Option(Int)), cref_Char)(&item_res));
+    Result(ref(Option(Int)), cref(Char)) item_res = Vector_at(Option(Int))(&vec, 0);
+    assert(Result_is_ok(ref(Option(Int)), cref(Char))(&item_res));
     
     // Dereference to get the Option(Int) copy
-    Option(Int) opt = ref_deref(Option(Int))(Result_unwrap(ref(Option(Int)), cref_Char)(item_res));
+    Option(Int) opt = ref_deref(Option(Int))(Result_unwrap(ref(Option(Int)), cref(Char))(item_res));
     assert(Option_is_some(Int)(&opt));
     assert(Option_unwrap(Int)(opt) == 10);
 

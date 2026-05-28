@@ -20,10 +20,10 @@ VECTOR_CONFIG(Int)
 #define TEMPLATE_Stack(T) \
     STRUCT_CONFIG(Stack(T), \
                   Vector(T), items) \
-    static inline Result(Void, cref_Char) Stack_push(T)(ref_Stack(T) self, T value) { \
+    static inline Result(Void, cref(Char)) Stack_push(T)(ref_Stack(T) self, T value) { \
         return Vector_push_back(T)(&self->items, value); \
     } \
-    static inline Result(T, cref_Char) Stack_pop(T)(ref_Stack(T) self) { \
+    static inline Result(T, cref(Char)) Stack_pop(T)(ref_Stack(T) self) { \
         return Vector_pop_back(T)(&self->items); \
     }
 
@@ -36,19 +36,19 @@ int main(void) {
     // Test 1: Stack<Int> wrapping Vector<Int>
     Stack(Int) stack = Stack_new(Int)(Vector_new(Int)());
     
-    Result(Void, cref_Char) r_push1 = Stack_push(Int)(&stack, 100);
-    assert(Result_is_ok(Void, cref_Char)(&r_push1));
-    Result(Void, cref_Char) r_push2 = Stack_push(Int)(&stack, 200);
-    assert(Result_is_ok(Void, cref_Char)(&r_push2));
+    Result(Void, cref(Char)) r_push1 = Stack_push(Int)(&stack, 100);
+    assert(Result_is_ok(Void, cref(Char))(&r_push1));
+    Result(Void, cref(Char)) r_push2 = Stack_push(Int)(&stack, 200);
+    assert(Result_is_ok(Void, cref(Char))(&r_push2));
     printf("TEST: Stack_push(Int) pushed 100 and 200 ... ✓\n");
 
-    Result(Int, cref_Char) r_pop1 = Stack_pop(Int)(&stack);
-    assert(Result_is_ok(Int, cref_Char)(&r_pop1));
-    assert(Result_unwrap(Int, cref_Char)(r_pop1) == 200);
+    Result(Int, cref(Char)) r_pop1 = Stack_pop(Int)(&stack);
+    assert(Result_is_ok(Int, cref(Char))(&r_pop1));
+    assert(Result_unwrap(Int, cref(Char))(r_pop1) == 200);
 
-    Result(Int, cref_Char) r_pop2 = Stack_pop(Int)(&stack);
-    assert(Result_is_ok(Int, cref_Char)(&r_pop2));
-    assert(Result_unwrap(Int, cref_Char)(r_pop2) == 100);
+    Result(Int, cref(Char)) r_pop2 = Stack_pop(Int)(&stack);
+    assert(Result_is_ok(Int, cref(Char))(&r_pop2));
+    assert(Result_unwrap(Int, cref(Char))(r_pop2) == 100);
     printf("TEST: Stack_pop(Int) popped 200 then 100 (LIFO order) ... ✓\n");
 
     // Free resources cleanly

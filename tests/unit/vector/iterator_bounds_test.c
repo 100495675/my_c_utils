@@ -9,17 +9,17 @@ Int main(void)
   Vector(Int) vector = Vector_new(Int)();
 
   iter(Vector(Int)) it = into_iter(Vector(Int))(&vector);
-  Result(ref_Int, cref_Char) out = iter_next(Vector(Int))(&it);
-  assert(Result_is_err(ref_Int, cref_Char)(&out));
+  Result(ref_Int, cref(Char)) out = iter_next(Vector(Int))(&it);
+  assert(Result_is_err(ref_Int, cref(Char))(&out));
 
-  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
-  assert(Result_is_ok(Void, cref_Char)(&r1));
+  Result(Void, cref(Char)) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref(Char))(&r1));
   iter(Vector(Int)) it2 = into_iter(Vector(Int))(&vector);
-  Result(ref_Int, cref_Char) out2 = iter_next(Vector(Int))(&it2);
-  assert(Result_is_ok(ref_Int, cref_Char)(&out2));
-  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(out2)) == 1);
-  Result(ref_Int, cref_Char) out3 = iter_next(Vector(Int))(&it2);
-  assert(Result_is_err(ref_Int, cref_Char)(&out3));
+  Result(ref_Int, cref(Char)) out2 = iter_next(Vector(Int))(&it2);
+  assert(Result_is_ok(ref_Int, cref(Char))(&out2));
+  assert(ref_deref(Int)(Result_unwrap(ref_Int, cref(Char))(out2)) == 1);
+  Result(ref_Int, cref(Char)) out3 = iter_next(Vector(Int))(&it2);
+  assert(Result_is_err(ref_Int, cref(Char))(&out3));
 
   Vector_free(Int)(&vector);
   return 0;

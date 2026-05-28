@@ -9,15 +9,15 @@ Int main(void)
 {
   Vector(Int) vector = Vector_new(Int)();
 
-  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 10);
-  assert(Result_is_ok(Void, cref_Char)(&r1));
-  Result_free(Void, cref_Char)(&r1);
-  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 20);
-  assert(Result_is_ok(Void, cref_Char)(&r2));
-  Result_free(Void, cref_Char)(&r2);
-  Result(Void, cref_Char) r3 = Vector_push_back(Int)(&vector, 30);
-  assert(Result_is_ok(Void, cref_Char)(&r3));
-  Result_free(Void, cref_Char)(&r3);
+  Result(Void, cref(Char)) r1 = Vector_push_back(Int)(&vector, 10);
+  assert(Result_is_ok(Void, cref(Char))(&r1));
+  Result_free(Void, cref(Char))(&r1);
+  Result(Void, cref(Char)) r2 = Vector_push_back(Int)(&vector, 20);
+  assert(Result_is_ok(Void, cref(Char))(&r2));
+  Result_free(Void, cref(Char))(&r2);
+  Result(Void, cref(Char)) r3 = Vector_push_back(Int)(&vector, 30);
+  assert(Result_is_ok(Void, cref(Char))(&r3));
+  Result_free(Void, cref(Char))(&r3);
 
 
   Int sum_ref = 0;

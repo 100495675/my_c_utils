@@ -81,7 +81,7 @@
  * @param self Pointer to the Hashmap instance (&my_map).
  * @param key The key of type K to add (ownership is transferred to map).
  * @param value The value of type V to add (copied into map).
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Hashmap_add(String, Int)(&my_map, string_dup("key"), 100);
  */
 #define Hashmap_add(...) TEMPLATE_METHOD(Hashmap, add, __VA_ARGS__)
@@ -101,8 +101,8 @@
  * @param V The Value type.
  * @param self Pointer to the Hashmap instance.
  * @param key The search key of type K.
- * @returns Result(ref(V), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&my_map, "key");
+ * @returns Result(ref(V), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = Hashmap_get(String, Int)(&my_map, "key");
  */
 #define Hashmap_get(...) TEMPLATE_METHOD(Hashmap, get, __VA_ARGS__)
 
@@ -112,7 +112,7 @@
  * @param V The Value type.
  * @param self Pointer to the Hashmap instance.
  * @param key The search key of type K.
- * @returns Result(ref(V), cref_Char)
+ * @returns Result(ref(V), cref(Char))
  * @usage *Result_unwrap(ref_Int, ...)(Hashmap_get_mut(String, Int)(&my_map, "key")) = 999;
  */
 #define Hashmap_get_mut(...) TEMPLATE_METHOD(Hashmap, get_mut, __VA_ARGS__)
@@ -123,8 +123,8 @@
  * @param V The Value type.
  * @param self Pointer to the Hashmap instance.
  * @param key The key to pop.
- * @returns Result(V, cref_Char)
- * @usage Result(Int, cref_Char) popped = Hashmap_pop(String, Int)(&my_map, "key");
+ * @returns Result(V, cref(Char))
+ * @usage Result(Int, cref(Char)) popped = Hashmap_pop(String, Int)(&my_map, "key");
  */
 #define Hashmap_pop(...) TEMPLATE_METHOD(Hashmap, pop, __VA_ARGS__)
 
@@ -177,15 +177,15 @@
 
 /**
  * @brief Returns the value (ref(V)) of the current populated entry in the iterator.
- * @returns Result(ref(V), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_Hashmap_deref(String, Int)(&it);
+ * @returns Result(ref(V), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_Hashmap_deref(String, Int)(&it);
  */
 #define iter_Hashmap_deref(...) TEMPLATE_METHOD(iter_Hashmap, deref, __VA_ARGS__)
 
 /**
  * @brief Advances the iterator to the next populated entry.
- * @returns Result(ref(V), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_Hashmap_next(String, Int)(&it);
+ * @returns Result(ref(V), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_Hashmap_next(String, Int)(&it);
  */
 #define iter_Hashmap_next(...) TEMPLATE_METHOD(iter_Hashmap, next, __VA_ARGS__)
 
@@ -341,14 +341,14 @@
         .data = data};                                                                                                \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(Void, cref_Char) Hashmap_resize(K, V)(                                                         \
+  static inline Result(Void, cref(Char)) Hashmap_resize(K, V)(                                                         \
       ref_Hashmap(K, V) self, Size new_capacity)                                                                      \
   {                                                                                                                   \
     ref_Entry(K, V) new_data =                                                                                        \
         MY_C_UTILS_CALLOC(new_capacity, sizeof(Entry(K, V)));                                                         \
     if (!new_data)                                                                                                    \
     {                                                                                                                 \
-      return Result_err(Void, cref_Char)("Memory allocation failed");                                                 \
+      return Result_err(Void, cref(Char))("Memory allocation failed");                                                 \
     }                                                                                                                 \
     for (Size i = 0; i < self->capacity; i++)                                                                         \
     {                                                                                                                 \
@@ -363,10 +363,10 @@
     MY_C_UTILS_FREE(self->data);                                                                                      \
     self->data = new_data;                                                                                            \
     self->capacity = new_capacity;                                                                                    \
-    return Result_ok(Void, cref_Char)((Void){});                                                                      \
+    return Result_ok(Void, cref(Char))((Void){});                                                                      \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(Void, cref_Char) Hashmap_resize_if_needed(K, V)(                                               \
+  static inline Result(Void, cref(Char)) Hashmap_resize_if_needed(K, V)(                                               \
       ref_Hashmap(K, V) self)                                                                                         \
   {                                                                                                                   \
     Double load_factor = (Double)self->size / self->capacity;                                                         \
@@ -374,10 +374,10 @@
     {                                                                                                                 \
       return Hashmap_resize(K, V)(self, self->capacity * 2);                                                          \
     }                                                                                                                 \
-    return Result_ok(Void, cref_Char)((Void){});                                                                      \
+    return Result_ok(Void, cref(Char))((Void){});                                                                      \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(Void, cref_Char) Hashmap_add(K, V)(                                                            \
+  static inline Result(Void, cref(Char)) Hashmap_add(K, V)(                                                            \
       ref_Hashmap(K, V) self, K key, V value)                                                                         \
   {                                                                                                                   \
     Size existing_index = Hashmap_find_index(K, V)(self, key);                                                        \
@@ -388,10 +388,10 @@
       self->data[existing_index].key = key;                                                                           \
       self->data[existing_index].value = value;                                                                       \
       self->data[existing_index].hash = K##_hash(key);                                                                \
-      return Result_ok(Void, cref_Char)((Void){});                                                                    \
+      return Result_ok(Void, cref(Char))((Void){});                                                                    \
     }                                                                                                                 \
-    Result(Void, cref_Char) resize_res = Hashmap_resize_if_needed(K, V)(self);                                        \
-    if (Result_is_err(Void, cref_Char)(&resize_res))                                                                  \
+    Result(Void, cref(Char)) resize_res = Hashmap_resize_if_needed(K, V)(self);                                        \
+    if (Result_is_err(Void, cref(Char))(&resize_res))                                                                  \
     {                                                                                                                 \
       return resize_res;                                                                                              \
     }                                                                                                                 \
@@ -403,7 +403,7 @@
     Hashmap_insert_entry(K, V)(self->data, self->capacity,                                                            \
                                new_entry);                                                                            \
     self->size++;                                                                                                     \
-    return Result_ok(Void, cref_Char)((Void){});                                                                      \
+    return Result_ok(Void, cref(Char))((Void){});                                                                      \
   }                                                                                                                   \
                                                                                                                       \
   static inline void Hashmap_free(K, V)(                                                                              \
@@ -434,13 +434,13 @@
     return Result_err(ref(V), cref(Char))("no existe elemento con esa Key");                                          \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(ref(V), cref_Char) Hashmap_get_mut(K, V)(                                                      \
+  static inline Result(ref(V), cref(Char)) Hashmap_get_mut(K, V)(                                                      \
       ref(Hashmap(K, V)) self, K key)                                                                                  \
   {                                                                                                                   \
     return Hashmap_get(K, V)(self, key);                                                                              \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Result(V, cref_Char) Hashmap_pop(K, V)(                                                               \
+  static inline Result(V, cref(Char)) Hashmap_pop(K, V)(                                                               \
       ref(Hashmap(K, V)) self, K key)                                                                                  \
   {                                                                                                                   \
     Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
@@ -450,9 +450,9 @@
       MY_C_UTILS_CONCAT(K, _free)(&self->data[index].key);                                                            \
       self->size--;                                                                                                   \
       Hashmap_shift_delete(K, V)(self, index);                                                                        \
-      return Result_ok(V, cref_Char)(value);                                                                          \
+      return Result_ok(V, cref(Char))(value);                                                                          \
     }                                                                                                                 \
-    return Result_err(V, cref_Char)("no existe elemento con esa Key");                                                \
+    return Result_err(V, cref(Char))("no existe elemento con esa Key");                                                \
   }                                                                                                                   \
                                                                                                                       \
   static inline Bool Hashmap_contains(K, V)(                                                                          \
@@ -572,8 +572,8 @@
         continue;                                                                                                     \
       K key_clone = K##_clone(&self->data[i].key);                                                                    \
       V value_clone = V##_clone(&self->data[i].value);                                                                \
-      Result(Void, cref_Char) add_res = Hashmap_add(K, V)(&dest, key_clone, value_clone);                             \
-      if (Result_is_err(Void, cref_Char)(&add_res))                                                                   \
+      Result(Void, cref(Char)) add_res = Hashmap_add(K, V)(&dest, key_clone, value_clone);                             \
+      if (Result_is_err(Void, cref(Char))(&add_res))                                                                   \
       {                                                                                                               \
         Hashmap_free(K, V)(&dest);                                                                                    \
         perror("Memory allocation failed during hashmap clone");                                                      \

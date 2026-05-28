@@ -59,7 +59,7 @@
  * @param T The element type.
  * @param self Pointer to the List instance (&my_list).
  * @param value The value of type T to append (copied into list).
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage List_push_back(Int)(&my_list, 42);
  */
 #define List_push_back(...)    TEMPLATE_METHOD(List, push_back, __VA_ARGS__)
@@ -69,7 +69,7 @@
  * @param T The element type.
  * @param self Pointer to the List instance (&my_list).
  * @param value The value of type T to prepend.
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage List_push_front(Int)(&my_list, 10);
  */
 #define List_push_front(...)   TEMPLATE_METHOD(List, push_front, __VA_ARGS__)
@@ -78,8 +78,8 @@
  * @brief Removes and returns the first element of the List (constant time).
  * @param T The element type.
  * @param self Pointer to the List instance (&my_list).
- * @returns Result(T, cref_Char)
- * @usage Result(Int, cref_Char) popped = List_pop_front(Int)(&my_list);
+ * @returns Result(T, cref(Char))
+ * @usage Result(Int, cref(Char)) popped = List_pop_front(Int)(&my_list);
  */
 #define List_pop_front(...)    TEMPLATE_METHOD(List, pop_front, __VA_ARGS__)
 
@@ -87,8 +87,8 @@
  * @brief Removes and returns the last element of the List (linear time).
  * @param T The element type.
  * @param self Pointer to the List instance (&my_list).
- * @returns Result(T, cref_Char)
- * @usage Result(Int, cref_Char) popped = List_pop_back(Int)(&my_list);
+ * @returns Result(T, cref(Char))
+ * @usage Result(Int, cref(Char)) popped = List_pop_back(Int)(&my_list);
  */
 #define List_pop_back(...)     TEMPLATE_METHOD(List, pop_back, __VA_ARGS__)
 
@@ -136,15 +136,15 @@
 
 /**
  * @brief Returns the current element of the iterator without advancing.
- * @returns Result(ref(T), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_List_deref(Int)(&it);
+ * @returns Result(ref(T), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_List_deref(Int)(&it);
  */
 #define iter_List_deref(...)   TEMPLATE_METHOD(iter_List, deref, __VA_ARGS__)
 
 /**
  * @brief Advances the iterator to the next node and returns its element.
- * @returns Result(ref(T), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_List_next(Int)(&it);
+ * @returns Result(ref(T), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_List_next(Int)(&it);
  */
 #define iter_List_next(...)    TEMPLATE_METHOD(iter_List, next, __VA_ARGS__)
 
@@ -199,12 +199,12 @@
     return (List(T)){.head = NULL, .tail = NULL, .size = 0}; \
   } \
   \
-  static inline Result(Void, cref_Char) List_push_back(T)(ref_List(T) self, T value) \
+  static inline Result(Void, cref(Char)) List_push_back(T)(ref_List(T) self, T value) \
   { \
     TEMPLATE_TYPE(ref_Node, T) new_node = MY_C_UTILS_MALLOC(sizeof(TEMPLATE_TYPE(Node, T))); \
     if (!new_node) \
     { \
-      return Result_err(Void, cref_Char)("Memory allocation failed"); \
+      return Result_err(Void, cref(Char))("Memory allocation failed"); \
     } \
     new_node->data = value; \
     new_node->next = NULL; \
@@ -218,15 +218,15 @@
     } \
     self->tail = new_node; \
     ++self->size; \
-    return Result_ok(Void, cref_Char)((Void){}); \
+    return Result_ok(Void, cref(Char))((Void){}); \
   } \
   \
-  static inline Result(Void, cref_Char) List_push_front(T)(ref_List(T) self, T value) \
+  static inline Result(Void, cref(Char)) List_push_front(T)(ref_List(T) self, T value) \
   { \
     TEMPLATE_TYPE(ref_Node, T) new_node = MY_C_UTILS_MALLOC(sizeof(TEMPLATE_TYPE(Node, T))); \
     if (!new_node) \
     { \
-      return Result_err(Void, cref_Char)("Memory allocation failed"); \
+      return Result_err(Void, cref(Char))("Memory allocation failed"); \
     } \
     new_node->data = value; \
     new_node->next = self->head; \
@@ -236,14 +236,14 @@
       self->tail = new_node; \
     } \
     ++self->size; \
-    return Result_ok(Void, cref_Char)((Void){}); \
+    return Result_ok(Void, cref(Char))((Void){}); \
   } \
   \
-  static inline Result(T, cref_Char) List_pop_front(T)(ref_List(T) self) \
+  static inline Result(T, cref(Char)) List_pop_front(T)(ref_List(T) self) \
   { \
     if (self->size == 0) \
     { \
-      return Result_err(T, cref_Char)("Pop on empty list"); \
+      return Result_err(T, cref(Char))("Pop on empty list"); \
     } \
     TEMPLATE_TYPE(ref_Node, T) temp = self->head; \
     self->head = self->head->next; \
@@ -254,14 +254,14 @@
     T data = temp->data; \
     MY_C_UTILS_FREE(temp); \
     --self->size; \
-    return Result_ok(T, cref_Char)(data); \
+    return Result_ok(T, cref(Char))(data); \
   } \
   \
-  static inline Result(T, cref_Char) List_pop_back(T)(ref_List(T) self) \
+  static inline Result(T, cref(Char)) List_pop_back(T)(ref_List(T) self) \
   { \
     if (self->size == 0) \
     { \
-      return Result_err(T, cref_Char)("Pop on empty list"); \
+      return Result_err(T, cref(Char))("Pop on empty list"); \
     } \
     TEMPLATE_TYPE(ref_Node, T) current = self->head; \
     TEMPLATE_TYPE(ref_Node, T) previous = NULL; \
@@ -283,7 +283,7 @@
     T data = current->data; \
     MY_C_UTILS_FREE(current); \
     --self->size; \
-    return Result_ok(T, cref_Char)(data); \
+    return Result_ok(T, cref(Char))(data); \
   } \
   \
   static inline void List_free(T)(ref_List(T) self) \
@@ -361,8 +361,8 @@
     while (node != NULL) \
     { \
       T cloned_value = T##_clone(&node->data); \
-      Result(Void, cref_Char) push_res = List_push_back(T)(&dest, cloned_value); \
-      if (Result_is_err(Void, cref_Char)(&push_res)) \
+      Result(Void, cref(Char)) push_res = List_push_back(T)(&dest, cloned_value); \
+      if (Result_is_err(Void, cref(Char))(&push_res)) \
       { \
         List_free(T)(&dest); \
         perror("Memory allocation failed during list clone"); \

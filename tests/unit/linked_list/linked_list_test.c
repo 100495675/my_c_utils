@@ -13,17 +13,17 @@ Int main(void)
   List_push_back(Int)(&ll, 30);
   assert(List_size(Int)(&ll) == 3);
 
-  Result(Int, cref_Char) result = List_pop_back(Int)(&ll);
-  assert(Result_is_ok(Int, cref_Char)(&result));
-  assert(Result_unwrap(Int, cref_Char)(result) == 30);
+  Result(Int, cref(Char)) result = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref(Char))(&result));
+  assert(Result_unwrap(Int, cref(Char))(result) == 30);
 
-  Result(Int, cref_Char) second = List_pop_back(Int)(&ll);
-  assert(Result_is_ok(Int, cref_Char)(&second));
-  assert(Result_unwrap(Int, cref_Char)(second) == 20);
+  Result(Int, cref(Char)) second = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref(Char))(&second));
+  assert(Result_unwrap(Int, cref(Char))(second) == 20);
 
-  Result(Int, cref_Char) third = List_pop_back(Int)(&ll);
-  assert(Result_is_ok(Int, cref_Char)(&third));
-  assert(Result_unwrap(Int, cref_Char)(third) == 10);
+  Result(Int, cref(Char)) third = List_pop_back(Int)(&ll);
+  assert(Result_is_ok(Int, cref(Char))(&third));
+  assert(Result_unwrap(Int, cref(Char))(third) == 10);
 
   assert(List_size(Int)(&ll) == 0);
 

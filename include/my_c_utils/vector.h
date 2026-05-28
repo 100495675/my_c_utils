@@ -59,8 +59,8 @@
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
  * @param value The value of type T to append (copied into Vector).
- * @returns Result(Void, cref_Char)
- * @usage Result(Void, cref_Char) r = Vector_push_back(Int)(&my_vec, 42);
+ * @returns Result(Void, cref(Char))
+ * @usage Result(Void, cref(Char)) r = Vector_push_back(Int)(&my_vec, 42);
  */
 #define Vector_push_back(...)    TEMPLATE_METHOD(Vector, push_back, __VA_ARGS__)
 
@@ -69,8 +69,8 @@
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
  * @param index The target index.
- * @returns Result(ref(T), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = Vector_at(Int)(&my_vec, 0);
+ * @returns Result(ref(T), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = Vector_at(Int)(&my_vec, 0);
  */
 #define Vector_at(...)           TEMPLATE_METHOD(Vector, at, __VA_ARGS__)
 
@@ -89,7 +89,7 @@
  * @param self Pointer to the Vector instance (&my_vec).
  * @param index The target index.
  * @param value The new value of type T to assign (overwriting the old one).
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Vector_set(Int)(&my_vec, 0, 999);
  */
 #define Vector_set(...)          TEMPLATE_METHOD(Vector, set, __VA_ARGS__)
@@ -115,7 +115,7 @@
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
  * @param capacity The desired minimum capacity.
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Vector_reserve(Int)(&my_vec, 100);
  */
 #define Vector_reserve(...)      TEMPLATE_METHOD(Vector, reserve, __VA_ARGS__)
@@ -124,8 +124,8 @@
  * @brief Removes and returns the last element of the Vector.
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
- * @returns Result(T, cref_Char)
- * @usage Result(Int, cref_Char) popped = Vector_pop_back(Int)(&my_vec);
+ * @returns Result(T, cref(Char))
+ * @usage Result(Int, cref(Char)) popped = Vector_pop_back(Int)(&my_vec);
  */
 #define Vector_pop_back(...)     TEMPLATE_METHOD(Vector, pop_back, __VA_ARGS__)
 
@@ -135,7 +135,7 @@
  * @param self Pointer to the Vector instance (&my_vec).
  * @param index The target index to insert at.
  * @param value The value to insert.
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Vector_insert_at(Int)(&my_vec, 0, 5);
  */
 #define Vector_insert_at(...)    TEMPLATE_METHOD(Vector, insert_at, __VA_ARGS__)
@@ -145,7 +145,7 @@
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
  * @param index The target index to remove.
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Vector_remove_at(Int)(&my_vec, 1);
  */
 #define Vector_remove_at(...)    TEMPLATE_METHOD(Vector, remove_at, __VA_ARGS__)
@@ -154,7 +154,7 @@
  * @brief Reallocates the Vector storage to match exactly its current size.
  * @param T The element type.
  * @param self Pointer to the Vector instance (&my_vec).
- * @returns Result(Void, cref_Char)
+ * @returns Result(Void, cref(Char))
  * @usage Vector_shrink_to_fit(Int)(&my_vec);
  */
 #define Vector_shrink_to_fit(...) TEMPLATE_METHOD(Vector, shrink_to_fit, __VA_ARGS__)
@@ -195,15 +195,15 @@
 
 /**
  * @brief Returns the current element of the iterator without advancing.
- * @returns Result(ref(T), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_Vector_deref(Int)(&it);
+ * @returns Result(ref(T), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_Vector_deref(Int)(&it);
  */
 #define iter_Vector_deref(...)   TEMPLATE_METHOD(iter_Vector, deref, __VA_ARGS__)
 
 /**
  * @brief Advances the iterator and returns the next element.
- * @returns Result(ref(T), cref_Char)
- * @usage Result(ref_Int, cref_Char) r = iter_Vector_next(Int)(&it);
+ * @returns Result(ref(T), cref(Char))
+ * @usage Result(ref_Int, cref(Char)) r = iter_Vector_next(Int)(&it);
  */
 #define iter_Vector_next(...)    TEMPLATE_METHOD(iter_Vector, next, __VA_ARGS__)
 
@@ -248,7 +248,7 @@
         return (Vector(T)){.data = NULL, .size = 0, .capacity = 0}; \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_push_back(T)(ref_Vector(T) self, \
+    static inline Result(Void, cref(Char)) Vector_push_back(T)(ref_Vector(T) self, \
                                                    const T value) \
     { \
         if (self->size == self->capacity) \
@@ -257,12 +257,12 @@
             ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T)); \
             if (!new_data) \
             { \
-                return Result_err(Void, cref_Char)("Memory allocation failed"); \
+                return Result_err(Void, cref(Char))("Memory allocation failed"); \
             } \
             self->data = new_data; \
         } \
         self->data[self->size++] = value; \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
     static inline Result(ref(T), cref(Char)) Vector_at(T)( \
@@ -280,16 +280,16 @@
         return self->size; \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_set(T)( \
+    static inline Result(Void, cref(Char)) Vector_set(T)( \
         ref_Vector(T) self, const Size index, const T value) \
     { \
         if (index >= self->size) \
         { \
-            return Result_err(Void, cref_Char)("Index out of bounds"); \
+            return Result_err(Void, cref(Char))("Index out of bounds"); \
         } \
         T##_free(&self->data[index]); \
         self->data[index] = value; \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
     static inline void Vector_clear(T)(ref_Vector(T) self) \
@@ -313,7 +313,7 @@
         self->capacity = 0; \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_reserve(T)(ref_Vector(T) self, \
+    static inline Result(Void, cref(Char)) Vector_reserve(T)(ref_Vector(T) self, \
                                                  const Size capacity) \
     { \
         if (capacity > self->capacity) \
@@ -321,30 +321,30 @@
             ref(T) new_data = MY_C_UTILS_REALLOC(self->data, capacity * sizeof(T)); \
             if (!new_data) \
             { \
-                return Result_err(Void, cref_Char)("Memory allocation failed"); \
+                return Result_err(Void, cref(Char))("Memory allocation failed"); \
             } \
             self->data = new_data; \
             self->capacity = capacity; \
         } \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
-    static inline Result(T, cref_Char) Vector_pop_back(T)(ref_Vector(T) self) \
+    static inline Result(T, cref(Char)) Vector_pop_back(T)(ref_Vector(T) self) \
     { \
         if (self->size == 0) \
         { \
-            return Result_err(T, cref_Char)("Vector is empty"); \
+            return Result_err(T, cref(Char))("Vector is empty"); \
         } \
-        return Result_ok(T, cref_Char)(self->data[--self->size]); \
+        return Result_ok(T, cref(Char))(self->data[--self->size]); \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_insert_at(T)(ref_Vector(T) self, \
+    static inline Result(Void, cref(Char)) Vector_insert_at(T)(ref_Vector(T) self, \
                                                    Size index, \
                                                     T value) \
     { \
         if (index > self->size) \
         { \
-            return Result_err(Void, cref_Char)("Index out of bounds"); \
+            return Result_err(Void, cref(Char))("Index out of bounds"); \
         } \
         if (self->size == self->capacity) \
         { \
@@ -352,7 +352,7 @@
             ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->capacity * sizeof(T));\
             if (!new_data) \
             { \
-                return Result_err(Void, cref_Char)("Memory allocation failed"); \
+                return Result_err(Void, cref(Char))("Memory allocation failed"); \
             } \
             self->data = new_data; \
         } \
@@ -362,14 +362,14 @@
         } \
         self->data[index] = value; \
         self->size++; \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_remove_at(T)(ref_Vector(T) self, Size index) \
+    static inline Result(Void, cref(Char)) Vector_remove_at(T)(ref_Vector(T) self, Size index) \
     { \
         if (index >= self->size) \
         { \
-            return Result_err(Void, cref_Char)("Index out of bounds"); \
+            return Result_err(Void, cref(Char))("Index out of bounds"); \
         } \
         T##_free(&self->data[index]); \
         for (Size i = index; i < self->size - 1; ++i) \
@@ -377,10 +377,10 @@
             self->data[i] = self->data[i + 1]; \
         } \
         self->size--; \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
-    static inline Result(Void, cref_Char) Vector_shrink_to_fit(T)(ref_Vector(T) self) \
+    static inline Result(Void, cref(Char)) Vector_shrink_to_fit(T)(ref_Vector(T) self) \
     { \
         if (self->capacity > self->size) \
         { \
@@ -395,13 +395,13 @@
                 ref(T) new_data = MY_C_UTILS_REALLOC(self->data, self->size * sizeof(T));\
                 if (!new_data) \
                 { \
-                    return Result_err(Void, cref_Char)("Memory allocation failed"); \
+                    return Result_err(Void, cref(Char))("Memory allocation failed"); \
                 } \
                 self->data = new_data; \
                 self->capacity = self->size; \
             } \
         } \
-        return Result_ok(Void, cref_Char)((Void){}); \
+        return Result_ok(Void, cref(Char))((Void){}); \
     } \
     \
     static inline void Vector_sort(T)(ref_Vector(T) self, \
@@ -460,8 +460,8 @@
         for (Size i = 0; i < self->size; ++i) \
         { \
             T cloned_value = T##_clone(&self->data[i]); \
-            Result(Void, cref_Char) push_res = Vector_push_back(T)(&dest, cloned_value); \
-            if (Result_is_err(Void, cref_Char)(&push_res)) \
+            Result(Void, cref(Char)) push_res = Vector_push_back(T)(&dest, cloned_value); \
+            if (Result_is_err(Void, cref(Char))(&push_res)) \
             { \
                 Vector_free(T)(&dest); \
                 perror("Memory allocation failed during vector clone"); \

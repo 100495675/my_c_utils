@@ -31,7 +31,7 @@
  * @param E Error type.
  * @param self Pointer to the Result instance (&res).
  * @returns Bool
- * @usage Bool success = Result_is_ok(Int, cref_Char)(&res);
+ * @usage Bool success = Result_is_ok(Int, cref(Char))(&res);
  */
 #define Result_is_ok(...)      TEMPLATE_METHOD(Result, is_ok, __VA_ARGS__)
 
@@ -41,7 +41,7 @@
  * @param E Error type.
  * @param self Pointer to the Result instance (&res).
  * @returns Bool
- * @usage Bool failure = Result_is_err(Int, cref_Char)(&res);
+ * @usage Bool failure = Result_is_err(Int, cref(Char))(&res);
  */
 #define Result_is_err(...)     TEMPLATE_METHOD(Result, is_err, __VA_ARGS__)
 
@@ -51,7 +51,7 @@
  * @param E Error type.
  * @param self The Result instance.
  * @returns T
- * @usage Int value = Result_unwrap(Int, cref_Char)(res);
+ * @usage Int value = Result_unwrap(Int, cref(Char))(res);
  */
 #define Result_unwrap(...)     TEMPLATE_METHOD(Result, unwrap, __VA_ARGS__)
 
@@ -61,7 +61,7 @@
  * @param E Error type.
  * @param self The Result instance.
  * @returns E
- * @usage cref_Char err = Result_unwrap_err(Int, cref_Char)(res);
+ * @usage cref(Char) err = Result_unwrap_err(Int, cref(Char))(res);
  */
 #define Result_unwrap_err(...) TEMPLATE_METHOD(Result, unwrap_err, __VA_ARGS__)
 
@@ -70,7 +70,7 @@
  * @param T Success type.
  * @param E Error type.
  * @param self Pointer to the Result instance (&res).
- * @usage Result_free(Int, cref_Char)(&res);
+ * @usage Result_free(Int, cref(Char))(&res);
  */
 #define Result_free(...)       TEMPLATE_METHOD(Result, free, __VA_ARGS__)
 
@@ -80,7 +80,7 @@
  * @param E Error type.
  * @param value The success value of type T to store.
  * @returns Result(T, E)
- * @usage Result(Int, cref_Char) res = Result_ok(Int, cref_Char)(42);
+ * @usage Result(Int, cref(Char)) res = Result_ok(Int, cref(Char))(42);
  */
 #define Result_ok(...)         TEMPLATE_METHOD(Result, ok, __VA_ARGS__)
 
@@ -90,7 +90,7 @@
  * @param E Error type.
  * @param error The error value of type E to store.
  * @returns Result(T, E)
- * @usage Result(Int, cref_Char) res = Result_err(Int, cref_Char)("An error occurred");
+ * @usage Result(Int, cref(Char)) res = Result_err(Int, cref(Char))("An error occurred");
  */
 #define Result_err(...)        TEMPLATE_METHOD(Result, err, __VA_ARGS__)
 
@@ -102,7 +102,7 @@
  * @param self The Result(T, E) instance.
  * @param fn Mapping function U (*fn)(T).
  * @returns Result(U, E)
- * @usage Result_map(Int, cref_Char, Double)(res, int_to_double)
+ * @usage Result_map(Int, cref(Char), Double)(res, int_to_double)
  */
 #define Result_map(...)      TEMPLATE_METHOD(Result, map, __VA_ARGS__)
 
@@ -114,7 +114,7 @@
  * @param self The Result(T, E) instance.
  * @param fn Monadic function Result(U, E) (*fn)(T).
  * @returns Result(U, E)
- * @usage Result_and_then(Int, cref_Char, Double)(res, int_to_res_double)
+ * @usage Result_and_then(Int, cref(Char), Double)(res, int_to_res_double)
  */
 #define Result_and_then(...) TEMPLATE_METHOD(Result, and_then, __VA_ARGS__)
 
@@ -125,7 +125,7 @@
  * @param self The Result(T, E) instance.
  * @param default_value Default value to return if it is Err.
  * @returns T
- * @usage Int val = Result_unwrap_or(Int, cref_Char)(res, 0)
+ * @usage Int val = Result_unwrap_or(Int, cref(Char))(res, 0)
  */
 #define Result_unwrap_or(...) TEMPLATE_METHOD(Result, unwrap_or, __VA_ARGS__)
 
@@ -225,6 +225,6 @@ static inline void Void_free(Void *value)
     (void)value;
 }
 
-RESULT_CONFIG(Void, cref_Char)
+RESULT_CONFIG(Void, cref(Char))
 
 #endif

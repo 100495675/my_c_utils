@@ -32,11 +32,11 @@ Int main(){
     assert(p1_clone.x == 3 && p1_clone.y == 4);
     printf("Point<Int> clonado correctamente: (%d, %d)\n", p1_clone.x, p1_clone.y);
 
-    // 5. Probar el tipo Result(Point(Int), cref_Char) autogenerado por RESULT_CONFIG
-    Result(Point(Int), cref_Char) res = Result_ok(Point(Int), cref_Char)(p1_clone);
-    assert(Result_is_ok(Point(Int), cref_Char)(&res));
+    // 5. Probar el tipo Result(Point(Int), cref(Char)) autogenerado por RESULT_CONFIG
+    Result(Point(Int), cref(Char)) res = Result_ok(Point(Int), cref(Char))(p1_clone);
+    assert(Result_is_ok(Point(Int), cref(Char))(&res));
 
-    Point(Int) p1_unwrapped = Result_unwrap(Point(Int), cref_Char)(res);
+    Point(Int) p1_unwrapped = Result_unwrap(Point(Int), cref(Char))(res);
     assert(p1_unwrapped.x == 3 && p1_unwrapped.y == 4);
     printf("Point<Int> extraído de Result correctamente: (%d, %d)\n", p1_unwrapped.x, p1_unwrapped.y);
 

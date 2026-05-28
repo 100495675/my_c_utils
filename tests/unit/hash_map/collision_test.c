@@ -46,9 +46,9 @@ Int main(void)
   {
     String key = make_key(i);
     assert(Hashmap_contains(String, Int)(&hm, key));
-    Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&hm, key);
-    assert(Result_is_ok(ref_Int, cref_Char)(&r));
-    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(r)) == i);
+    Result(ref_Int, cref(Char)) r = Hashmap_get(String, Int)(&hm, key);
+    assert(Result_is_ok(ref_Int, cref(Char))(&r));
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref(Char))(r)) == i);
     free(key);
   }
 
@@ -70,9 +70,9 @@ Int main(void)
   {
     String key = make_key(i);
     assert(Hashmap_contains(String, Int)(&hm, key));
-    Result(ref_Int, cref_Char) r = Hashmap_get(String, Int)(&hm, key);
-    assert(Result_is_ok(ref_Int, cref_Char)(&r));
-    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref_Char)(r)) == i);
+    Result(ref_Int, cref(Char)) r = Hashmap_get(String, Int)(&hm, key);
+    assert(Result_is_ok(ref_Int, cref(Char))(&r));
+    assert(ref_deref(Int)(Result_unwrap(ref_Int, cref(Char))(r)) == i);
     free(key);
   }
 

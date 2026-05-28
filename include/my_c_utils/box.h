@@ -100,7 +100,7 @@
             self->value = NULL; \
         } \
     } \
-    RESULT_CONFIG(Box(T), cref_Char) \
+    RESULT_CONFIG(Box(T), cref(Char)) \
     static inline Box(T) Box_new(T)(T value) { \
         ref(T) boxed_value = MY_C_UTILS_MALLOC(sizeof(T)); \
         if (!boxed_value) { \

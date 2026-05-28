@@ -24,10 +24,10 @@ Int main(void)
   Box_free(Int)(&cloned_number);
 
   Vector(Int) vector = Vector_new(Int)();
-  Result(Void, cref_Char) r1 = Vector_push_back(Int)(&vector, 1);
-  assert(Result_is_ok(Void, cref_Char)(&r1));
-  Result(Void, cref_Char) r2 = Vector_push_back(Int)(&vector, 2);
-  assert(Result_is_ok(Void, cref_Char)(&r2));
+  Result(Void, cref(Char)) r1 = Vector_push_back(Int)(&vector, 1);
+  assert(Result_is_ok(Void, cref(Char))(&r1));
+  Result(Void, cref(Char)) r2 = Vector_push_back(Int)(&vector, 2);
+  assert(Result_is_ok(Void, cref(Char))(&r2));
 
   Box(Vector(Int)) vector_box = Box_new(Vector(Int))(vector);
   vector = Vector_new(Int)();
@@ -46,9 +46,9 @@ Int main(void)
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(cloned_first)) == 1);
 
   Result(Void, cref(Char)) r3 = Vector_set(Int)(Box_deref_mut(Vector(Int))(&vector_box), 0, 99);
-  assert(Result_is_ok(Void, cref_Char)(&r3));
+  assert(Result_is_ok(Void, cref(Char))(&r3));
   Result(Void, cref(Char)) r4 = Vector_set(Int)(Box_deref_mut(Vector(Int))(&vector_box), 0, 99);
-  assert(Result_is_ok(Void, cref_Char)(&r4));
+  assert(Result_is_ok(Void, cref(Char))(&r4));
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(Box_deref(Vector(Int))(&vector_box), 0))) == 99);
   assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(Box_deref(Vector(Int))(&cloned_vector_box), 0))) == 1);
 

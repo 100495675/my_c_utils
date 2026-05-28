@@ -19,16 +19,16 @@ RESULT_CONFIG(Int, Int)
 
 Int main(void)
 {
-  // Test new simplified C++/Rust two-parameter Result(String, cref_Char)
-  Result(String, cref_Char) ok = Result_ok(String, cref_Char)(make_text());
-  assert(Result_is_ok(String, cref_Char)(&ok));
-  String ok_val = Result_unwrap(String, cref_Char)(ok);
+  // Test new simplified C++/Rust two-parameter Result(String, cref(Char))
+  Result(String, cref(Char)) ok = Result_ok(String, cref(Char))(make_text());
+  assert(Result_is_ok(String, cref(Char))(&ok));
+  String ok_val = Result_unwrap(String, cref(Char))(ok);
   assert(strcmp(ok_val, "hello") == 0);
   String_free(&ok_val);
 
-  Result(String, cref_Char) err = Result_err(String, cref_Char)("oops");
-  assert(Result_is_err(String, cref_Char)(&err));
-  assert(strcmp(Result_unwrap_err(String, cref_Char)(err), "oops") == 0);
+  Result(String, cref(Char)) err = Result_err(String, cref(Char))("oops");
+  assert(Result_is_err(String, cref(Char))(&err));
+  assert(strcmp(Result_unwrap_err(String, cref(Char))(err), "oops") == 0);
 
   // Test new C++/Rust two-parameter Result(Int, Int)
   Result(Int, Int) res_ok = Result_ok(Int, Int)(42);
