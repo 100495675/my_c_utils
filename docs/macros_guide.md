@@ -325,7 +325,36 @@ To facilitate inline anonymous function declaration without verbose nested funct
 
 ---
 
-## 10. Interactive Example
+## 10. Declarative Pipeline Composition (The Pipe Operator)
+
+*Provides a thread-safe, type-safe declarative pipeline composition system using GCC statement expression nested shadowing scopes. This allows fluent chaining of lazy iterators, container transformations, and inline lambdas in standard C without verbose nested function calls or type-changing variables.*
+
+To overcome standard C limitations where a variable's type cannot be changed within the same scope, `pipeline` nestedly declares and shadows a special local identifier `_val` at each stage. Inside each inner statement expression scope, `_val` is shadowed sequentially with a new deduced type, allowing the output of each pipeline step to serve as the input for the next step.
+
+### A. The `pipeline` Macro
+*Combines an input container/iterator and any number of pipeline steps (up to 8) into a single unified statement expression.*
+
+* **Syntax**: `pipeline(input, step1, step2, ...)`
+* **The `_val` Placeholder**: Within each step expression, use the keyword `_val` to represent the output from the immediate preceding step.
+* **Example**:
+  ```c
+  Vector(Int) pipeline_res = pipeline(
+      Vector_into_iter(Int)(Vector_clone(Int)(&vec)),
+      skip(Vector(Int))(_val, 1),
+      filter(Skip(Vector(Int)))(_val, lambda(bool, (cref(Int) x), { return cref_deref(Int)(x) > 20; })),
+      map(Filtered(Skip(Vector(Int))), Int)(_val, lambda(Int, (cref(Int) x), { return cref_deref(Int)(x) * 2; })),
+      collect_new(Vector(Int), Mapped(Filtered(Skip(Vector(Int))), Int))(_val)
+  );
+  ```
+
+### B. Features & Compile-Time Safety
+* **Zero Runtime Overhead**: Designed completely via standard C preprocessor structures; compiles directly down to standard nested blocks, optimized by the compiler without any performance or allocation overhead.
+* **100% Memory Safe**: Fully integrates with our memory-consuming ownership model. Intermediate iterators are automatically consumed and cleaned up at the end of the pipeline when the final `collect` or `collect_new` step calls `iter_free` on the pipeline.
+* **Lambda Compatible**: Fully compatible with inline anonymous functions (`lambda`) at any filtering or mapping stage.
+
+---
+
+## 11. Interactive Example
 
 Below is a complete, working example using several templates together:
 

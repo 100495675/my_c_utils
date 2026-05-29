@@ -2,6 +2,7 @@
 #define MY_C_UTILS_ITERATOR_H
 
 #include "my_c_utils/template.h"
+#include "my_c_utils/pair.h"
 
 /*
 Functions the containes has to implement to be iterable:
@@ -327,5 +328,366 @@ Functions the containes has to implement to be iterable:
         } \
         _all_impl; \
     })
+
+#define Take(...) TEMPLATE_TYPE(Take, __VA_ARGS__)
+#define iter_Take(...) TEMPLATE_TYPE(iter_Take, __VA_ARGS__)
+
+/**
+ * @brief Configuration macro to instantiate a type-safe lazy taking iterator.
+ * @param SrcContainer The source container type (e.g. Vector(Int)).
+ * @param T The element type (e.g. Int).
+ */
+#define TAKE_CONFIG(SrcContainer, T) \
+    typedef struct { \
+        iter(SrcContainer) source; \
+        Size limit; \
+        Size count; \
+    } iter_Take(SrcContainer); \
+    \
+    static inline void TEMPLATE_METHOD(iter_Take, free, SrcContainer)(const iter_Take(SrcContainer)* self) { \
+        iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Take, next, SrcContainer)(iter_Take(SrcContainer)* self) { \
+        if (self->count >= self->limit) { \
+            return Result_err(ref(T), cref(Char))("Take limit reached"); \
+        } \
+        __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(T), cref(Char))(res.error); \
+        } \
+        self->count++; \
+        return Result_ok(ref(T), cref(Char))(res.value); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Take, deref, SrcContainer)(const iter_Take(SrcContainer)* self) { \
+        if (self->count >= self->limit) { \
+            return Result_err(ref(T), cref(Char))("Take limit reached"); \
+        } \
+        __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(T), cref(Char))(res.error); \
+        } \
+        return Result_ok(ref(T), cref(Char))(res.value); \
+    }
+
+/**
+ * @brief Lazily takes the first N elements from an iterator.
+ * @param SrcContainer The source container type.
+ * @usage take(Vector(Int))(my_iter, 5)
+ */
+#define take(SrcContainer) \
+    ({ \
+        iter_Take(SrcContainer) _take_impl(iter(SrcContainer) _s, Size _n) { \
+            return (iter_Take(SrcContainer)){.source = _s, .limit = _n, .count = 0}; \
+        } \
+        _take_impl; \
+    })
+
+#define Skip(...) TEMPLATE_TYPE(Skip, __VA_ARGS__)
+#define iter_Skip(...) TEMPLATE_TYPE(iter_Skip, __VA_ARGS__)
+
+/**
+ * @brief Configuration macro to instantiate a type-safe lazy skipping iterator.
+ * @param SrcContainer The source container type (e.g. Vector(Int)).
+ * @param T The element type (e.g. Int).
+ */
+#define SKIP_CONFIG(SrcContainer, T) \
+    typedef struct { \
+        iter(SrcContainer) source; \
+    } iter_Skip(SrcContainer); \
+    \
+    static inline void TEMPLATE_METHOD(iter_Skip, free, SrcContainer)(const iter_Skip(SrcContainer)* self) { \
+        iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Skip, next, SrcContainer)(iter_Skip(SrcContainer)* self) { \
+        return iter_next(SrcContainer)(&self->source); \
+    } \
+    \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Skip, deref, SrcContainer)(const iter_Skip(SrcContainer)* self) { \
+        return iter_deref(SrcContainer)(&self->source); \
+    }
+
+/**
+ * @brief Lazily skips the first N elements from an iterator.
+ * @param SrcContainer The source container type.
+ * @usage skip(Vector(Int))(my_iter, 3)
+ */
+#define skip(SrcContainer) \
+    ({ \
+        iter_Skip(SrcContainer) _skip_impl(iter(SrcContainer) _s, Size _n) { \
+            for (Size _i = 0; _i < _n; _i++) { \
+                __typeof__(iter_next(SrcContainer)(&_s)) _res = iter_next(SrcContainer)(&_s); \
+                if (_res.is_error) { \
+                    break; \
+                } \
+            } \
+            return (iter_Skip(SrcContainer)){.source = _s}; \
+        } \
+        _skip_impl; \
+    })
+
+#define Enumerate(...) TEMPLATE_TYPE(Enumerate, __VA_ARGS__)
+#define iter_Enumerate(...) TEMPLATE_TYPE(iter_Enumerate, __VA_ARGS__)
+
+/**
+ * @brief Configuration macro to instantiate a type-safe lazy enumerating iterator.
+ * @param SrcContainer The source container type (e.g. Vector(Int)).
+ * @param T The element type (e.g. Int).
+ */
+#define ENUMERATE_CONFIG(SrcContainer, T) \
+    PAIR_CONFIG(Size, ref(T)) \
+    RESULT_CONFIG(ref(Pair(Size, ref(T))), cref(Char)) \
+    typedef struct { \
+        iter(SrcContainer) source; \
+        Size index; \
+        Pair(Size, ref(T)) current_value; \
+    } iter_Enumerate(SrcContainer, T); \
+    \
+    static inline void TEMPLATE_METHOD(iter_Enumerate, free, SrcContainer, T)(const iter_Enumerate(SrcContainer, T)* self) { \
+        iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
+    } \
+    \
+    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(iter_Enumerate, next, SrcContainer, T)(iter_Enumerate(SrcContainer, T)* self) { \
+        __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(Pair(Size, ref(T))), cref(Char))(res.error); \
+        } \
+        self->current_value.first = self->index; \
+        self->current_value.second = res.value; \
+        self->index++; \
+        return Result_ok(ref(Pair(Size, ref(T))), cref(Char))(&self->current_value); \
+    } \
+    \
+    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(iter_Enumerate, deref, SrcContainer, T)(const iter_Enumerate(SrcContainer, T)* self) { \
+        __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(Pair(Size, ref(T))), cref(Char))(res.error); \
+        } \
+        iter_Enumerate(SrcContainer, T)* self_mut = (iter_Enumerate(SrcContainer, T)*)self; \
+        self_mut->current_value.first = self->index; \
+        self_mut->current_value.second = res.value; \
+        return Result_ok(ref(Pair(Size, ref(T))), cref(Char))(&self_mut->current_value); \
+    }
+
+/**
+ * @brief Lazily pairs each element of an iterator with its index, returning a Pair(Size, ref(T)).
+ * @param SrcContainer The source container type.
+ * @param T The element type of the container.
+ * @usage enumerate(Vector(Int), Int)(my_iter)
+ */
+#define enumerate(SrcContainer, T) \
+    ({ \
+        iter_Enumerate(SrcContainer, T) _enumerate_impl(iter(SrcContainer) _s) { \
+            return (iter_Enumerate(SrcContainer, T)){.source = _s, .index = 0}; \
+        } \
+        _enumerate_impl; \
+    })
+
+#define Zip(...) TEMPLATE_TYPE(Zip, __VA_ARGS__)
+#define iter_Zip(...) TEMPLATE_TYPE(iter_Zip, __VA_ARGS__)
+
+/**
+ * @brief Configuration macro to instantiate a type-safe lazy zipping iterator.
+ * @param SrcContainer1 The first source container type.
+ * @param SrcContainer2 The second source container type.
+ * @param T1 The first element type.
+ * @param T2 The second element type.
+ */
+#define ZIP_CONFIG(SrcContainer1, SrcContainer2, T1, T2) \
+    PAIR_CONFIG(ref(T1), ref(T2)) \
+    RESULT_CONFIG(ref(Pair(ref(T1), ref(T2))), cref(Char)) \
+    typedef struct { \
+        iter(SrcContainer1) source1; \
+        iter(SrcContainer2) source2; \
+        Pair(ref(T1), ref(T2)) current_value; \
+    } iter_Zip(SrcContainer1, SrcContainer2, T1, T2); \
+    \
+    static inline void TEMPLATE_METHOD(iter_Zip, free, SrcContainer1, SrcContainer2, T1, T2)(const iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+        iter_free(SrcContainer1)((iter(SrcContainer1)*)&self->source1); \
+        iter_free(SrcContainer2)((iter(SrcContainer2)*)&self->source2); \
+    } \
+    \
+    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(iter_Zip, next, SrcContainer1, SrcContainer2, T1, T2)(iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+        __typeof__(iter_next(SrcContainer1)(&self->source1)) res1 = iter_next(SrcContainer1)(&self->source1); \
+        __typeof__(iter_next(SrcContainer2)(&self->source2)) res2 = iter_next(SrcContainer2)(&self->source2); \
+        if (res1.is_error || res2.is_error) { \
+            return Result_err(ref(Pair(ref(T1), ref(T2))), cref(Char))("Zip end reached"); \
+        } \
+        self->current_value.first = res1.value; \
+        self->current_value.second = res2.value; \
+        return Result_ok(ref(Pair(ref(T1), ref(T2))), cref(Char))(&self->current_value); \
+    } \
+    \
+    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(iter_Zip, deref, SrcContainer1, SrcContainer2, T1, T2)(const iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+        __typeof__(iter_deref(SrcContainer1)(&self->source1)) res1 = iter_deref(SrcContainer1)(&self->source1); \
+        __typeof__(iter_deref(SrcContainer2)(&self->source2)) res2 = iter_deref(SrcContainer2)(&self->source2); \
+        if (res1.is_error || res2.is_error) { \
+            return Result_err(ref(Pair(ref(T1), ref(T2))), cref(Char))("Zip end reached"); \
+        } \
+        iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self_mut = (iter_Zip(SrcContainer1, SrcContainer2, T1, T2)*)self; \
+        self_mut->current_value.first = res1.value; \
+        self_mut->current_value.second = res2.value; \
+        return Result_ok(ref(Pair(ref(T1), ref(T2))), cref(Char))(&self_mut->current_value); \
+    }
+
+/**
+ * @brief Lazily pairs elements from two iterators concurrently, returning a Pair(ref(T1), ref(T2)).
+ * @param SrcContainer1 The first source container type.
+ * @param SrcContainer2 The second source container type.
+ * @param T1 The first element type.
+ * @param T2 The second element type.
+ * @usage zip(List(Int), Vector(Int), Int, Int)(my_list_iter, my_vec_iter)
+ */
+#define zip(SrcContainer1, SrcContainer2, T1, T2) \
+    ({ \
+        iter_Zip(SrcContainer1, SrcContainer2, T1, T2) _zip_impl(iter(SrcContainer1) _s1, iter(SrcContainer2) _s2) { \
+            return (iter_Zip(SrcContainer1, SrcContainer2, T1, T2)){.source1 = _s1, .source2 = _s2}; \
+        } \
+        _zip_impl; \
+    })
+
+#define pipeline_1(input) (input)
+
+#define pipeline_2(input, step1) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        __typeof__(step1) _temp = (step1); \
+        _temp; \
+    })
+
+#define pipeline_3(input, step1, step2) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            __typeof__(step2) _temp2 = (step2); \
+            _temp2; \
+        }); \
+    })
+
+#define pipeline_4(input, step1, step2, step3) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            ({ \
+                __typeof__(step2) _temp = (step2); \
+                __typeof__(_temp) _val = _temp; \
+                __typeof__(step3) _temp2 = (step3); \
+                _temp2; \
+            }); \
+        }); \
+    })
+
+#define pipeline_5(input, step1, step2, step3, step4) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            ({ \
+                __typeof__(step2) _temp = (step2); \
+                __typeof__(_temp) _val = _temp; \
+                ({ \
+                    __typeof__(step3) _temp = (step3); \
+                    __typeof__(_temp) _val = _temp; \
+                    __typeof__(step4) _temp2 = (step4); \
+                    _temp2; \
+                }); \
+            }); \
+        }); \
+    })
+
+#define pipeline_6(input, step1, step2, step3, step4, step5) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            ({ \
+                __typeof__(step2) _temp = (step2); \
+                __typeof__(_temp) _val = _temp; \
+                ({ \
+                    __typeof__(step3) _temp = (step3); \
+                    __typeof__(_temp) _val = _temp; \
+                    ({ \
+                        __typeof__(step4) _temp = (step4); \
+                        __typeof__(_temp) _val = _temp; \
+                        __typeof__(step5) _temp2 = (step5); \
+                        _temp2; \
+                    }); \
+                }); \
+            }); \
+        }); \
+    })
+
+#define pipeline_7(input, step1, step2, step3, step4, step5, step6) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            ({ \
+                __typeof__(step2) _temp = (step2); \
+                __typeof__(_temp) _val = _temp; \
+                ({ \
+                    __typeof__(step3) _temp = (step3); \
+                    __typeof__(_temp) _val = _temp; \
+                    ({ \
+                        __typeof__(step4) _temp = (step4); \
+                        __typeof__(_temp) _val = _temp; \
+                        ({ \
+                            __typeof__(step5) _temp = (step5); \
+                            __typeof__(_temp) _val = _temp; \
+                            __typeof__(step6) _temp2 = (step6); \
+                            _temp2; \
+                        }); \
+                    }); \
+                }); \
+            }); \
+        }); \
+    })
+
+#define pipeline_8(input, step1, step2, step3, step4, step5, step6, step7) \
+    ({ \
+        __typeof__(input) _val = (input); \
+        ({ \
+            __typeof__(step1) _temp = (step1); \
+            __typeof__(_temp) _val = _temp; \
+            ({ \
+                __typeof__(step2) _temp = (step2); \
+                __typeof__(_temp) _val = _temp; \
+                ({ \
+                    __typeof__(step3) _temp = (step3); \
+                    __typeof__(_temp) _val = _temp; \
+                    ({ \
+                        __typeof__(step4) _temp = (step4); \
+                        __typeof__(_temp) _val = _temp; \
+                        ({ \
+                            __typeof__(step5) _temp = (step5); \
+                            __typeof__(_temp) _val = _temp; \
+                            ({ \
+                                __typeof__(step6) _temp = (step6); \
+                                __typeof__(_temp) _val = _temp; \
+                                __typeof__(step7) _temp2 = (step7); \
+                                _temp2; \
+                            }); \
+                        }); \
+                    }); \
+                }); \
+            }); \
+        }); \
+    })
+
+/**
+ * @brief Thread-safe, type-safe declarative pipeline composition macro (The Pipe Operator).
+ * @usage Vector(Int) res = pipeline(input, step1(_val), step2(_val), ...);
+ */
+#define pipeline(...) \
+    MY_C_UTILS_PP_CAT(pipeline_, MY_C_UTILS_NARGS(__VA_ARGS__))(__VA_ARGS__)
 
 #endif
