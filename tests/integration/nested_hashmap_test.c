@@ -3,6 +3,7 @@
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
+RESULT_CONFIG(cref(Vector(Int)), cref(Char))
 HASH_MAP_CONFIG(String, Vector(Int))
 
 Int main(void)

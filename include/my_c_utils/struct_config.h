@@ -124,6 +124,7 @@
     FREE_CONFIG(T, __VA_ARGS__)                                                \
     RESULT_CONFIG(T, cref(Char))                                                \
     RESULT_CONFIG(ref(T), cref(Char))                                          \
+    RESULT_CONFIG(cref(T), cref(Char))                                         \
     CLONE_CONFIG(T, __VA_ARGS__)                                               \
     NEW_CONFIG(T, __VA_ARGS__)
 

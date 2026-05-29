@@ -16,13 +16,13 @@ static inline void Double_free(Double *val)
 }
 
 // 1. Instantiate Option and Result Templates first
+RESULT_CONFIG(Int, cref(Char))
+RESULT_CONFIG(Double, cref(Char))
 OPTION_CONFIG(Int)
 OPTION_CONFIG(Double)
 OPTION_MAP_CONFIG(Int, Double)
 OPTION_AND_THEN_CONFIG(Int, Double)
 
-RESULT_CONFIG(Int, cref(Char))
-RESULT_CONFIG(Double, cref(Char))
 RESULT_MAP_CONFIG(Int, cref(Char), Double)
 RESULT_AND_THEN_CONFIG(Int, cref(Char), Double)
 

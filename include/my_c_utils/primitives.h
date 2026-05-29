@@ -11,6 +11,7 @@
 	TRIVIAL_FREE(T) \
 	RESULT_CONFIG(T, cref(Char))                  \
 	RESULT_CONFIG(ref(T), cref(Char))            \
+	RESULT_CONFIG(cref(T), cref(Char))            \
 	TRIVIAL_CLONE(T)                  \
 	PRIMITIVE_HASH_EQUALS(T)
 

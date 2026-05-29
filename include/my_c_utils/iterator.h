@@ -12,14 +12,7 @@ Functions the containes has to implement to be iterable:
     a Result_Void, or an error if the iterator is out of bounds
 */
 
-#define iter(Container) MY_C_UTILS_CONCAT(iter_, Container)
-#define ref_iter(Container) MY_C_UTILS_CONCAT(ref_iter_, Container)
-#define cref_iter(Container) MY_C_UTILS_CONCAT(cref_iter_, Container)
-
-#define into_iter(Container) MY_C_UTILS_CONCAT(Container, _into_iter)
-#define iter_next(Container) MY_C_UTILS_CONCAT(iter(Container), _next)
-#define iter_deref(Container) MY_C_UTILS_CONCAT(iter(Container), _deref)
-#define iter_free(Container) MY_C_UTILS_CONCAT(iter(Container), _free)
+// Iterator macros moved to template.h to allow global access for result.h and option.h
 #define lambda_impl(ret_t, params, body, unique_id) \
     ({ \
         ret_t unique_id params body \
@@ -83,12 +76,69 @@ Functions the containes has to implement to be iterable:
 #define for_each(ContainerT, var_name, iterable) \
     for_each_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
 
+#define for_each_val_impl(ContainerT, var_name, iterable, state_var) \
+    for (struct { iter_val(ContainerT) it; \
+                  __typeof__(iter_val_next(ContainerT)(NULL)) res; \
+                  bool active; } state_var = {.it = into_iter_val(ContainerT)(iterable), .active = true}; \
+         (state_var.active = true) && \
+         (state_var.res = iter_val_next(ContainerT)(&state_var.it), \
+          !state_var.res.is_error ? true : (iter_val_free(ContainerT)(&state_var.it), false));) \
+        for (__typeof__(state_var.res.value) var_name = state_var.res.value; \
+             state_var.active; \
+             state_var.active = false)
+
 /**
- * @brief Collects all remaining elements from a source iterator and appends them to a destination container.
- * @param DestContainerT The destination container type (e.g. Vector(Int), List(Int)).
- * @param SrcContainerT The source container/iterator type (e.g. Vector(Int), List(Int)).
- * @usage collect(Vector(Int), List(Int))(&my_vec, my_list_iter)
+ * @brief Loops over a container, consuming it and exposing each element directly by value (T).
+ * @param ContainerT The container type (e.g. Vector(Int), List(Int)).
+ * @param var_name Name of the local variable that will hold the element.
+ * @param iterable The container instance itself passed by value (e.g. my_vec or Vector_clone(Int)(&my_vec)).
+ * @usage for_each_val(Vector(Int), item, Vector_clone(Int)(&my_vec)) { ... }
  */
+#define for_each_val(ContainerT, var_name, iterable) \
+    for_each_val_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
+
+#define for_each_mut_impl(ContainerT, var_name, iterable, state_var) \
+    for (struct { iter_mut(ContainerT) it; \
+                  __typeof__(iter_mut_next(ContainerT)(NULL)) res; \
+                  bool active; } state_var = {.it = iter_mut_init(ContainerT)(iterable), .active = true}; \
+         (state_var.active = true) && \
+         (state_var.res = iter_mut_next(ContainerT)(&state_var.it), \
+          !state_var.res.is_error ? true : (iter_mut_free(ContainerT)(&state_var.it), false));) \
+        for (__typeof__(state_var.res.value) var_name = state_var.res.value; \
+             state_var.active; \
+             state_var.active = false)
+
+/**
+ * @brief Loops over a container, borrowing it mutably and exposing each element as a mutable borrowed pointer (ref(T) / T*).
+ * @param ContainerT The container type (e.g. Vector(Int), List(Int)).
+ * @param var_name Name of the local variable that will hold the ref(T) mutable pointer.
+ * @param iterable Pointer to the container instance (e.g. &my_vec).
+ * @usage for_each_mut(Vector(Int), item_ref, &my_vec) { *item_ref = 42; }
+ */
+#define for_each_mut(ContainerT, var_name, iterable) \
+    for_each_mut_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
+
+#define for_each_const_impl(ContainerT, var_name, iterable, state_var) \
+    for (struct { iter_const(ContainerT) it; \
+                  __typeof__(iter_const_next(ContainerT)(NULL)) res; \
+                  bool active; } state_var = {.it = iter_const_init(ContainerT)(iterable), .active = true}; \
+         (state_var.active = true) && \
+         (state_var.res = iter_const_next(ContainerT)(&state_var.it), \
+          !state_var.res.is_error ? true : (iter_const_free(ContainerT)(&state_var.it), false));) \
+        for (__typeof__(state_var.res.value) var_name = state_var.res.value; \
+             state_var.active; \
+             state_var.active = false)
+
+/**
+ * @brief Loops over a container, borrowing it immutably and exposing each element as an immutable borrowed pointer (cref(T) / const T*).
+ * @param ContainerT The container type (e.g. Vector(Int), List(Int)).
+ * @param var_name Name of the local variable that will hold the cref(T) immutable pointer.
+ * @param iterable Pointer to the container instance (e.g. &my_vec).
+ * @usage for_each_const(Vector(Int), item_ref, &my_vec) { printf("%d\n", *item_ref); }
+ */
+#define for_each_const(ContainerT, var_name, iterable) \
+    for_each_const_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
+
 #define collect(DestContainerT, SrcContainerT) \
     ({ \
         void _collect_impl(DestContainerT* _d, iter(SrcContainerT) _s) { \
@@ -114,7 +164,7 @@ Functions the containes has to implement to be iterable:
 #define collect_new(DestContainerT, SrcContainerT) \
     ({ \
         DestContainerT _collect_new_impl(iter(SrcContainerT) _s) { \
-            DestContainerT _dest = MY_C_UTILS_CONCAT(DestContainerT, _new)(); \
+            DestContainerT _dest = Default(DestContainerT)(); \
             collect(DestContainerT, SrcContainerT)(&_dest, _s); \
             return _dest; \
         } \

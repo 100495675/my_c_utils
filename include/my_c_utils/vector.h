@@ -183,6 +183,12 @@
  * @usage iter_Vector(Int) it = Vector_into_iter(Int)(&my_vec);
  */
 #define Vector_into_iter(...)    TEMPLATE_METHOD(Vector, into_iter, __VA_ARGS__)
+#define Vector_into_iter_val(...) TEMPLATE_METHOD(Vector, into_iter_val, __VA_ARGS__)
+#define Vector_iter_mut(...)     TEMPLATE_METHOD(Vector, iter_mut, __VA_ARGS__)
+#define Vector_iter_const(...)   TEMPLATE_METHOD(Vector, iter_const, __VA_ARGS__)
+
+#define Vector_iter_mut_Result(...) TEMPLATE_TYPE(Vector_iter_mut_Result, __VA_ARGS__)
+#define Vector_iter_const_Result(...) TEMPLATE_TYPE(Vector_iter_const_Result, __VA_ARGS__)
 
 /**
  * @brief Clones the Vector, returning an independent deep copy of it.
@@ -449,6 +455,7 @@
         } \
         return Result_ok(ref(T), cref(Char))(&self->vector.data[self->index++]); \
     } \
+    \
     RESULT_CONFIG(Vector(T), cref(Char)) \
     RESULT_CONFIG(ref(Vector(T)), cref(Char)) \
     static inline Vector(T) Vector_clone(T)(cref_Vector(T) self) \
@@ -471,6 +478,137 @@
             } \
         } \
         return dest; \
+    } \
+    \
+    typedef struct \
+    { \
+        Vector(T) vector; \
+        Size index; \
+    } iter_val(Vector(T)); \
+    typedef iter_val(Vector(T)) *ref_iter_val(Vector(T)); \
+    typedef const iter_val(Vector(T)) *cref_iter_val(Vector(T)); \
+    static inline void TEMPLATE_METHOD(ref_iter_val(Vector(T)), free, T)(ref_iter_val(Vector(T)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_val(Vector(T)), free, T)(cref_iter_val(Vector(T)) *value) { (void)value; } \
+    static inline void iter_val_free(Vector(T))(cref_iter_val(Vector(T)) value) \
+    { \
+        for (Size _i = value->index; _i < value->vector.size; ++_i) \
+        { \
+            MY_C_UTILS_CONCAT(T, _free)(&value->vector.data[_i]); \
+        } \
+        TEMPLATE_METHOD(Vector, free, T)((ref_Vector(T))&value->vector); \
+    } \
+    \
+    typedef struct \
+    { \
+        T *value; \
+        bool is_error; \
+    } Vector_iter_mut_Result(T); \
+    typedef struct \
+    { \
+        const T *value; \
+        bool is_error; \
+    } Vector_iter_const_Result(T); \
+    \
+    typedef struct \
+    { \
+        ref_Vector(T) vector; \
+        Size index; \
+    } iter_mut(Vector(T)); \
+    typedef iter_mut(Vector(T)) *ref_iter_mut(Vector(T)); \
+    typedef const iter_mut(Vector(T)) *cref_iter_mut(Vector(T)); \
+    static inline void TEMPLATE_METHOD(ref_iter_mut(Vector(T)), free, T)(ref_iter_mut(Vector(T)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_mut(Vector(T)), free, T)(cref_iter_mut(Vector(T)) *value) { (void)value; } \
+    static inline void iter_mut_free(Vector(T))(cref_iter_mut(Vector(T)) value) { (void)value; } \
+    \
+    typedef struct \
+    { \
+        cref_Vector(T) vector; \
+        Size index; \
+    } iter_const(Vector(T)); \
+    typedef iter_const(Vector(T)) *ref_iter_const(Vector(T)); \
+    typedef const iter_const(Vector(T)) *cref_iter_const(Vector(T)); \
+    static inline void TEMPLATE_METHOD(ref_iter_const(Vector(T)), free, T)(ref_iter_const(Vector(T)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_const(Vector(T)), free, T)(cref_iter_const(Vector(T)) *value) { (void)value; } \
+    static inline void iter_const_free(Vector(T))(cref_iter_const(Vector(T)) value) { (void)value; } \
+    \
+    static inline iter_val(Vector(T)) Vector_into_iter_val(T)( \
+        Vector(T) self) \
+    { \
+        return (iter_val(Vector(T))){.vector = self, .index = 0}; \
+    } \
+    \
+    static inline Result(T, cref(Char)) iter_val_deref(Vector(T))( \
+        cref_iter_val(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector.size) \
+        { \
+            return Result_err(T, cref(Char))("Iterator out of bounds"); \
+        } \
+        return Result_ok(T, cref(Char))(self->vector.data[self->index]); \
+    } \
+    \
+    static inline Result(T, cref(Char)) iter_val_next(Vector(T))(ref_iter_val(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector.size) \
+        { \
+            return Result_err(T, cref(Char))("Iterator out of bounds"); \
+        } \
+        return Result_ok(T, cref(Char))(self->vector.data[self->index++]); \
+    } \
+    \
+    static inline iter_mut(Vector(T)) Vector_iter_mut(T)( \
+        ref_Vector(T) self) \
+    { \
+        return (iter_mut(Vector(T))){.vector = self, .index = 0}; \
+    } \
+    \
+    static inline Vector_iter_mut_Result(T) iter_mut_deref(Vector(T))( \
+        cref_iter_mut(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector->size) \
+        { \
+            return (Vector_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Vector_iter_mut_Result(T)){.value = &(self->vector->data[self->index]), .is_error = false}; \
+    } \
+    \
+    static inline Vector_iter_mut_Result(T) iter_mut_next(Vector(T))(ref_iter_mut(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector->size) \
+        { \
+            return (Vector_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Vector_iter_mut_Result(T)){.value = &self->vector->data[self->index++], .is_error = false}; \
+    } \
+    \
+    static inline iter_const(Vector(T)) Vector_iter_const(T)( \
+        cref_Vector(T) self) \
+    { \
+        return (iter_const(Vector(T))){.vector = self, .index = 0}; \
+    } \
+    \
+    static inline Vector_iter_const_Result(T) iter_const_deref(Vector(T))( \
+        cref_iter_const(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector->size) \
+        { \
+            return (Vector_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Vector_iter_const_Result(T)){.value = &(self->vector->data[self->index]), .is_error = false}; \
+    } \
+    \
+    static inline Vector_iter_const_Result(T) iter_const_next(Vector(T))(ref_iter_const(Vector(T)) self) \
+    { \
+        if (self->index >= self->vector->size) \
+        { \
+            return (Vector_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Vector_iter_const_Result(T)){.value = &self->vector->data[self->index++], .is_error = false}; \
+    } \
+    \
+    static inline Vector(T) TEMPLATE_METHOD(Default, default, Vector(T))(void) \
+    { \
+        return Vector_new(T)(); \
     }
 
 #endif

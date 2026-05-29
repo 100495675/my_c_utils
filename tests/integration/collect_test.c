@@ -1,8 +1,16 @@
 #include "my_c_utils/my_c_utils.h"
 #include <assert.h>
+#include <string.h>
 
 VECTOR_CONFIG(Int)
 LINKED_LIST_CONFIG(Int)
+OPTION_CONFIG(Int)
+HASH_MAP_CONFIG(Int, Int)
+TRIVIAL_FREE(Pair(Int, Int))
+TRIVIAL_CLONE(Pair(Int, Int))
+RESULT_CONFIG(Pair(Int, Int), cref(Char))
+RESULT_CONFIG(ref(Pair(Int, Int)), cref(Char))
+VECTOR_CONFIG(Pair(Int, Int))
 MAPPED_CONFIG(Vector(Int), Int)
 FILTERED_CONFIG(Vector(Int), Int)
 
@@ -292,6 +300,83 @@ int main(void)
     for_each_fn(Vector(Int))(&vec, lambda(void, (cref(Int) x), { fn_sum += cref_deref(Int)(x); }));
     assert(fn_sum == 10); // 1 + 2 + 3 + 4 = 10
 
+    printf("✓\n");
+  }
+
+  // ==========================================
+  // Test 8: Collect to Option
+  // ==========================================
+  {
+    printf("TEST 8: Collect to Option... ");
+    
+    // 1. From non-empty List to Option
+    List(Int) list = List_new(Int)();
+    (void)List_push_back(Int)(&list, 42);
+    (void)List_push_back(Int)(&list, 100);
+    
+    Option(Int) opt_some = collect_new(Option(Int), List(Int))(List_into_iter(Int)(list));
+    assert(Option_is_some(Int)(&opt_some));
+    assert(Option_unwrap(Int)(opt_some) == 42);
+    Option_free(Int)(&opt_some);
+    
+    // 2. From empty List to Option
+    List(Int) empty_list = List_new(Int)();
+    Option(Int) opt_none = collect_new(Option(Int), List(Int))(List_into_iter(Int)(empty_list));
+    assert(Option_is_none(Int)(&opt_none));
+    Option_free(Int)(&opt_none);
+    
+    printf("✓\n");
+  }
+
+  // ==========================================
+  // Test 9: Collect to Result
+  // ==========================================
+  {
+    printf("TEST 9: Collect to Result... ");
+    
+    // 1. From non-empty List to Result
+    List(Int) list = List_new(Int)();
+    (void)List_push_back(Int)(&list, 99);
+    (void)List_push_back(Int)(&list, 200);
+    
+    Result(Int, cref(Char)) res_ok = collect_new(Result(Int, cref(Char)), List(Int))(List_into_iter(Int)(list));
+    assert(Result_is_ok(Int, cref(Char))(&res_ok));
+    assert(Result_unwrap(Int, cref(Char))(res_ok) == 99);
+    Result_free(Int, cref(Char))(&res_ok);
+    
+    // 2. From empty List to Result
+    List(Int) empty_list = List_new(Int)();
+    Result(Int, cref(Char)) res_err = collect_new(Result(Int, cref(Char)), List(Int))(List_into_iter(Int)(empty_list));
+    assert(Result_is_err(Int, cref(Char))(&res_err));
+    assert(strcmp(Result_unwrap_err(Int, cref(Char))(res_err), "Uninitialized Result") == 0);
+    Result_free(Int, cref(Char))(&res_err);
+    
+    printf("✓\n");
+  }
+
+  // ==========================================
+  // Test 10: Collect to Hashmap
+  // ==========================================
+  {
+    printf("TEST 10: Collect to Hashmap... ");
+    
+    // Create a vector of Pair(Int, Int)
+    Vector(Pair(Int, Int)) vec = Vector_new(Pair(Int, Int))();
+    (void)Vector_push_back(Pair(Int, Int))(&vec, (Pair(Int, Int)){.first = 1, .second = 10});
+    (void)Vector_push_back(Pair(Int, Int))(&vec, (Pair(Int, Int)){.first = 2, .second = 20});
+    
+    Hashmap(Int, Int) map = collect_new(Hashmap(Int, Int), Vector(Pair(Int, Int)))(Vector_into_iter(Pair(Int, Int))(vec));
+    assert(Hashmap_stats(Int, Int)(&map).size == 2);
+    
+    Result(ref(Int), cref(Char)) r1 = Hashmap_get(Int, Int)(&map, 1);
+    assert(Result_is_ok(ref(Int), cref(Char))(&r1));
+    assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(r1)) == 10);
+    
+    Result(ref(Int), cref(Char)) r2 = Hashmap_get(Int, Int)(&map, 2);
+    assert(Result_is_ok(ref(Int), cref(Char))(&r2));
+    assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(r2)) == 20);
+    
+    Hashmap_free(Int, Int)(&map);
     printf("✓\n");
   }
 

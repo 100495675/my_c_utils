@@ -167,6 +167,13 @@
  * @usage iter_Hashmap(String, Int) it = Hashmap_into_iter(String, Int)(&my_map);
  */
 #define Hashmap_into_iter(...) TEMPLATE_METHOD(Hashmap, into_iter, __VA_ARGS__)
+#define Hashmap_into_iter_val(...) TEMPLATE_METHOD(Hashmap, into_iter_val, __VA_ARGS__)
+#define Hashmap_iter_mut(...)      TEMPLATE_METHOD(Hashmap, iter_mut, __VA_ARGS__)
+#define Hashmap_iter_const(...)    TEMPLATE_METHOD(Hashmap, iter_const, __VA_ARGS__)
+#define Hashmap_push_back(...)   TEMPLATE_METHOD(Hashmap, push_back, __VA_ARGS__)
+
+#define Hashmap_iter_mut_Result(...) TEMPLATE_TYPE(Hashmap_iter_mut_Result, __VA_ARGS__)
+#define Hashmap_iter_const_Result(...) TEMPLATE_TYPE(Hashmap_iter_const_Result, __VA_ARGS__)
 
 /**
  * @brief Clones the Hashmap, creating a completely independent deep copy.
@@ -208,6 +215,7 @@
 
 // 2. Template Definition Macro
 #define TEMPLATE_Hashmap(K, V)                                                                                        \
+  PAIR_CONFIG(K, V) \
   typedef struct                                                                                                      \
   {                                                                                                                   \
     K key;                                                                                                            \
@@ -583,6 +591,156 @@
       }                                                                                                               \
     }                                                                                                                 \
     return dest;                                                                                                      \
-  }
+  } \
+  \
+  typedef struct \
+    { \
+        Hashmap(K, V) map; \
+        Size current_index; \
+    } iter_val(Hashmap(K, V)); \
+    typedef iter_val(Hashmap(K, V)) *ref_iter_val(Hashmap(K, V)); \
+    typedef const iter_val(Hashmap(K, V)) *cref_iter_val(Hashmap(K, V)); \
+    static inline void TEMPLATE_METHOD(ref_iter_val_Hashmap, free, K, V)(ref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_val_Hashmap, free, K, V)(cref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void iter_val_free(Hashmap(K, V))(cref_iter_val(Hashmap(K, V)) value) \
+    { \
+        for (Size _i = value->current_index; _i < value->map.capacity; ++_i) \
+        { \
+            if (value->map.data[_i].filled) \
+            { \
+                MY_C_UTILS_CONCAT(K, _free)(&value->map.data[_i].key); \
+                MY_C_UTILS_CONCAT(V, _free)(&value->map.data[_i].value); \
+            } \
+        } \
+        TEMPLATE_METHOD(Hashmap, free, K, V)((ref_Hashmap(K, V))&value->map); \
+    } \
+    \
+    typedef struct \
+    { \
+        V *value; \
+        bool is_error; \
+    } Hashmap_iter_mut_Result(K, V); \
+    typedef struct \
+    { \
+        const V *value; \
+        bool is_error; \
+    } Hashmap_iter_const_Result(K, V); \
+    \
+    typedef struct \
+    { \
+        ref_Hashmap(K, V) map; \
+        Size current_index; \
+    } iter_mut(Hashmap(K, V)); \
+    typedef iter_mut(Hashmap(K, V)) *ref_iter_mut(Hashmap(K, V)); \
+    typedef const iter_mut(Hashmap(K, V)) *cref_iter_mut(Hashmap(K, V)); \
+    static inline void TEMPLATE_METHOD(ref_iter_mut_Hashmap, free, K, V)(ref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_mut_Hashmap, free, K, V)(cref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void iter_mut_free(Hashmap(K, V))(cref_iter_mut(Hashmap(K, V)) value) { (void)value; } \
+    \
+    typedef struct \
+    { \
+        cref_Hashmap(K, V) map; \
+        Size current_index; \
+    } iter_const(Hashmap(K, V)); \
+    typedef iter_const(Hashmap(K, V)) *ref_iter_const(Hashmap(K, V)); \
+    typedef const iter_const(Hashmap(K, V)) *cref_iter_const(Hashmap(K, V)); \
+    static inline void TEMPLATE_METHOD(ref_iter_const_Hashmap, free, K, V)(ref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(cref_iter_const_Hashmap, free, K, V)(cref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
+    static inline void iter_const_free(Hashmap(K, V))(cref_iter_const(Hashmap(K, V)) value) { (void)value; } \
+    \
+    static inline iter_val(Hashmap(K, V)) Hashmap_into_iter_val(K, V)( \
+        Hashmap(K, V) self) \
+    { \
+        Size first_index = Hashmap_seek_next(K, V)(&self, 0); \
+        return (iter_val(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+    } \
+    \
+    static inline Result(V, cref(Char)) iter_val_deref(Hashmap(K, V))( \
+        cref_iter_val(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+        { \
+            return Result_err(V, cref(Char))("Iterator out of bounds"); \
+        } \
+        return Result_ok(V, cref(Char))(self->map.data[self->current_index].value); \
+    } \
+    \
+    static inline Result(V, cref(Char)) iter_val_next(Hashmap(K, V))(ref_iter_val(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+        { \
+            return Result_err(V, cref(Char))("Iterator out of bounds"); \
+        } \
+        Size cur = self->current_index; \
+        MY_C_UTILS_CONCAT(K, _free)(&self->map.data[cur].key); \
+        self->current_index = Hashmap_seek_next(K, V)(&self->map, self->current_index + 1); \
+        return Result_ok(V, cref(Char))(self->map.data[cur].value); \
+    } \
+    \
+    static inline iter_mut(Hashmap(K, V)) Hashmap_iter_mut(K, V)( \
+        ref_Hashmap(K, V) self) \
+    { \
+        Size first_index = Hashmap_seek_next(K, V)(self, 0); \
+        return (iter_mut(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+    } \
+    \
+    static inline Hashmap_iter_mut_Result(K, V) iter_mut_deref(Hashmap(K, V))( \
+        cref_iter_mut(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+        { \
+            return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
+        } \
+        return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
+    } \
+    \
+    static inline Hashmap_iter_mut_Result(K, V) iter_mut_next(Hashmap(K, V))(ref_iter_mut(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+        { \
+            return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
+        } \
+        Size cur = self->current_index; \
+        self->current_index = Hashmap_seek_next(K, V)(self->map, self->current_index + 1); \
+        return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
+    } \
+    \
+    static inline iter_const(Hashmap(K, V)) Hashmap_iter_const(K, V)( \
+        cref_Hashmap(K, V) self) \
+    { \
+        Size first_index = Hashmap_seek_next(K, V)((ref_Hashmap(K, V))self, 0); \
+        return (iter_const(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+    } \
+    \
+    static inline Hashmap_iter_const_Result(K, V) iter_const_deref(Hashmap(K, V))( \
+        cref_iter_const(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+        { \
+            return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
+        } \
+        return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
+    } \
+    \
+    static inline Hashmap_iter_const_Result(K, V) iter_const_next(Hashmap(K, V))(ref_iter_const(Hashmap(K, V)) self) \
+    { \
+        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+        { \
+            return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
+        } \
+        Size cur = self->current_index; \
+        self->current_index = Hashmap_seek_next(K, V)((ref_Hashmap(K, V))self->map, self->current_index + 1); \
+        return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
+    } \
+    \
+    static inline Result(Void, cref(Char)) Hashmap_push_back(K, V)(ref_Hashmap(K, V) self, Pair(K, V) pair) \
+    { \
+        return Hashmap_add(K, V)(self, pair.first, pair.second); \
+    } \
+    \
+    static inline Hashmap(K, V) TEMPLATE_METHOD(Default, default, Hashmap(K, V))(void) \
+    { \
+        return Hashmap_new(K, V)(16); \
+    }
 
 #endif

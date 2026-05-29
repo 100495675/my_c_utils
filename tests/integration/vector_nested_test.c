@@ -3,6 +3,7 @@
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
+RESULT_CONFIG(cref(Vector(Int)), cref(Char))
 VECTOR_CONFIG(Vector(Int))
 
 static void assert_nested_iteration(const Vector(Vector(Int)) *outer,

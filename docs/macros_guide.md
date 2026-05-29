@@ -211,6 +211,59 @@ Below is a cheat sheet showing the exact syntax for each container and helper ma
   }
   ```
 
+### C. Triple Iterator Loops (`_val`, `_mut`, `_const`)
+
+To support distinct ownership and borrowing models (inspired by systems languages like Rust), the library provides a **Triple Iterator Interface**:
+
+1. **`_val`**: Consumes the container, taking complete ownership of it and yielding its elements by value (`T`). On loop termination (natural completion), the iterator automatically releases the container and frees any unconsumed elements.
+2. **`_mut`**: Borrows the container mutably, yielding mutable reference pointers (`ref(T)` / `T*`). Enables modifying container elements in-place.
+3. **`_const`**: Borrows the container immutably, yielding constant reference pointers (`cref(T)` / `const T*`). Ideal for read-only iteration over shared data.
+
+#### Instantiation & Configuration
+To use the triple iterator interface on a container or monad type, you must call the corresponding configuration macro:
+```c
+VECTOR_TRIPLE_ITER_CONFIG(Int)             // For Vector(Int)
+LINKED_LIST_TRIPLE_ITER_CONFIG(Int)        // For List(Int)
+HASH_MAP_TRIPLE_ITER_CONFIG(String, Int)    // For Hashmap(String, Int) (iterates over values)
+OPTION_TRIPLE_ITER_CONFIG(Int)             // For Option(Int)
+RESULT_TRIPLE_ITER_CONFIG(Int, cref(Char)) // For Result(Int, cref(Char))
+```
+
+#### 1. Consuming Loop: `for_each_val`
+*Loops over a container, consuming it and exposing each element directly by value (`T`).*
+
+* **Syntax**: `for_each_val(ContainerT, var_name, iterable) { ... }`
+* **Example**:
+  ```c
+  // The vector vec is consumed and automatically freed when the loop finishes!
+  for_each_val(Vector(Int), item, Vector_clone(Int)(&vec)) {
+      printf("Item: %d\n", item);
+  }
+  ```
+
+#### 2. Mutable Reference Loop: `for_each_mut`
+*Loops over a container, mutably borrowing it and yielding mutable pointers (`ref(T)` / `T*`).*
+
+* **Syntax**: `for_each_mut(ContainerT, var_name, iterable) { ... }`
+* **Example**:
+  ```c
+  for_each_mut(Vector(Int), item_ref, &my_vec) {
+      *item_ref = (*item_ref) * 2; // Modify elements in-place!
+  }
+  ```
+
+#### 3. Constant Reference Loop: `for_each_const`
+*Loops over a container, immutably borrowing it and yielding constant pointers (`cref(T)` / `const T*`).*
+
+* **Syntax**: `for_each_const(ContainerT, var_name, iterable) { ... }`
+* **Example**:
+  ```c
+  Int sum = 0;
+  for_each_const(Vector(Int), item_cref, &my_vec) {
+      sum += cref_deref(Int)(item_cref);
+  }
+  ```
+
 ---
 
 ## 9. Functional Iterator Operators
@@ -351,6 +404,33 @@ To overcome standard C limitations where a variable's type cannot be changed wit
 * **Zero Runtime Overhead**: Designed completely via standard C preprocessor structures; compiles directly down to standard nested blocks, optimized by the compiler without any performance or allocation overhead.
 * **100% Memory Safe**: Fully integrates with our memory-consuming ownership model. Intermediate iterators are automatically consumed and cleaned up at the end of the pipeline when the final `collect` or `collect_new` step calls `iter_free` on the pipeline.
 * **Lambda Compatible**: Fully compatible with inline anonymous functions (`lambda`) at any filtering or mapping stage.
+
+### C. Nested Pipelines & Collision Prevention
+
+> [!WARNING]
+> **Variable Shadowing Collision**: Because the `pipeline` macro uses a unified, shadowed local identifier `_val` at each stage, nesting a pipeline directly inside another (e.g., `pipeline(input, pipeline(_val, ...), ...)`) will cause a variable shadowing collision. The inner pipeline's initialization will try to reference its own new (uninitialized) `_val` instead of the outer pipeline's `_val`, leading to undefined behavior or compilation warnings.
+
+To safely nest pipelines, simply assign the outer pipeline's `_val` to an intermediate variable with a different name (e.g., `_outer_val`) before invoking the nested pipeline.
+
+#### Safe Nesting Example:
+```c
+int res = pipeline(
+    input_value,
+    ({
+        // 1. Save the outer _val into a unique identifier
+        __typeof__(_val) _outer_val = _val;
+        
+        // 2. Invoke the nested pipeline using that unique identifier as input
+        pipeline(
+            _outer_val,
+            stepA(_val),
+            stepB(_val)
+        );
+    }),
+    step3(_val)
+);
+```
+Since the inner pipeline's input refers to `_outer_val`, the generated variable declaration (`__typeof__(_outer_val) _val = (_outer_val);`) successfully resolves without colliding with its own name.
 
 ---
 

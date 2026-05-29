@@ -29,4 +29,56 @@
 // Instantiates a registered template with the given type arguments
 #define TEMPLATE_CONFIG(TemplateName, ...) MY_C_UTILS_CONCAT(TEMPLATE_, TemplateName)(__VA_ARGS__)
 
+#define iter(Container) MY_C_UTILS_CONCAT(iter_, Container)
+#define ref_iter(Container) MY_C_UTILS_CONCAT(ref_iter_, Container)
+#define cref_iter(Container) MY_C_UTILS_CONCAT(cref_iter_, Container)
+
+#define into_iter(Container) MY_C_UTILS_CONCAT(Container, _into_iter)
+#define iter_next(Container) MY_C_UTILS_CONCAT(iter(Container), _next)
+#define iter_deref(Container) MY_C_UTILS_CONCAT(iter(Container), _deref)
+#define iter_free(Container) MY_C_UTILS_CONCAT(iter(Container), _free)
+
+#define iter_val(Container) MY_C_UTILS_CONCAT(iter_val_, Container)
+#define ref_iter_val(Container) MY_C_UTILS_CONCAT(ref_iter_val_, Container)
+#define cref_iter_val(Container) MY_C_UTILS_CONCAT(cref_iter_val_, Container)
+
+#define into_iter_val(Container) MY_C_UTILS_CONCAT(Container, _into_iter_val)
+#define iter_val_next(...) TEMPLATE_METHOD(iter_val, next, __VA_ARGS__)
+#define iter_val_deref(...) TEMPLATE_METHOD(iter_val, deref, __VA_ARGS__)
+#define iter_val_free(...) TEMPLATE_METHOD(iter_val, free, __VA_ARGS__)
+
+#define iter_mut(Container) MY_C_UTILS_CONCAT(iter_mut_, Container)
+#define ref_iter_mut(Container) MY_C_UTILS_CONCAT(ref_iter_mut_, Container)
+#define cref_iter_mut(Container) MY_C_UTILS_CONCAT(cref_iter_mut_, Container)
+
+#define iter_mut_init(Container) MY_C_UTILS_CONCAT(Container, _iter_mut)
+#define iter_mut_next(...) TEMPLATE_METHOD(iter_mut, next, __VA_ARGS__)
+#define iter_mut_deref(...) TEMPLATE_METHOD(iter_mut, deref, __VA_ARGS__)
+#define iter_mut_free(...) TEMPLATE_METHOD(iter_mut, free, __VA_ARGS__)
+
+#define iter_const(Container) MY_C_UTILS_CONCAT(iter_const_, Container)
+#define ref_iter_const(Container) MY_C_UTILS_CONCAT(ref_iter_const_, Container)
+#define cref_iter_const(Container) MY_C_UTILS_CONCAT(cref_iter_const_, Container)
+
+#define iter_const_init(Container) MY_C_UTILS_CONCAT(Container, _iter_const)
+#define iter_const_next(...) TEMPLATE_METHOD(iter_const, next, __VA_ARGS__)
+#define iter_const_deref(...) TEMPLATE_METHOD(iter_const, deref, __VA_ARGS__)
+#define iter_const_free(...) TEMPLATE_METHOD(iter_const, free, __VA_ARGS__)
+
+/**
+ * @brief Trait definition to retrieve the default value or constructor for a type.
+ * @usage Default(T)()
+ */
+#define Default(...) TEMPLATE_METHOD(Default, default, __VA_ARGS__)
+
+/**
+ * @brief Configures/registers the Default trait for a primitive or custom type.
+ * @usage DEFAULT_CONFIG(Int, 0)
+ */
+#define DEFAULT_CONFIG(T, ...) \
+    static inline T TEMPLATE_METHOD(Default, default, T)(void) \
+    { \
+        return __VA_ARGS__; \
+    }
+
 #endif

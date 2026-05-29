@@ -2,6 +2,7 @@
 #include <assert.h>
 
 VECTOR_CONFIG(Int)
+RESULT_CONFIG(cref(Vector(Int)), cref(Char))
 LINKED_LIST_CONFIG(Vector(Int))
 
 Int main(void)

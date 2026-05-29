@@ -124,6 +124,12 @@
  * @usage iter_List(Int) it = List_into_iter(Int)(&my_list);
  */
 #define List_into_iter(...)    TEMPLATE_METHOD(List, into_iter, __VA_ARGS__)
+#define List_into_iter_val(...) TEMPLATE_METHOD(List, into_iter_val, __VA_ARGS__)
+#define List_iter_mut(...)     TEMPLATE_METHOD(List, iter_mut, __VA_ARGS__)
+#define List_iter_const(...)   TEMPLATE_METHOD(List, iter_const, __VA_ARGS__)
+
+#define List_iter_mut_Result(...) TEMPLATE_TYPE(List_iter_mut_Result, __VA_ARGS__)
+#define List_iter_const_Result(...) TEMPLATE_TYPE(List_iter_const_Result, __VA_ARGS__)
 
 /**
  * @brief Clones the List, returning an independent deep copy of it.
@@ -195,6 +201,7 @@
   { \
     TEMPLATE_METHOD(List, free, T)((ref_List(T))&value->list); \
   } \
+  \
   \
   static inline List(T) List_new(T)() \
   { \
@@ -349,6 +356,7 @@
     self->node = self->node->next; \
     return Result_ok(ref(T), cref(Char))(&cur->data); \
   } \
+ \
   RESULT_CONFIG(List(T), cref(Char)) \
   RESULT_CONFIG(ref(List(T)), cref(Char)) \
   static inline List(T) List_clone(T)(cref_List(T) self) \
@@ -373,6 +381,150 @@
       node = node->next; \
     } \
     return dest; \
+  } \
+  \
+  typedef struct \
+  { \
+    List(T) list; \
+    TEMPLATE_TYPE(ref_Node, T) node; \
+  } iter_val(List(T)); \
+  typedef iter_val(List(T)) *ref_iter_val(List(T)); \
+  typedef const iter_val(List(T)) *cref_iter_val(List(T)); \
+  static inline void TEMPLATE_METHOD(ref_iter_val(List(T)), free, T)(ref_iter_val(List(T)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_val(List(T)), free, T)(cref_iter_val(List(T)) *value) { (void)value; } \
+  static inline void iter_val_free(List(T))(cref_iter_val(List(T)) value) \
+  { \
+    TEMPLATE_TYPE(ref_Node, T) current = value->node; \
+    while (current != NULL) \
+    { \
+      TEMPLATE_TYPE(ref_Node, T) next = current->next; \
+      MY_C_UTILS_CONCAT(T, _free)(&current->data); \
+      free(current); \
+      current = next; \
+    } \
+  } \
+  \
+  typedef struct \
+  { \
+    T *value; \
+    bool is_error; \
+  } List_iter_mut_Result(T); \
+  typedef struct \
+  { \
+    const T *value; \
+    bool is_error; \
+  } List_iter_const_Result(T); \
+  \
+  typedef struct \
+  { \
+    TEMPLATE_TYPE(ref_Node, T) node; \
+  } iter_mut(List(T)); \
+  typedef iter_mut(List(T)) *ref_iter_mut(List(T)); \
+  typedef const iter_mut(List(T)) *cref_iter_mut(List(T)); \
+  static inline void TEMPLATE_METHOD(ref_iter_mut(List(T)), free, T)(ref_iter_mut(List(T)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_mut(List(T)), free, T)(cref_iter_mut(List(T)) *value) { (void)value; } \
+  static inline void iter_mut_free(List(T))(cref_iter_mut(List(T)) value) { (void)value; } \
+  \
+  typedef struct \
+  { \
+    TEMPLATE_TYPE(ref_Node, T) node; \
+  } iter_const(List(T)); \
+  typedef iter_const(List(T)) *ref_iter_const(List(T)); \
+  typedef const iter_const(List(T)) *cref_iter_const(List(T)); \
+  static inline void TEMPLATE_METHOD(ref_iter_const(List(T)), free, T)(ref_iter_const(List(T)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_const(List(T)), free, T)(cref_iter_const(List(T)) *value) { (void)value; } \
+  static inline void iter_const_free(List(T))(cref_iter_const(List(T)) value) { (void)value; } \
+  \
+  static inline iter_val(List(T)) List_into_iter_val(T)( \
+      List(T) self) \
+  { \
+    return (iter_val(List(T))){ \
+        .list = self, \
+        .node = self.head}; \
+  } \
+  \
+  static inline Result(T, cref(Char)) iter_val_deref(List(T))( \
+      cref_iter_val(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return Result_err(T, cref(Char))("Iterator out of bounds"); \
+    } \
+    return Result_ok(T, cref(Char))(self->node->data); \
+  } \
+  \
+  static inline Result(T, cref(Char)) iter_val_next(List(T))(ref_iter_val(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return Result_err(T, cref(Char))("Iterator out of bounds"); \
+    } \
+    TEMPLATE_TYPE(ref_Node, T) cur = self->node; \
+    self->node = self->node->next; \
+    T val = cur->data; \
+    free(cur); \
+    return Result_ok(T, cref(Char))(val); \
+  } \
+  \
+  static inline iter_mut(List(T)) List_iter_mut(T)( \
+      ref_List(T) self) \
+  { \
+    return (iter_mut(List(T))){ \
+        .node = self->head}; \
+  } \
+  \
+  static inline List_iter_mut_Result(T) iter_mut_deref(List(T))( \
+      cref_iter_mut(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return (List_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+    } \
+    return (List_iter_mut_Result(T)){.value = &self->node->data, .is_error = false}; \
+  } \
+  \
+  static inline List_iter_mut_Result(T) iter_mut_next(List(T))(ref_iter_mut(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return (List_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+    } \
+    TEMPLATE_TYPE(ref_Node, T) cur = self->node; \
+    self->node = self->node->next; \
+    return (List_iter_mut_Result(T)){.value = &cur->data, .is_error = false}; \
+  } \
+  \
+  static inline iter_const(List(T)) List_iter_const(T)( \
+      cref_List(T) self) \
+  { \
+    return (iter_const(List(T))){ \
+        .node = self->head}; \
+  } \
+  \
+  static inline List_iter_const_Result(T) iter_const_deref(List(T))( \
+      cref_iter_const(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return (List_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+    } \
+    return (List_iter_const_Result(T)){.value = &self->node->data, .is_error = false}; \
+  } \
+  \
+  static inline List_iter_const_Result(T) iter_const_next(List(T))(ref_iter_const(List(T)) self) \
+  { \
+    if (self->node == NULL) \
+    { \
+      return (List_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+    } \
+    TEMPLATE_TYPE(ref_Node, T) cur = self->node; \
+    self->node = self->node->next; \
+    return (List_iter_const_Result(T)){.value = &cur->data, .is_error = false}; \
+  } \
+  \
+  static inline List(T) TEMPLATE_METHOD(Default, default, List(T))(void) \
+  { \
+    return List_new(T)(); \
   }
 
 #endif
