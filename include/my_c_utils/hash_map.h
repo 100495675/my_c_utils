@@ -93,7 +93,7 @@
  * @param self Pointer to the Hashmap instance.
  * @usage Hashmap_free(String, Int)(&my_map);
  */
-#define Hashmap_free(...) TEMPLATE_METHOD(Hashmap, free, __VA_ARGS__)
+#define Hashmap_free(...) Free(Hashmap(__VA_ARGS__))
 
 /**
  * @brief Retrieves a borrowed pointer (ref(V)) to the value associated with the key.
@@ -166,10 +166,10 @@
  * @returns iter_Hashmap(K, V)
  * @usage iter_Hashmap(String, Int) it = Hashmap_into_iter(String, Int)(&my_map);
  */
-#define Hashmap_into_iter(...) TEMPLATE_METHOD(Hashmap, into_iter, __VA_ARGS__)
-#define Hashmap_into_iter_val(...) TEMPLATE_METHOD(Hashmap, into_iter_val, __VA_ARGS__)
-#define Hashmap_iter_mut(...)      TEMPLATE_METHOD(Hashmap, iter_mut, __VA_ARGS__)
-#define Hashmap_iter_const(...)    TEMPLATE_METHOD(Hashmap, iter_const, __VA_ARGS__)
+#define Hashmap_into_iter(...) IntoIterator(Hashmap(__VA_ARGS__))
+#define Hashmap_into_iter_val(...) IntoIterator(Hashmap(__VA_ARGS__))
+#define Hashmap_iter_mut(...)      IntoIteratorMut(Hashmap(__VA_ARGS__))
+#define Hashmap_iter_const(...)    IntoIteratorConst(Hashmap(__VA_ARGS__))
 #define Hashmap_push_back(...)   TEMPLATE_METHOD(Hashmap, push_back, __VA_ARGS__)
 
 #define Hashmap_iter_mut_Result(...) TEMPLATE_TYPE(Hashmap_iter_mut_Result, __VA_ARGS__)
@@ -180,27 +180,27 @@
  * @returns Hashmap(K, V)
  * @usage Hashmap(String, Int) cloned = Hashmap_clone(String, Int)(&my_map);
  */
-#define Hashmap_clone(...) TEMPLATE_METHOD(Hashmap, clone, __VA_ARGS__)
+#define Hashmap_clone(...) Clone(Hashmap(__VA_ARGS__))
 
 /**
  * @brief Returns the value (ref(V)) of the current populated entry in the iterator.
  * @returns Result(ref(V), cref(Char))
  * @usage Result(ref_Int, cref(Char)) r = iter_Hashmap_deref(String, Int)(&it);
  */
-#define iter_Hashmap_deref(...) TEMPLATE_METHOD(iter_Hashmap, deref, __VA_ARGS__)
+#define iter_Hashmap_deref(...) Iterator_deref(iter(Hashmap(__VA_ARGS__)))
 
 /**
  * @brief Advances the iterator to the next populated entry.
  * @returns Result(ref(V), cref(Char))
  * @usage Result(ref_Int, cref(Char)) r = iter_Hashmap_next(String, Int)(&it);
  */
-#define iter_Hashmap_next(...) TEMPLATE_METHOD(iter_Hashmap, next, __VA_ARGS__)
+#define iter_Hashmap_next(...) Iterator_next(iter(Hashmap(__VA_ARGS__)))
 
 /**
  * @brief Destroys and cleans up the iterator.
  * @usage iter_Hashmap_free(String, Int)(&it);
  */
-#define iter_Hashmap_free(...) TEMPLATE_METHOD(iter_Hashmap, free, __VA_ARGS__)
+#define iter_Hashmap_free(...) Iterator_free(iter(Hashmap(__VA_ARGS__)))
 
 #define Hashmap_insert_entry(...) TEMPLATE_METHOD(Hashmap, insert_entry, __VA_ARGS__)
 #define Hashmap_find_index(...) TEMPLATE_METHOD(Hashmap, find_index, __VA_ARGS__)
@@ -237,10 +237,12 @@
   } Hashmap(K, V);                                                                                                    \
   typedef Hashmap(K, V) * ref_Hashmap(K, V);                                                                          \
   typedef const Hashmap(K, V) * cref_Hashmap(K, V);                                                                   \
-  static inline void TEMPLATE_METHOD(ref_Hashmap, free, K, V)(ref_Hashmap(K, V) * value) { (void)value; }             \
-  static inline void TEMPLATE_METHOD(cref_Hashmap, free, K, V)(cref_Hashmap(K, V) * value) { (void)value; }           \
-                                                                                                                      \
-  static inline void TEMPLATE_METHOD(Hashmap, free, K, V)(ref_Hashmap(K, V) self); \
+  static inline void TEMPLATE_METHOD(Free, free, ref(Hashmap(K, V)))(ref(Hashmap(K, V)) *self) { (void)self; } \
+  static inline void TEMPLATE_METHOD(Free, free, cref(Hashmap(K, V)))(cref(Hashmap(K, V)) *self) { (void)self; } \
+  static inline ref(Hashmap(K, V)) TEMPLATE_METHOD(Clone, clone, ref(Hashmap(K, V)))(const ref(Hashmap(K, V)) *self) { return *self; } \
+  static inline cref(Hashmap(K, V)) TEMPLATE_METHOD(Clone, clone, cref(Hashmap(K, V)))(const cref(Hashmap(K, V)) *self) { return *self; } \
+  static inline Hashmap(K, V) TEMPLATE_METHOD(Deref, deref, ref(Hashmap(K, V)))(ref(Hashmap(K, V)) self) { return *self; } \
+  static inline Hashmap(K, V) TEMPLATE_METHOD(Deref, deref, cref(Hashmap(K, V)))(cref(Hashmap(K, V)) self) { return *self; } \
   \
   typedef struct                                                                                                      \
   {                                                                                                                   \
@@ -251,10 +253,6 @@
   typedef const iter_Hashmap(K, V) * cref_iter_Hashmap(K, V);                                                         \
   static inline void TEMPLATE_METHOD(ref_iter_Hashmap, free, K, V)(ref_iter_Hashmap(K, V) * value) { (void)value; }   \
   static inline void TEMPLATE_METHOD(cref_iter_Hashmap, free, K, V)(cref_iter_Hashmap(K, V) * value) { (void)value; } \
-  static inline void iter_Hashmap_free(K, V)(cref_iter_Hashmap(K, V) value)                                           \
-  {                                                                                                                   \
-    TEMPLATE_METHOD(Hashmap, free, K, V)((ref_Hashmap(K, V))&value->map);                                             \
-  }                                                                                                                   \
                                                                                                                       \
   typedef struct                                                                                                      \
   {                                                                                                                   \
@@ -291,456 +289,436 @@
     }                                                                                                                 \
   }                                                                                                                   \
                                                                                                                       \
-  static inline Size Hashmap_find_index(K, V)(                                                                        \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
-  {                                                                                                                   \
-    Size key_hash = K##_hash(key);                                                                                    \
-    Size index = key_hash % self->capacity;                                                                           \
-    Size distance = 0;                                                                                                \
-    while (self->data[index].filled)                                                                                  \
-    {                                                                                                                 \
-      if (self->data[index].hash == key_hash &&                                                                       \
-          K##_equals(self->data[index].key, key))                                                                     \
-      {                                                                                                               \
-        return index;                                                                                                 \
-      }                                                                                                               \
-      if (self->data[index].distance < distance)                                                                      \
-      {                                                                                                               \
-        break;                                                                                                        \
-      }                                                                                                               \
-      index = (index + 1) % self->capacity;                                                                           \
-      distance++;                                                                                                     \
-    }                                                                                                                 \
-    return self->capacity;                                                                                            \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline void Hashmap_shift_delete(K, V)(                                                                      \
-      ref_Hashmap(K, V) self, Size delete_index)                                                                      \
-  {                                                                                                                   \
-    Size hole = delete_index;                                                                                         \
-    Size index = (hole + 1) % self->capacity;                                                                         \
-    while (self->data[index].filled && self->data[index].distance > 0)                                                \
-    {                                                                                                                 \
-      self->data[hole] = self->data[index];                                                                           \
-      self->data[hole].distance--;                                                                                    \
-      hole = index;                                                                                                   \
-      index = (index + 1) % self->capacity;                                                                           \
-    }                                                                                                                 \
-    self->data[hole].filled = false;                                                                                  \
-    self->data[hole].distance = 0;                                                                                    \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Hashmap(K, V) Hashmap_new(K, V)(                                                                      \
-      Size capacity)                                                                                                  \
-  {                                                                                                                   \
-    if (capacity == 0)                                                                                                \
-    {                                                                                                                 \
-      perror("Capacity must be greater than 0");                                                                      \
-      exit(1);                                                                                                        \
-    }                                                                                                                 \
-    ref_Entry(K, V) data =                                                                                            \
-        MY_C_UTILS_CALLOC(capacity, sizeof(Entry(K, V)));                                                             \
-    if (!data)                                                                                                        \
-    {                                                                                                                 \
-      perror("Memory allocation failed");                                                                             \
-      exit(1);                                                                                                        \
-    }                                                                                                                 \
-    return (Hashmap(K, V)){                                                                                           \
-        .size = 0,                                                                                                    \
-        .capacity = capacity,                                                                                         \
-        .data = data};                                                                                                \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(Void, cref(Char)) Hashmap_resize(K, V)(                                                         \
-      ref_Hashmap(K, V) self, Size new_capacity)                                                                      \
-  {                                                                                                                   \
-    ref_Entry(K, V) new_data =                                                                                        \
-        MY_C_UTILS_CALLOC(new_capacity, sizeof(Entry(K, V)));                                                         \
-    if (!new_data)                                                                                                    \
-    {                                                                                                                 \
-      return Result_err(Void, cref(Char))("Memory allocation failed");                                                 \
-    }                                                                                                                 \
-    for (Size i = 0; i < self->capacity; i++)                                                                         \
-    {                                                                                                                 \
-      if (self->data[i].filled)                                                                                       \
-      {                                                                                                               \
-        Entry(K, V) entry = self->data[i];                                                                            \
-        entry.distance = 0;                                                                                           \
-        Hashmap_insert_entry(K, V)(new_data, new_capacity,                                                            \
-                                   entry);                                                                            \
-      }                                                                                                               \
-    }                                                                                                                 \
-    MY_C_UTILS_FREE(self->data);                                                                                      \
-    self->data = new_data;                                                                                            \
-    self->capacity = new_capacity;                                                                                    \
-    return Result_ok(Void, cref(Char))((Void){});                                                                      \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(Void, cref(Char)) Hashmap_resize_if_needed(K, V)(                                               \
-      ref_Hashmap(K, V) self)                                                                                         \
-  {                                                                                                                   \
-    Double load_factor = (Double)self->size / self->capacity;                                                         \
-    if (load_factor >= DEFAULT_LOAD_FACTOR)                                                                           \
-    {                                                                                                                 \
-      return Hashmap_resize(K, V)(self, self->capacity * 2);                                                          \
-    }                                                                                                                 \
-    return Result_ok(Void, cref(Char))((Void){});                                                                      \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(Void, cref(Char)) Hashmap_add(K, V)(                                                            \
-      ref_Hashmap(K, V) self, K key, V value)                                                                         \
-  {                                                                                                                   \
-    Size existing_index = Hashmap_find_index(K, V)(self, key);                                                        \
-    if (existing_index < self->capacity)                                                                              \
-    {                                                                                                                 \
-      MY_C_UTILS_CONCAT(K, _free)(&self->data[existing_index].key);                                                   \
-      MY_C_UTILS_CONCAT(V, _free)(&self->data[existing_index].value);                                                 \
-      self->data[existing_index].key = key;                                                                           \
-      self->data[existing_index].value = value;                                                                       \
-      self->data[existing_index].hash = K##_hash(key);                                                                \
-      return Result_ok(Void, cref(Char))((Void){});                                                                    \
-    }                                                                                                                 \
-    Result(Void, cref(Char)) resize_res = Hashmap_resize_if_needed(K, V)(self);                                        \
-    if (Result_is_err(Void, cref(Char))(&resize_res))                                                                  \
-    {                                                                                                                 \
-      return resize_res;                                                                                              \
-    }                                                                                                                 \
-    Entry(K, V) new_entry = {.key = key,                                                                              \
-                             .value = value,                                                                          \
-                             .hash = K##_hash(key),                                                                   \
-                             .distance = 0,                                                                           \
-                             .filled = true};                                                                         \
-    Hashmap_insert_entry(K, V)(self->data, self->capacity,                                                            \
-                               new_entry);                                                                            \
-    self->size++;                                                                                                     \
-    return Result_ok(Void, cref(Char))((Void){});                                                                      \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline void Hashmap_free(K, V)(                                                                              \
-      ref_Hashmap(K, V) self)                                                                                         \
-  {                                                                                                                   \
-    for (Size i = 0; i < self->capacity; i++)                                                                         \
-    {                                                                                                                 \
-      if (self->data[i].filled)                                                                                       \
-      {                                                                                                               \
-        MY_C_UTILS_CONCAT(K, _free)(&self->data[i].key);                                                              \
-        MY_C_UTILS_CONCAT(V, _free)(&self->data[i].value);                                                            \
-      }                                                                                                               \
-    }                                                                                                                 \
-    MY_C_UTILS_FREE(self->data);                                                                                      \
-    self->data = NULL;                                                                                                \
-    self->size = 0;                                                                                                   \
-    self->capacity = 0;                                                                                               \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(ref(V), cref(Char)) Hashmap_get(K, V)(                                                         \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
-  {                                                                                                                   \
-    Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
-    if (index < self->capacity)                                                                                       \
-    {                                                                                                                 \
-      return Result_ok(ref(V), cref(Char))(&self->data[index].value);                                                 \
-    }                                                                                                                 \
-    return Result_err(ref(V), cref(Char))("no existe elemento con esa Key");                                          \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(ref(V), cref(Char)) Hashmap_get_mut(K, V)(                                                      \
-      ref(Hashmap(K, V)) self, K key)                                                                                  \
-  {                                                                                                                   \
-    return Hashmap_get(K, V)(self, key);                                                                              \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Result(V, cref(Char)) Hashmap_pop(K, V)(                                                               \
-      ref(Hashmap(K, V)) self, K key)                                                                                  \
-  {                                                                                                                   \
-    Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
-    if (index < self->capacity)                                                                                       \
-    {                                                                                                                 \
-      V value = self->data[index].value;                                                                              \
-      MY_C_UTILS_CONCAT(K, _free)(&self->data[index].key);                                                            \
-      self->size--;                                                                                                   \
-      Hashmap_shift_delete(K, V)(self, index);                                                                        \
-      return Result_ok(V, cref(Char))(value);                                                                          \
-    }                                                                                                                 \
-    return Result_err(V, cref(Char))("no existe elemento con esa Key");                                                \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Bool Hashmap_contains(K, V)(                                                                          \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
-  {                                                                                                                   \
-    return Hashmap_find_index(K, V)(self, key) < self->capacity;                                                      \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline void Hashmap_remove(K, V)(                                                                            \
-      ref_Hashmap(K, V) self, K key)                                                                                  \
-  {                                                                                                                   \
-    Size index = Hashmap_find_index(K, V)(self, key);                                                                 \
-    if (index < self->capacity)                                                                                       \
-    {                                                                                                                 \
-      MY_C_UTILS_CONCAT(K, _free)(&self->data[index].key);                                                            \
-      MY_C_UTILS_CONCAT(V, _free)(&self->data[index].value);                                                          \
-      self->size--;                                                                                                   \
-      Hashmap_shift_delete(K, V)(self, index);                                                                        \
-    }                                                                                                                 \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline HashmapStats Hashmap_stats(K, V)(                                                                     \
-      cref_Hashmap(K, V) self)                                                                                        \
-  {                                                                                                                   \
-    HashmapStats stats = {.size = self->size,                                                                         \
-                          .capacity = self->capacity,                                                                 \
-                          .load_factor = (Double)self->size / self->capacity,                                         \
-                          .collisions = 0};                                                                           \
-    for (Size i = 0; i < self->capacity; i++)                                                                         \
-    {                                                                                                                 \
-      if (self->data[i].filled && self->data[i].distance > 0)                                                         \
-      {                                                                                                               \
-        stats.collisions++;                                                                                           \
-      }                                                                                                               \
-    }                                                                                                                 \
-    return stats;                                                                                                     \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline Size Hashmap_seek_next(K, V)(                                                                         \
-      cref_Hashmap(K, V) self, Size start_index)                                                                      \
-  {                                                                                                                   \
-    Size index = start_index;                                                                                         \
-    while (index < self->capacity && !self->data[index].filled)                                                       \
-    {                                                                                                                 \
-      index++;                                                                                                        \
-    }                                                                                                                 \
-    return index;                                                                                                     \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline void Hashmap_debug(K, V)(                                                                             \
-      cref_Hashmap(K, V) self)                                                                                        \
-  {                                                                                                                   \
-    HashmapStats stats = Hashmap_stats(K, V)(self);                                                                   \
-    printf("size: %zu, capacity: %zu, load factor: %f, collisions: %zu\n",                                            \
-           stats.size, stats.capacity, stats.load_factor, stats.collisions);                                          \
-    printf("{\n");                                                                                                    \
-    for (Size i = 0; i < self->capacity; i++)                                                                         \
-    {                                                                                                                 \
-      if (self->data[i].filled)                                                                                       \
-      {                                                                                                               \
-        printf("  index: %zu, distance: %zu, hash: %zu\n", i,                                                         \
-               self->data[i].distance, self->data[i].hash);                                                           \
-      }                                                                                                               \
-    }                                                                                                                 \
-    printf("}\n");                                                                                                    \
-  }                                                                                                                   \
-                                                                                                                      \
-  static inline iter_Hashmap(K, V)                                                                                    \
-      Hashmap_into_iter(K, V)(                                                                                        \
-          Hashmap(K, V) self)                                                                                          \
-  {                                                                                                                   \
-    Size first_index = Hashmap_seek_next(K, V)(&self, 0);                                                             \
-    return (iter_Hashmap(K, V)){.map = self,                                                                          \
-                                .current_index = first_index};                                                        \
-  }                                                                                                                   \
-                                                                                                                       \
-  static inline Result(ref(V), cref(Char)) iter_Hashmap_deref(K, V)(                                                  \
-      cref_iter_Hashmap(K, V) self)                                                                                   \
-  {                                                                                                                   \
-    if (self->current_index >= self->map.capacity ||                                                                  \
-        !self->map.data[self->current_index].filled)                                                                  \
-    {                                                                                                                 \
-      return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
-    }                                                                                                                 \
-    return Result_ok(ref(V), cref(Char))(                                                                             \
-        (ref(V))&self->map.data[self->current_index].value);                                                           \
-  }                                                                                                                   \
-                                                                                                                       \
-  static inline Result(ref(V), cref(Char)) iter_Hashmap_next(K, V)(                                                   \
-      ref_iter_Hashmap(K, V) self)                                                                                    \
-  {                                                                                                                   \
-    if (self->current_index >= self->map.capacity ||                                                                  \
-        !self->map.data[self->current_index].filled)                                                                  \
-    {                                                                                                                 \
-      return Result_err(ref(V), cref(Char))("Iterator out of bounds");                                                \
-    }                                                                                                                 \
-    Size cur = self->current_index;                                                                                   \
-    self->current_index =                                                                                             \
-        Hashmap_seek_next(K, V)(&self->map,                                                                           \
-                                self->current_index + 1);                                                             \
-    return Result_ok(ref(V), cref(Char))(&self->map.data[cur].value);                                                 \
-  }                                                                                                                   \
-  RESULT_CONFIG(Hashmap(K, V), cref(Char))                                                                             \
-  RESULT_CONFIG(ref(Hashmap(K, V)), cref(Char)) \
-  static inline Hashmap(K, V) Hashmap_clone(K, V)(                                                                    \
-      cref_Hashmap(K, V) self)                                                                                        \
-  {                                                                                                                   \
-    if (!self)                                                                                                        \
-    {                                                                                                                 \
-      perror("Cannot clone NULL Hashmap pointer");                                                                    \
-      exit(1);                                                                                                        \
-    }                                                                                                                 \
-    Hashmap(K, V) dest = Hashmap_new(K, V)(self->capacity);                                                           \
-    for (Size i = 0; i < self->capacity; ++i)                                                                         \
-    {                                                                                                                 \
-      if (!self->data[i].filled)                                                                                      \
-        continue;                                                                                                     \
-      K key_clone = K##_clone(&self->data[i].key);                                                                    \
-      V value_clone = V##_clone(&self->data[i].value);                                                                \
-      Result(Void, cref(Char)) add_res = Hashmap_add(K, V)(&dest, key_clone, value_clone);                             \
-      if (Result_is_err(Void, cref(Char))(&add_res))                                                                   \
-      {                                                                                                               \
-        Hashmap_free(K, V)(&dest);                                                                                    \
-        perror("Memory allocation failed during hashmap clone");                                                      \
-        exit(1);                                                                                                      \
-      }                                                                                                               \
-    }                                                                                                                 \
-    return dest;                                                                                                      \
+  static inline Size Hashmap_find_index(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    Size key_hash = K##_hash(key); \
+    Size index = key_hash % self->capacity; \
+    Size distance = 0; \
+    while (self->data[index].filled) \
+    { \
+      if (self->data[index].hash == key_hash && \
+          K##_equals(self->data[index].key, key)) \
+      { \
+        return index; \
+      } \
+      if (self->data[index].distance < distance) \
+      { \
+        break; \
+      } \
+      index = (index + 1) % self->capacity; \
+      distance++; \
+    } \
+    return self->capacity; \
   } \
   \
+  static inline void Hashmap_shift_delete(K, V)( \
+      ref(Hashmap(K, V)) self, Size delete_index) \
+  { \
+    Size hole = delete_index; \
+    Size index = (hole + 1) % self->capacity; \
+    while (self->data[index].filled && self->data[index].distance > 0) \
+    { \
+      self->data[hole] = self->data[index]; \
+      self->data[hole].distance--; \
+      hole = index; \
+      index = (index + 1) % self->capacity; \
+    } \
+    self->data[hole].filled = false; \
+    self->data[hole].distance = 0; \
+  } \
+  \
+  static inline Hashmap(K, V) Hashmap_new(K, V)( \
+      Size capacity) \
+  { \
+    if (capacity == 0) \
+    { \
+      perror("Capacity must be greater than 0"); \
+      exit(1); \
+    } \
+    ref_Entry(K, V) data = \
+        MY_C_UTILS_CALLOC(capacity, sizeof(Entry(K, V))); \
+    if (!data) \
+    { \
+      perror("Memory allocation failed"); \
+      exit(1); \
+    } \
+    return (Hashmap(K, V)){ \
+        .size = 0, \
+        .capacity = capacity, \
+        .data = data}; \
+  } \
+  \
+  static inline Result(Void, cref(Char)) Hashmap_resize(K, V)( \
+      ref(Hashmap(K, V)) self, Size new_capacity) \
+  { \
+    ref_Entry(K, V) new_data = \
+        MY_C_UTILS_CALLOC(new_capacity, sizeof(Entry(K, V))); \
+    if (!new_data) \
+    { \
+      return Result_err(Void, cref(Char))("Memory allocation failed"); \
+    } \
+    for (Size i = 0; i < self->capacity; i++) \
+    { \
+      if (self->data[i].filled) \
+      { \
+        Entry(K, V) entry = self->data[i]; \
+        entry.distance = 0; \
+        Hashmap_insert_entry(K, V)(new_data, new_capacity, \
+                                   entry); \
+      } \
+    } \
+    MY_C_UTILS_FREE(self->data); \
+    self->data = new_data; \
+    self->capacity = new_capacity; \
+    return Result_ok(Void, cref(Char))((Void){}); \
+  } \
+  \
+  static inline Result(Void, cref(Char)) Hashmap_resize_if_needed(K, V)( \
+      ref(Hashmap(K, V)) self) \
+  { \
+    Double load_factor = (Double)self->size / self->capacity; \
+    if (load_factor >= DEFAULT_LOAD_FACTOR) \
+    { \
+      return Hashmap_resize(K, V)(self, self->capacity * 2); \
+    } \
+    return Result_ok(Void, cref(Char))((Void){}); \
+  } \
+  \
+  static inline Result(Void, cref(Char)) Hashmap_add(K, V)( \
+      ref(Hashmap(K, V)) self, K key, V value) \
+  { \
+    Size existing_index = Hashmap_find_index(K, V)(self, key); \
+    if (existing_index < self->capacity) \
+    { \
+      Free(K)(&self->data[existing_index].key); \
+      Free(V)(&self->data[existing_index].value); \
+      self->data[existing_index].key = key; \
+      self->data[existing_index].value = value; \
+      self->data[existing_index].hash = K##_hash(key); \
+      return Result_ok(Void, cref(Char))((Void){}); \
+    } \
+    Result(Void, cref(Char)) resize_res = Hashmap_resize_if_needed(K, V)(self); \
+    if (Result_is_err(Void, cref(Char))(&resize_res)) \
+    { \
+      return resize_res; \
+    } \
+    Entry(K, V) new_entry = {.key = key, \
+                             .value = value, \
+                             .hash = K##_hash(key), \
+                             .distance = 0, \
+                             .filled = true}; \
+    Hashmap_insert_entry(K, V)(self->data, self->capacity, \
+                               new_entry); \
+    self->size++; \
+    return Result_ok(Void, cref(Char))((Void){}); \
+  } \
+  \
+  static inline Result(ref(V), cref(Char)) Hashmap_get(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    Size index = Hashmap_find_index(K, V)(self, key); \
+    if (index < self->capacity) \
+    { \
+      return Result_ok(ref(V), cref(Char))(&self->data[index].value); \
+    } \
+    return Result_err(ref(V), cref(Char))("no existe elemento con esa Key"); \
+  } \
+  \
+  static inline Result(ref(V), cref(Char)) Hashmap_get_mut(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    return Hashmap_get(K, V)(self, key); \
+  } \
+  \
+  static inline Result(V, cref(Char)) Hashmap_pop(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    Size index = Hashmap_find_index(K, V)(self, key); \
+    if (index < self->capacity) \
+    { \
+      V value = self->data[index].value; \
+      Free(K)(&self->data[index].key); \
+      self->size--; \
+      Hashmap_shift_delete(K, V)(self, index); \
+      return Result_ok(V, cref(Char))(value); \
+    } \
+    return Result_err(V, cref(Char))("no existe elemento con esa Key"); \
+  } \
+  \
+  static inline Bool Hashmap_contains(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    return Hashmap_find_index(K, V)(self, key) < self->capacity; \
+  } \
+  \
+  static inline void Hashmap_remove(K, V)( \
+      ref(Hashmap(K, V)) self, K key) \
+  { \
+    Size index = Hashmap_find_index(K, V)(self, key); \
+    if (index < self->capacity) \
+    { \
+      Free(K)(&self->data[index].key); \
+      Free(V)(&self->data[index].value); \
+      self->size--; \
+      Hashmap_shift_delete(K, V)(self, index); \
+    } \
+  } \
+  \
+  static inline HashmapStats Hashmap_stats(K, V)( \
+      cref(Hashmap(K, V)) self) \
+  { \
+    HashmapStats stats = {.size = self->size, \
+                          .capacity = self->capacity, \
+                          .load_factor = (Double)self->size / self->capacity, \
+                          .collisions = 0}; \
+    for (Size i = 0; i < self->capacity; i++) \
+    { \
+      if (self->data[i].filled && self->data[i].distance > 0) \
+      { \
+        stats.collisions++; \
+      } \
+    } \
+    return stats; \
+  } \
+  \
+  static inline Size Hashmap_seek_next(K, V)( \
+      cref(Hashmap(K, V)) self, Size start_index) \
+  { \
+    Size index = start_index; \
+    while (index < self->capacity && !self->data[index].filled) \
+    { \
+      index++; \
+    } \
+    return index; \
+  } \
+  \
+  static inline void Hashmap_debug(K, V)( \
+      cref(Hashmap(K, V)) self) \
+  { \
+    HashmapStats stats = Hashmap_stats(K, V)(self); \
+    printf("size: %zu, capacity: %zu, load factor: %f, collisions: %zu\n", \
+           stats.size, stats.capacity, stats.load_factor, stats.collisions); \
+    printf("{\n"); \
+    for (Size i = 0; i < self->capacity; i++) \
+    { \
+      if (self->data[i].filled) \
+      { \
+        printf("  index: %zu, distance: %zu, hash: %zu\n", i, \
+               self->data[i].distance, self->data[i].hash); \
+      } \
+    } \
+    printf("}\n"); \
+  } \
+  \
+  static inline Result(Void, cref(Char)) Hashmap_push_back(K, V)(ref(Hashmap(K, V)) self, Pair(K, V) pair) \
+  { \
+    return Hashmap_add(K, V)(self, pair.first, pair.second); \
+  } \
   typedef struct \
-    { \
-        Hashmap(K, V) map; \
-        Size current_index; \
-    } iter_val(Hashmap(K, V)); \
-    typedef iter_val(Hashmap(K, V)) *ref_iter_val(Hashmap(K, V)); \
-    typedef const iter_val(Hashmap(K, V)) *cref_iter_val(Hashmap(K, V)); \
-    static inline void TEMPLATE_METHOD(ref_iter_val_Hashmap, free, K, V)(ref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_iter_val_Hashmap, free, K, V)(cref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void iter_val_free(Hashmap(K, V))(cref_iter_val(Hashmap(K, V)) value) \
-    { \
-        for (Size _i = value->current_index; _i < value->map.capacity; ++_i) \
-        { \
-            if (value->map.data[_i].filled) \
-            { \
-                MY_C_UTILS_CONCAT(K, _free)(&value->map.data[_i].key); \
-                MY_C_UTILS_CONCAT(V, _free)(&value->map.data[_i].value); \
-            } \
-        } \
-        TEMPLATE_METHOD(Hashmap, free, K, V)((ref_Hashmap(K, V))&value->map); \
-    } \
-    \
-    typedef struct \
-    { \
-        V *value; \
-        bool is_error; \
-    } Hashmap_iter_mut_Result(K, V); \
-    typedef struct \
-    { \
-        const V *value; \
-        bool is_error; \
-    } Hashmap_iter_const_Result(K, V); \
-    \
-    typedef struct \
-    { \
-        ref_Hashmap(K, V) map; \
-        Size current_index; \
-    } iter_mut(Hashmap(K, V)); \
-    typedef iter_mut(Hashmap(K, V)) *ref_iter_mut(Hashmap(K, V)); \
-    typedef const iter_mut(Hashmap(K, V)) *cref_iter_mut(Hashmap(K, V)); \
-    static inline void TEMPLATE_METHOD(ref_iter_mut_Hashmap, free, K, V)(ref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_iter_mut_Hashmap, free, K, V)(cref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void iter_mut_free(Hashmap(K, V))(cref_iter_mut(Hashmap(K, V)) value) { (void)value; } \
-    \
-    typedef struct \
-    { \
-        cref_Hashmap(K, V) map; \
-        Size current_index; \
-    } iter_const(Hashmap(K, V)); \
-    typedef iter_const(Hashmap(K, V)) *ref_iter_const(Hashmap(K, V)); \
-    typedef const iter_const(Hashmap(K, V)) *cref_iter_const(Hashmap(K, V)); \
-    static inline void TEMPLATE_METHOD(ref_iter_const_Hashmap, free, K, V)(ref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_iter_const_Hashmap, free, K, V)(cref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
-    static inline void iter_const_free(Hashmap(K, V))(cref_iter_const(Hashmap(K, V)) value) { (void)value; } \
-    \
-    static inline iter_val(Hashmap(K, V)) Hashmap_into_iter_val(K, V)( \
-        Hashmap(K, V) self) \
-    { \
-        Size first_index = Hashmap_seek_next(K, V)(&self, 0); \
-        return (iter_val(Hashmap(K, V))){.map = self, .current_index = first_index}; \
-    } \
-    \
-    static inline Result(V, cref(Char)) iter_val_deref(Hashmap(K, V))( \
-        cref_iter_val(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
-        { \
-            return Result_err(V, cref(Char))("Iterator out of bounds"); \
-        } \
-        return Result_ok(V, cref(Char))(self->map.data[self->current_index].value); \
-    } \
-    \
-    static inline Result(V, cref(Char)) iter_val_next(Hashmap(K, V))(ref_iter_val(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
-        { \
-            return Result_err(V, cref(Char))("Iterator out of bounds"); \
-        } \
-        Size cur = self->current_index; \
-        MY_C_UTILS_CONCAT(K, _free)(&self->map.data[cur].key); \
-        self->current_index = Hashmap_seek_next(K, V)(&self->map, self->current_index + 1); \
-        return Result_ok(V, cref(Char))(self->map.data[cur].value); \
-    } \
-    \
-    static inline iter_mut(Hashmap(K, V)) Hashmap_iter_mut(K, V)( \
-        ref_Hashmap(K, V) self) \
-    { \
-        Size first_index = Hashmap_seek_next(K, V)(self, 0); \
-        return (iter_mut(Hashmap(K, V))){.map = self, .current_index = first_index}; \
-    } \
-    \
-    static inline Hashmap_iter_mut_Result(K, V) iter_mut_deref(Hashmap(K, V))( \
-        cref_iter_mut(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
-        { \
-            return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
-        } \
-        return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
-    } \
-    \
-    static inline Hashmap_iter_mut_Result(K, V) iter_mut_next(Hashmap(K, V))(ref_iter_mut(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
-        { \
-            return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
-        } \
-        Size cur = self->current_index; \
-        self->current_index = Hashmap_seek_next(K, V)(self->map, self->current_index + 1); \
-        return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
-    } \
-    \
-    static inline iter_const(Hashmap(K, V)) Hashmap_iter_const(K, V)( \
-        cref_Hashmap(K, V) self) \
-    { \
-        Size first_index = Hashmap_seek_next(K, V)((ref_Hashmap(K, V))self, 0); \
-        return (iter_const(Hashmap(K, V))){.map = self, .current_index = first_index}; \
-    } \
-    \
-    static inline Hashmap_iter_const_Result(K, V) iter_const_deref(Hashmap(K, V))( \
-        cref_iter_const(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
-        { \
-            return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
-        } \
-        return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
-    } \
-    \
-    static inline Hashmap_iter_const_Result(K, V) iter_const_next(Hashmap(K, V))(ref_iter_const(Hashmap(K, V)) self) \
-    { \
-        if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
-        { \
-            return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
-        } \
-        Size cur = self->current_index; \
-        self->current_index = Hashmap_seek_next(K, V)((ref_Hashmap(K, V))self->map, self->current_index + 1); \
-        return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
-    } \
-    \
-    static inline Result(Void, cref(Char)) Hashmap_push_back(K, V)(ref_Hashmap(K, V) self, Pair(K, V) pair) \
-    { \
-        return Hashmap_add(K, V)(self, pair.first, pair.second); \
-    } \
-    \
-    static inline Hashmap(K, V) TEMPLATE_METHOD(Default, default, Hashmap(K, V))(void) \
-    { \
-        return Hashmap_new(K, V)(16); \
-    }
+  { \
+      Hashmap(K, V) map; \
+      Size current_index; \
+  } iter_val(Hashmap(K, V)); \
+  typedef iter_val(Hashmap(K, V)) *ref_iter_val(Hashmap(K, V)); \
+  typedef const iter_val(Hashmap(K, V)) *cref_iter_val(Hashmap(K, V)); \
+  static inline void TEMPLATE_METHOD(ref_iter_val_Hashmap, free, K, V)(ref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_val_Hashmap, free, K, V)(cref_iter_val(Hashmap(K, V)) *value) { (void)value; } \
+  \
+  typedef struct \
+  { \
+      V *value; \
+      bool is_error; \
+  } Hashmap_iter_mut_Result(K, V); \
+  typedef struct \
+  { \
+      const V *value; \
+      bool is_error; \
+  } Hashmap_iter_const_Result(K, V); \
+  \
+  typedef struct \
+  { \
+      ref(Hashmap(K, V)) map; \
+      Size current_index; \
+  } iter_mut(Hashmap(K, V)); \
+  typedef iter_mut(Hashmap(K, V)) *ref_iter_mut(Hashmap(K, V)); \
+  typedef const iter_mut(Hashmap(K, V)) *cref_iter_mut(Hashmap(K, V)); \
+  static inline void TEMPLATE_METHOD(ref_iter_mut_Hashmap, free, K, V)(ref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_mut_Hashmap, free, K, V)(cref_iter_mut(Hashmap(K, V)) *value) { (void)value; } \
+  \
+  typedef struct \
+  { \
+      cref(Hashmap(K, V)) map; \
+      Size current_index; \
+  } iter_const(Hashmap(K, V)); \
+  typedef iter_const(Hashmap(K, V)) *ref_iter_const(Hashmap(K, V)); \
+  typedef const iter_const(Hashmap(K, V)) *cref_iter_const(Hashmap(K, V)); \
+  static inline void TEMPLATE_METHOD(ref_iter_const_Hashmap, free, K, V)(ref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
+  static inline void TEMPLATE_METHOD(cref_iter_const_Hashmap, free, K, V)(cref_iter_const(Hashmap(K, V)) *value) { (void)value; } \
+  \
+  static inline Hashmap(K, V) TEMPLATE_METHOD(Default, default, Hashmap(K, V))(void) \
+  { \
+      return Hashmap_new(K, V)(16); \
+  } \
+  static inline void TEMPLATE_METHOD(Free, free, Hashmap(K, V))(ref(Hashmap(K, V)) self) \
+  { \
+      for (Size i = 0; i < self->capacity; i++) \
+      { \
+          if (self->data[i].filled) \
+          { \
+              Free(K)(&self->data[i].key); \
+              Free(V)(&self->data[i].value); \
+          } \
+      } \
+      MY_C_UTILS_FREE(self->data); \
+      self->data = NULL; \
+      self->size = 0; \
+      self->capacity = 0; \
+  } \
+  static inline Hashmap(K, V) TEMPLATE_METHOD(Clone, clone, Hashmap(K, V))(cref(Hashmap(K, V)) self) \
+  { \
+      if (!self) \
+      { \
+          perror("Cannot clone NULL Hashmap pointer"); \
+          exit(1); \
+      } \
+      Hashmap(K, V) dest = Hashmap_new(K, V)(self->capacity > 0 ? self->capacity : 16); \
+      for (Size i = 0; i < self->capacity; i++) \
+      { \
+          if (self->data[i].filled) \
+          { \
+              K key_clone = Clone(K)(&self->data[i].key); \
+              V value_clone = Clone(V)(&self->data[i].value); \
+              Result(Void, cref(Char)) add_res = Hashmap_add(K, V)(&dest, key_clone, value_clone); \
+              if (Result_is_err(Void, cref(Char))(&add_res)) \
+              { \
+                  TEMPLATE_METHOD(Free, free, Hashmap(K, V))(&dest); \
+                  perror("Memory allocation failed during hashmap clone"); \
+                  exit(1); \
+              } \
+          } \
+      } \
+      return dest; \
+  } \
+  static inline iter_Hashmap(K, V) TEMPLATE_METHOD(IntoIterator, into_iter, Hashmap(K, V))(Hashmap(K, V) self) \
+  { \
+      Size first_index = Hashmap_seek_next(K, V)(&self, 0); \
+      return (iter_Hashmap(K, V)){.map = self, .current_index = first_index}; \
+  } \
+  static inline iter_val(Hashmap(K, V)) TEMPLATE_METHOD(IntoIterator, into_iter_val, Hashmap(K, V))(Hashmap(K, V) self) \
+  { \
+      Size first_index = Hashmap_seek_next(K, V)(&self, 0); \
+      return (iter_val(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+  } \
+  static inline iter_mut(Hashmap(K, V)) TEMPLATE_METHOD(IntoIteratorMut, into_iter_mut, Hashmap(K, V))(ref(Hashmap(K, V)) self) \
+  { \
+      Size first_index = Hashmap_seek_next(K, V)(self, 0); \
+      return (iter_mut(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+  } \
+  static inline iter_const(Hashmap(K, V)) TEMPLATE_METHOD(IntoIteratorConst, into_iter_const, Hashmap(K, V))(cref(Hashmap(K, V)) self) \
+  { \
+      Size first_index = Hashmap_seek_next(K, V)((ref(Hashmap(K, V)))self, 0); \
+      return (iter_const(Hashmap(K, V))){.map = self, .current_index = first_index}; \
+  } \
+  static inline Result(ref(V), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter(Hashmap(K, V)))(iter(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+      { \
+          return Result_err(ref(V), cref(Char))("Iterator out of bounds"); \
+      } \
+      Size cur = self->current_index; \
+      self->current_index = Hashmap_seek_next(K, V)(&self->map, self->current_index + 1); \
+      return Result_ok(ref(V), cref(Char))(&self->map.data[cur].value); \
+  } \
+  static inline Result(ref(V), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter(Hashmap(K, V)))(const iter(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+      { \
+          return Result_err(ref(V), cref(Char))("Iterator out of bounds"); \
+      } \
+      return Result_ok(ref(V), cref(Char))((ref(V))&self->map.data[self->current_index].value); \
+  } \
+  static inline void TEMPLATE_METHOD(Iterator, free, iter(Hashmap(K, V)))(iter(Hashmap(K, V)) *self) \
+  { \
+      TEMPLATE_METHOD(Free, free, Hashmap(K, V))(&self->map); \
+  } \
+  static inline Result(V, cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_val(Hashmap(K, V)))(iter_val(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+      { \
+          return Result_err(V, cref(Char))("Iterator out of bounds"); \
+      } \
+      Size cur = self->current_index; \
+      Free(K)(&self->map.data[cur].key); \
+      self->current_index = Hashmap_seek_next(K, V)(&self->map, self->current_index + 1); \
+      return Result_ok(V, cref(Char))(self->map.data[cur].value); \
+  } \
+  static inline Result(V, cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_val(Hashmap(K, V)))(const iter_val(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map.capacity || !self->map.data[self->current_index].filled) \
+      { \
+          return Result_err(V, cref(Char))("Iterator out of bounds"); \
+      } \
+      return Result_ok(V, cref(Char))(self->map.data[self->current_index].value); \
+  } \
+  static inline void TEMPLATE_METHOD(Iterator, free, iter_val(Hashmap(K, V)))(iter_val(Hashmap(K, V)) *self) \
+  { \
+      for (Size _i = self->current_index; _i < self->map.capacity; ++_i) \
+      { \
+          if (self->map.data[_i].filled) \
+          { \
+              Free(K)(&self->map.data[_i].key); \
+              Free(V)(&self->map.data[_i].value); \
+          } \
+      } \
+      TEMPLATE_METHOD(Free, free, Hashmap(K, V))(&self->map); \
+  } \
+  static inline Hashmap_iter_mut_Result(K, V) TEMPLATE_METHOD(Iterator, next, iter_mut(Hashmap(K, V)))(iter_mut(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+      { \
+          return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
+      } \
+      Size cur = self->current_index; \
+      self->current_index = Hashmap_seek_next(K, V)(self->map, self->current_index + 1); \
+      return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
+  } \
+  static inline Hashmap_iter_mut_Result(K, V) TEMPLATE_METHOD(Iterator, deref, iter_mut(Hashmap(K, V)))(const iter_mut(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+      { \
+          return (Hashmap_iter_mut_Result(K, V)){.value = NULL, .is_error = true}; \
+      } \
+      return (Hashmap_iter_mut_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
+  } \
+  static inline void TEMPLATE_METHOD(Iterator, free, iter_mut(Hashmap(K, V)))(iter_mut(Hashmap(K, V)) *self) \
+  { \
+      (void)self; \
+  } \
+  static inline Hashmap_iter_const_Result(K, V) TEMPLATE_METHOD(Iterator, next, iter_const(Hashmap(K, V)))(iter_const(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+      { \
+          return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
+      } \
+      Size cur = self->current_index; \
+      ref(Hashmap(K, V)) map_mut = (ref(Hashmap(K, V)))self->map; \
+      self->current_index = Hashmap_seek_next(K, V)(map_mut, self->current_index + 1); \
+      return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[cur].value, .is_error = false}; \
+  } \
+  static inline Hashmap_iter_const_Result(K, V) TEMPLATE_METHOD(Iterator, deref, iter_const(Hashmap(K, V)))(const iter_const(Hashmap(K, V)) *self) \
+  { \
+      if (self->current_index >= self->map->capacity || !self->map->data[self->current_index].filled) \
+      { \
+          return (Hashmap_iter_const_Result(K, V)){.value = NULL, .is_error = true}; \
+      } \
+      return (Hashmap_iter_const_Result(K, V)){.value = &self->map->data[self->current_index].value, .is_error = false}; \
+  } \
+  static inline void TEMPLATE_METHOD(Iterator, free, iter_const(Hashmap(K, V)))(iter_const(Hashmap(K, V)) *self) \
+  { \
+      (void)self; \
+  } \
+  RESULT_CONFIG(Hashmap(K, V), cref(Char)) \
+  RESULT_CONFIG(ref(Hashmap(K, V)), cref(Char))
 
 #endif

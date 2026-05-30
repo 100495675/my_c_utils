@@ -6,8 +6,8 @@
 #define Point(...) TEMPLATE_TYPE(Point, __VA_ARGS__)
 #define ref_Point(...) TEMPLATE_TYPE(ref_Point, __VA_ARGS__)
 #define cref_Point(...) TEMPLATE_TYPE(cref_Point, __VA_ARGS__)
-#define Point_free(...) TEMPLATE_METHOD(Point, free, __VA_ARGS__)
-#define Point_clone(...) TEMPLATE_METHOD(Point, clone, __VA_ARGS__)
+#define Point_free(...) Free(Point(__VA_ARGS__))
+#define Point_clone(...) Clone(Point(__VA_ARGS__))
 #define Point_new(...) TEMPLATE_METHOD(Point, new, __VA_ARGS__)
 
 // 2. Definimos la plantilla genérica usando STRUCT_CONFIG

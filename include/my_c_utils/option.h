@@ -46,9 +46,14 @@
  * @usage Option(Int) opt = Option_none(Int)();
  */
 #define Option_none(...)    TEMPLATE_METHOD(Option, none, __VA_ARGS__)
-#define Option_into_iter_val(...) TEMPLATE_METHOD(Option, into_iter_val, __VA_ARGS__)
-#define Option_iter_mut(...)      TEMPLATE_METHOD(Option, iter_mut, __VA_ARGS__)
-#define Option_iter_const(...)    TEMPLATE_METHOD(Option, iter_const, __VA_ARGS__)
+#define Option_into_iter_val(...) IntoIterator(Option(__VA_ARGS__))
+#define Option_into_iter(...)     Option_into_iter_val(__VA_ARGS__)
+#define Option_iter_mut(...)      IntoIteratorMut(Option(__VA_ARGS__))
+#define Option_iter_const(...)    IntoIteratorConst(Option(__VA_ARGS__))
+
+#define iter_Option_next(...)       Iterator_next(iter_val(Option(__VA_ARGS__)))
+#define iter_Option_deref(...)      Iterator_deref(iter_val(Option(__VA_ARGS__)))
+#define iter_Option_free(...)       Iterator_free(iter_val(Option(__VA_ARGS__)))
 #define Option_push_back(...) TEMPLATE_METHOD(Option, push_back, __VA_ARGS__)
 #define Option_new(...)       Option_none(__VA_ARGS__)
 
@@ -85,7 +90,7 @@
  * @param self A pointer to the Option(T) instance (&opt).
  * @usage Option_free(Int)(&opt);
  */
-#define Option_free(...)    TEMPLATE_METHOD(Option, free, __VA_ARGS__)
+#define Option_free(...)    Free(Option(__VA_ARGS__))
 
 /**
  * @brief Maps an Option(T) to Option(U) by applying a function to the contained value.
@@ -96,7 +101,16 @@
  * @returns Option(U)
  * @usage Option_map(Int, Double)(opt, int_to_double)
  */
-#define Option_map(...)      TEMPLATE_METHOD(Option, map, __VA_ARGS__)
+#define Option_map(T, U) \
+    ({ \
+        Option(U) _map_fn(Option(T) self, U (*fn)(T)) { \
+            if (self.filled) { \
+                return Option_some(U)(fn(self.value)); \
+            } \
+            return Option_none(U)(); \
+        } \
+        _map_fn; \
+    })
 
 /**
  * @brief Applies a function returning Option(U) to the contained value of Option(T).
@@ -107,7 +121,16 @@
  * @returns Option(U)
  * @usage Option_and_then(Int, Double)(opt, int_to_opt_double)
  */
-#define Option_and_then(...) TEMPLATE_METHOD(Option, and_then, __VA_ARGS__)
+#define Option_and_then(T, U) \
+    ({ \
+        Option(U) _and_then_fn(Option(T) self, Option(U) (*fn)(T)) { \
+            if (self.filled) { \
+                return fn(self.value); \
+            } \
+            return Option_none(U)(); \
+        } \
+        _and_then_fn; \
+    })
 
 /**
  * @brief Returns the contained value or a default value.
@@ -131,8 +154,12 @@
     } Option(T); \
     typedef Option(T) *ref_Option(T); \
     typedef const Option(T) *cref_Option(T); \
-    static inline void TEMPLATE_METHOD(ref_Option, free, T)(ref_Option(T) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_Option, free, T)(cref_Option(T) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(Free, free, ref(Option(T)))(ref(Option(T)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(Free, free, cref(Option(T)))(cref(Option(T)) *value) { (void)value; } \
+    static inline ref(Option(T)) TEMPLATE_METHOD(Clone, clone, ref(Option(T)))(const ref(Option(T)) *self) { return *self; } \
+    static inline cref(Option(T)) TEMPLATE_METHOD(Clone, clone, cref(Option(T)))(const cref(Option(T)) *self) { return *self; } \
+    static inline Option(T) TEMPLATE_METHOD(Deref, deref, ref(Option(T)))(ref(Option(T)) self) { return *self; } \
+    static inline Option(T) TEMPLATE_METHOD(Deref, deref, cref(Option(T)))(cref(Option(T)) self) { return *self; } \
     \
     static inline Option(T) Option_some(T)(T value) \
     { \
@@ -154,22 +181,14 @@
         return self.value; \
     } \
     \
-    static inline Bool Option_is_none(T)(cref_Option(T) self) \
+    static inline Bool Option_is_none(T)(cref(Option(T)) self) \
     { \
         return !(self->filled); \
     } \
     \
-    static inline Bool Option_is_some(T)(cref_Option(T) self) \
+    static inline Bool Option_is_some(T)(cref(Option(T)) self) \
     { \
         return self->filled; \
-    } \
-    \
-    static inline void Option_free(T)(ref_Option(T) self) \
-    { \
-        if (self->filled) \
-        { \
-            MY_C_UTILS_CONCAT(T, _free)(&self->value); \
-        } \
     } \
     \
     static inline T Option_unwrap_or(T)(Option(T) self, T default_value) \
@@ -186,13 +205,6 @@
     typedef const iter_val(Option(T)) *cref_iter_val(Option(T)); \
     static inline void TEMPLATE_METHOD(ref_iter_val_Option, free, T)(ref_iter_val(Option(T)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_val_Option, free, T)(cref_iter_val(Option(T)) *value) { (void)value; } \
-    static inline void iter_val_free(Option(T))(cref_iter_val(Option(T)) value) \
-    { \
-        if (!value->consumed) \
-        { \
-            Option_free(T)((Option(T)*)&value->opt); \
-        } \
-    } \
     \
     typedef struct \
     { \
@@ -213,104 +225,25 @@
     \
     typedef struct \
     { \
-        ref_Option(T) opt; \
+        ref(Option(T)) opt; \
         bool consumed; \
     } iter_mut(Option(T)); \
     typedef iter_mut(Option(T)) *ref_iter_mut(Option(T)); \
     typedef const iter_mut(Option(T)) *cref_iter_mut(Option(T)); \
     static inline void TEMPLATE_METHOD(ref_iter_mut_Option, free, T)(ref_iter_mut(Option(T)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_mut_Option, free, T)(cref_iter_mut(Option(T)) *value) { (void)value; } \
-    static inline void iter_mut_free(Option(T))(cref_iter_mut(Option(T)) value) { (void)value; } \
     \
     typedef struct \
     { \
-        cref_Option(T) opt; \
+        cref(Option(T)) opt; \
         bool consumed; \
     } iter_const(Option(T)); \
     typedef iter_const(Option(T)) *ref_iter_const(Option(T)); \
     typedef const iter_const(Option(T)) *cref_iter_const(Option(T)); \
     static inline void TEMPLATE_METHOD(ref_iter_const_Option, free, T)(ref_iter_const(Option(T)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_const_Option, free, T)(cref_iter_const(Option(T)) *value) { (void)value; } \
-    static inline void iter_const_free(Option(T))(cref_iter_const(Option(T)) value) { (void)value; } \
     \
-    static inline iter_val(Option(T)) Option_into_iter_val(T)( \
-        Option(T) self) \
-    { \
-        return (iter_val(Option(T))){.opt = self, .consumed = false}; \
-    } \
-    \
-    static inline Option_iter_val_Result(T) iter_val_deref(Option(T))( \
-        cref_iter_val(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)((Option(T)*)&self->opt)) \
-        { \
-            return (Option_iter_val_Result(T)){.is_error = true}; \
-        } \
-        return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = false}; \
-    } \
-    \
-    static inline Option_iter_val_Result(T) iter_val_next(Option(T))(ref_iter_val(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)(&self->opt)) \
-        { \
-            return (Option_iter_val_Result(T)){.is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = false}; \
-    } \
-    \
-    static inline iter_mut(Option(T)) Option_iter_mut(T)( \
-        ref_Option(T) self) \
-    { \
-        return (iter_mut(Option(T))){.opt = self, .consumed = false}; \
-    } \
-    \
-    static inline Option_iter_mut_Result(T) iter_mut_deref(Option(T))( \
-        cref_iter_mut(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)((Option(T)*)self->opt)) \
-        { \
-            return (Option_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
-        } \
-        return (Option_iter_mut_Result(T)){.value = &(self->opt->value), .is_error = false}; \
-    } \
-    \
-    static inline Option_iter_mut_Result(T) iter_mut_next(Option(T))(ref_iter_mut(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)(self->opt)) \
-        { \
-            return (Option_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Option_iter_mut_Result(T)){.value = &(self->opt->value), .is_error = false}; \
-    } \
-    \
-    static inline iter_const(Option(T)) Option_iter_const(T)( \
-        cref_Option(T) self) \
-    { \
-        return (iter_const(Option(T))){.opt = self, .consumed = false}; \
-    } \
-    \
-    static inline Option_iter_const_Result(T) iter_const_deref(Option(T))( \
-        cref_iter_const(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)((Option(T)*)self->opt)) \
-        { \
-            return (Option_iter_const_Result(T)){.value = NULL, .is_error = true}; \
-        } \
-        return (Option_iter_const_Result(T)){.value = &(self->opt->value), .is_error = false}; \
-    } \
-    static inline Option_iter_const_Result(T) iter_const_next(Option(T))(ref_iter_const(Option(T)) self) \
-    { \
-        if (self->consumed || !Option_is_some(T)((Option(T)*)self->opt)) \
-        { \
-            return (Option_iter_const_Result(T)){.value = NULL, .is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Option_iter_const_Result(T)){.value = &(self->opt->value), .is_error = false}; \
-    } \
-    \
-    static inline Result(Void, cref(Char)) Option_push_back(T)(ref_Option(T) self, T value) \
+    static inline Result(Void, cref(Char)) Option_push_back(T)(ref(Option(T)) self, T value) \
     { \
         if (!self->filled) \
         { \
@@ -318,7 +251,7 @@
         } \
         else \
         { \
-            MY_C_UTILS_CONCAT(T, _free)(&value); \
+            Free(T)(&value); \
         } \
         return Result_ok(Void, cref(Char))((Void){}); \
     } \
@@ -326,26 +259,93 @@
     static inline Option(T) TEMPLATE_METHOD(Default, default, Option(T))(void) \
     { \
         return Option_none(T)(); \
-    }
-
-#define OPTION_MAP_CONFIG(T, U) \
-    static inline Option(U) TEMPLATE_METHOD(Option, map, T, U)(Option(T) self, U (*fn)(T)) \
+    } \
+    static inline void TEMPLATE_METHOD(Free, free, Option(T))(ref(Option(T)) self) \
     { \
-        if (self.filled) { \
-            return Option_some(U)(fn(self.value)); \
+        if (self->filled) \
+        { \
+            Free(T)(&self->value); \
         } \
-        return Option_none(U)(); \
-    }
-
-#define OPTION_AND_THEN_CONFIG(T, U) \
-    static inline Option(U) TEMPLATE_METHOD(Option, and_then, T, U)(Option(T) self, Option(U) (*fn)(T)) \
+    } \
+    static inline iter_val(Option(T)) TEMPLATE_METHOD(IntoIterator, into_iter_val, Option(T))(Option(T) self) \
     { \
-        if (self.filled) { \
-            return fn(self.value); \
+        return (iter_val(Option(T))){.opt = self, .consumed = false}; \
+    } \
+    static inline iter_mut(Option(T)) TEMPLATE_METHOD(IntoIteratorMut, into_iter_mut, Option(T))(ref(Option(T)) self) \
+    { \
+        return (iter_mut(Option(T))){.opt = self, .consumed = false}; \
+    } \
+    static inline iter_const(Option(T)) TEMPLATE_METHOD(IntoIteratorConst, into_iter_const, Option(T))(cref(Option(T)) self) \
+    { \
+        return (iter_const(Option(T))){.opt = self, .consumed = false}; \
+    } \
+    static inline Option_iter_val_Result(T) TEMPLATE_METHOD(Iterator, next, iter_val(Option(T)))(iter_val(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt.filled) \
+        { \
+            return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = true}; \
         } \
-        return Option_none(U)(); \
+        self->consumed = true; \
+        return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = false}; \
+    } \
+    static inline Option_iter_val_Result(T) TEMPLATE_METHOD(Iterator, deref, iter_val(Option(T)))(const iter_val(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt.filled) \
+        { \
+            return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = true}; \
+        } \
+        return (Option_iter_val_Result(T)){.value = self->opt.value, .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_val(Option(T)))(iter_val(Option(T)) *self) \
+    { \
+        if (!self->consumed) \
+        { \
+            Free(Option(T))(&self->opt); \
+        } \
+    } \
+    static inline Option_iter_mut_Result(T) TEMPLATE_METHOD(Iterator, next, iter_mut(Option(T)))(iter_mut(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt->filled) \
+        { \
+            return (Option_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        self->consumed = true; \
+        return (Option_iter_mut_Result(T)){.value = &(self->opt->value), .is_error = false}; \
+    } \
+    static inline Option_iter_mut_Result(T) TEMPLATE_METHOD(Iterator, deref, iter_mut(Option(T)))(const iter_mut(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt->filled) \
+        { \
+            return (Option_iter_mut_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Option_iter_mut_Result(T)){.value = &(self->opt->value), .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_mut(Option(T)))(iter_mut(Option(T)) *self) \
+    { \
+        (void)self; \
+    } \
+    static inline Option_iter_const_Result(T) TEMPLATE_METHOD(Iterator, next, iter_const(Option(T)))(iter_const(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt->filled) \
+        { \
+            return (Option_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        self->consumed = true; \
+        return (Option_iter_const_Result(T)){.value = &(self->opt->value), .is_error = false}; \
+    } \
+    static inline Option_iter_const_Result(T) TEMPLATE_METHOD(Iterator, deref, iter_const(Option(T)))(const iter_const(Option(T)) *self) \
+    { \
+        if (self->consumed || !self->opt->filled) \
+        { \
+            return (Option_iter_const_Result(T)){.value = NULL, .is_error = true}; \
+        } \
+        return (Option_iter_const_Result(T)){.value = &(self->opt->value), .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_const(Option(T)))(iter_const(Option(T)) *self) \
+    { \
+        (void)self; \
     }
 
-
+#include "my_c_utils/iterator.h"
 
 #endif

@@ -76,7 +76,7 @@
  * @param self Pointer to the Result instance (&res).
  * @usage Result_free(Int, cref(Char))(&res);
  */
-#define Result_free(...)       TEMPLATE_METHOD(Result, free, __VA_ARGS__)
+#define Result_free(...)       Free(Result(__VA_ARGS__))
 
 /**
  * @brief Constructs a successful Result containing a T value.
@@ -97,9 +97,14 @@
  * @usage Result(Int, cref(Char)) res = Result_err(Int, cref(Char))("An error occurred");
  */
 #define Result_err(...)        TEMPLATE_METHOD(Result, err, __VA_ARGS__)
-#define Result_into_iter_val(...) TEMPLATE_METHOD(Result, into_iter_val, __VA_ARGS__)
-#define Result_iter_mut(...)      TEMPLATE_METHOD(Result, iter_mut, __VA_ARGS__)
-#define Result_iter_const(...)    TEMPLATE_METHOD(Result, iter_const, __VA_ARGS__)
+#define Result_into_iter_val(...) IntoIterator(Result(__VA_ARGS__))
+#define Result_into_iter(...)     Result_into_iter_val(__VA_ARGS__)
+#define Result_iter_mut(...)      IntoIteratorMut(Result(__VA_ARGS__))
+#define Result_iter_const(...)    IntoIteratorConst(Result(__VA_ARGS__))
+
+#define iter_Result_next(...)       Iterator_next(iter_val(Result(__VA_ARGS__)))
+#define iter_Result_deref(...)      Iterator_deref(iter_val(Result(__VA_ARGS__)))
+#define iter_Result_free(...)       Iterator_free(iter_val(Result(__VA_ARGS__)))
 #define Result_push_back(...) TEMPLATE_METHOD(Result, push_back, __VA_ARGS__)
 #define Result_new(...)       TEMPLATE_METHOD(Result, new, __VA_ARGS__)
 
@@ -113,7 +118,16 @@
  * @returns Result(U, E)
  * @usage Result_map(Int, cref(Char), Double)(res, int_to_double)
  */
-#define Result_map(...)      TEMPLATE_METHOD(Result, map, __VA_ARGS__)
+#define Result_map(T, E, U) \
+    ({ \
+        Result(U, E) _map_fn(Result(T, E) self, U (*fn)(T)) { \
+            if (!self.is_error) { \
+                return Result_ok(U, E)(fn(self.value)); \
+            } \
+            return Result_err(U, E)(self.error); \
+        } \
+        _map_fn; \
+    })
 
 /**
  * @brief Applies a function returning Result(U, E) to the success value T of Result(T, E).
@@ -125,7 +139,16 @@
  * @returns Result(U, E)
  * @usage Result_and_then(Int, cref(Char), Double)(res, int_to_res_double)
  */
-#define Result_and_then(...) TEMPLATE_METHOD(Result, and_then, __VA_ARGS__)
+#define Result_and_then(T, E, U) \
+    ({ \
+        Result(U, E) _and_then_fn(Result(T, E) self, Result(U, E) (*fn)(T)) { \
+            if (!self.is_error) { \
+                return fn(self.value); \
+            } \
+            return Result_err(U, E)(self.error); \
+        } \
+        _and_then_fn; \
+    })
 
 /**
  * @brief Returns the success value or a default value.
@@ -154,8 +177,12 @@
     } Result(T, E); \
     typedef Result(T, E) *ref_Result(T, E); \
     typedef const Result(T, E) *cref_Result(T, E); \
-    static inline void TEMPLATE_METHOD(ref_Result, free, T, E)(ref_Result(T, E) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_Result, free, T, E)(cref_Result(T, E) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(Free, free, ref(Result(T, E)))(ref(Result(T, E)) *value) { (void)value; } \
+    static inline void TEMPLATE_METHOD(Free, free, cref(Result(T, E)))(cref(Result(T, E)) *value) { (void)value; } \
+    static inline ref(Result(T, E)) TEMPLATE_METHOD(Clone, clone, ref(Result(T, E)))(const ref(Result(T, E)) *self) { return *self; } \
+    static inline cref(Result(T, E)) TEMPLATE_METHOD(Clone, clone, cref(Result(T, E)))(const cref(Result(T, E)) *self) { return *self; } \
+    static inline Result(T, E) TEMPLATE_METHOD(Deref, deref, ref(Result(T, E)))(ref(Result(T, E)) self) { return *self; } \
+    static inline Result(T, E) TEMPLATE_METHOD(Deref, deref, cref(Result(T, E)))(cref(Result(T, E)) self) { return *self; } \
     \
     static inline Result(T, E) Result_ok(T, E)(T value) \
     { \
@@ -177,12 +204,12 @@
         return self.value; \
     } \
     \
-    static inline Bool Result_is_err(T, E)(cref_Result(T, E) self) \
+    static inline Bool Result_is_err(T, E)(cref(Result(T, E)) self) \
     { \
         return self->is_error; \
     } \
     \
-    static inline Bool Result_is_ok(T, E)(cref_Result(T, E) self) \
+    static inline Bool Result_is_ok(T, E)(cref(Result(T, E)) self) \
     { \
         return !(self->is_error); \
     } \
@@ -195,14 +222,6 @@
             exit(1); \
         } \
         return self.error; \
-    } \
-    \
-    static inline void Result_free(T, E)(ref_Result(T, E) self) \
-    { \
-        if (!self->is_error) \
-        { \
-            MY_C_UTILS_CONCAT(T, _free)(&self->value); \
-        } \
     } \
     \
     static inline T Result_unwrap_or(T, E)(Result(T, E) self, T default_value) \
@@ -219,13 +238,6 @@
     typedef const iter_val(Result(T, E)) *cref_iter_val(Result(T, E)); \
     static inline void TEMPLATE_METHOD(ref_iter_val_Result, free, T, E)(ref_iter_val(Result(T, E)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_val_Result, free, T, E)(cref_iter_val(Result(T, E)) *value) { (void)value; } \
-    static inline void iter_val_free(Result(T, E))(cref_iter_val(Result(T, E)) value) \
-    { \
-        if (!value->consumed) \
-        { \
-            TEMPLATE_METHOD(Result, free, T, E)((ref_Result(T, E))&value->res); \
-        } \
-    } \
     \
     typedef struct \
     { \
@@ -246,102 +258,23 @@
     \
     typedef struct \
     { \
-        ref_Result(T, E) res; \
+        ref(Result(T, E)) res; \
         bool consumed; \
     } iter_mut(Result(T, E)); \
     typedef iter_mut(Result(T, E)) *ref_iter_mut(Result(T, E)); \
     typedef const iter_mut(Result(T, E)) *cref_iter_mut(Result(T, E)); \
     static inline void TEMPLATE_METHOD(ref_iter_mut_Result, free, T, E)(ref_iter_mut(Result(T, E)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_mut_Result, free, T, E)(cref_iter_mut(Result(T, E)) *value) { (void)value; } \
-    static inline void iter_mut_free(Result(T, E))(cref_iter_mut(Result(T, E)) value) { (void)value; } \
     \
     typedef struct \
     { \
-        cref_Result(T, E) res; \
+        cref(Result(T, E)) res; \
         bool consumed; \
     } iter_const(Result(T, E)); \
     typedef iter_const(Result(T, E)) *ref_iter_const(Result(T, E)); \
     typedef const iter_const(Result(T, E)) *cref_iter_const(Result(T, E)); \
     static inline void TEMPLATE_METHOD(ref_iter_const_Result, free, T, E)(ref_iter_const(Result(T, E)) *value) { (void)value; } \
     static inline void TEMPLATE_METHOD(cref_iter_const_Result, free, T, E)(cref_iter_const(Result(T, E)) *value) { (void)value; } \
-    static inline void iter_const_free(Result(T, E))(cref_iter_const(Result(T, E)) value) { (void)value; } \
-    \
-    static inline iter_val(Result(T, E)) Result_into_iter_val(T, E)( \
-        Result(T, E) self) \
-    { \
-        return (iter_val(Result(T, E))){.res = self, .consumed = false}; \
-    } \
-    \
-    static inline Result_iter_val_Result(T, E) iter_val_deref(Result(T, E))( \
-        cref_iter_val(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res.is_error) \
-        { \
-            return (Result_iter_val_Result(T, E)){.is_error = true}; \
-        } \
-        return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = false}; \
-    } \
-    \
-    static inline Result_iter_val_Result(T, E) iter_val_next(Result(T, E))(ref_iter_val(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res.is_error) \
-        { \
-            return (Result_iter_val_Result(T, E)){.is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = false}; \
-    } \
-    \
-    static inline iter_mut(Result(T, E)) Result_iter_mut(T, E)( \
-        ref_Result(T, E) self) \
-    { \
-        return (iter_mut(Result(T, E))){.res = self, .consumed = false}; \
-    } \
-    \
-    static inline Result_iter_mut_Result(T, E) iter_mut_deref(Result(T, E))( \
-        cref_iter_mut(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res->is_error) \
-        { \
-            return (Result_iter_mut_Result(T, E)){.value = NULL, .is_error = true}; \
-        } \
-        return (Result_iter_mut_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
-    } \
-    \
-    static inline Result_iter_mut_Result(T, E) iter_mut_next(Result(T, E))(ref_iter_mut(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res->is_error) \
-        { \
-            return (Result_iter_mut_Result(T, E)){.value = NULL, .is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Result_iter_mut_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
-    } \
-    \
-    static inline iter_const(Result(T, E)) Result_iter_const(T, E)( \
-        cref_Result(T, E) self) \
-    { \
-        return (iter_const(Result(T, E))){.res = self, .consumed = false}; \
-    } \
-    \
-    static inline Result_iter_const_Result(T, E) iter_const_deref(Result(T, E))( \
-        cref_iter_const(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res->is_error) \
-        { \
-            return (Result_iter_const_Result(T, E)){.value = NULL, .is_error = true}; \
-        } \
-        return (Result_iter_const_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
-    } \
-    static inline Result_iter_const_Result(T, E) iter_const_next(Result(T, E))(ref_iter_const(Result(T, E)) self) \
-    { \
-        if (self->consumed || self->res->is_error) \
-        { \
-            return (Result_iter_const_Result(T, E)){.value = NULL, .is_error = true}; \
-        } \
-        self->consumed = true; \
-        return (Result_iter_const_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
-    } \
     \
     static inline Result(T, E) Result_new(T, E)() \
     { \
@@ -359,16 +292,16 @@
         return self; \
     } \
     \
-    static inline Result(Void, cref(Char)) Result_push_back(T, E)(ref_Result(T, E) self, T value) \
+    static inline Result(Void, cref(Char)) Result_push_back(T, E)(ref(Result(T, E)) self, T value) \
     { \
         if (self->is_error) \
         { \
-            MY_C_UTILS_CONCAT(E, _free)(&self->error); \
+            Free(E)(&self->error); \
             *self = Result_ok(T, E)(value); \
         } \
         else \
         { \
-            MY_C_UTILS_CONCAT(T, _free)(&value); \
+            Free(T)(&value); \
         } \
         return Result_ok(Void, cref(Char))((Void){}); \
     } \
@@ -376,34 +309,107 @@
     static inline Result(T, E) TEMPLATE_METHOD(Default, default, Result(T, E))(void) \
     { \
         return Result_new(T, E)(); \
-    }
-
-#define RESULT_MAP_CONFIG(T, E, U) \
-    static inline Result(U, E) TEMPLATE_METHOD(Result, map, T, E, U)(Result(T, E) self, U (*fn)(T)) \
+    } \
+    static inline void TEMPLATE_METHOD(Free, free, Result(T, E))(ref(Result(T, E)) self) \
     { \
-        if (!self.is_error) { \
-            return Result_ok(U, E)(fn(self.value)); \
+        if (!self->is_error) \
+        { \
+            Free(T)(&self->value); \
         } \
-        return Result_err(U, E)(self.error); \
-    }
-
-#define RESULT_AND_THEN_CONFIG(T, E, U) \
-    static inline Result(U, E) TEMPLATE_METHOD(Result, and_then, T, E, U)(Result(T, E) self, Result(U, E) (*fn)(T)) \
+    } \
+    static inline iter_val(Result(T, E)) TEMPLATE_METHOD(IntoIterator, into_iter_val, Result(T, E))(Result(T, E) self) \
     { \
-        if (!self.is_error) { \
-            return fn(self.value); \
+        return (iter_val(Result(T, E))){.res = self, .consumed = false}; \
+    } \
+    static inline iter_mut(Result(T, E)) TEMPLATE_METHOD(IntoIteratorMut, into_iter_mut, Result(T, E))(ref(Result(T, E)) self) \
+    { \
+        return (iter_mut(Result(T, E))){.res = self, .consumed = false}; \
+    } \
+    static inline iter_const(Result(T, E)) TEMPLATE_METHOD(IntoIteratorConst, into_iter_const, Result(T, E))(cref(Result(T, E)) self) \
+    { \
+        return (iter_const(Result(T, E))){.res = self, .consumed = false}; \
+    } \
+    static inline Result_iter_val_Result(T, E) TEMPLATE_METHOD(Iterator, next, iter_val(Result(T, E)))(iter_val(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res.is_error) \
+        { \
+            return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = true}; \
         } \
-        return Result_err(U, E)(self.error); \
+        self->consumed = true; \
+        return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = false}; \
+    } \
+    static inline Result_iter_val_Result(T, E) TEMPLATE_METHOD(Iterator, deref, iter_val(Result(T, E)))(const iter_val(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res.is_error) \
+        { \
+            return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = true}; \
+        } \
+        return (Result_iter_val_Result(T, E)){.value = self->res.value, .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_val(Result(T, E)))(iter_val(Result(T, E)) *self) \
+    { \
+        if (!self->consumed) \
+        { \
+            Free(Result(T, E))(&self->res); \
+        } \
+    } \
+    static inline Result_iter_mut_Result(T, E) TEMPLATE_METHOD(Iterator, next, iter_mut(Result(T, E)))(iter_mut(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res->is_error) \
+        { \
+            return (Result_iter_mut_Result(T, E)){.value = NULL, .is_error = true}; \
+        } \
+        self->consumed = true; \
+        return (Result_iter_mut_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
+    } \
+    static inline Result_iter_mut_Result(T, E) TEMPLATE_METHOD(Iterator, deref, iter_mut(Result(T, E)))(const iter_mut(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res->is_error) \
+        { \
+            return (Result_iter_mut_Result(T, E)){.value = NULL, .is_error = true}; \
+        } \
+        return (Result_iter_mut_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_mut(Result(T, E)))(iter_mut(Result(T, E)) *self) \
+    { \
+        (void)self; \
+    } \
+    static inline Result_iter_const_Result(T, E) TEMPLATE_METHOD(Iterator, next, iter_const(Result(T, E)))(iter_const(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res->is_error) \
+        { \
+            return (Result_iter_const_Result(T, E)){.value = NULL, .is_error = true}; \
+        } \
+        self->consumed = true; \
+        return (Result_iter_const_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
+    } \
+    static inline Result_iter_const_Result(T, E) TEMPLATE_METHOD(Iterator, deref, iter_const(Result(T, E)))(const iter_const(Result(T, E)) *self) \
+    { \
+        if (self->consumed || self->res->is_error) \
+        { \
+            return (Result_iter_const_Result(T, E)){.value = NULL, .is_error = true}; \
+        } \
+        return (Result_iter_const_Result(T, E)){.value = &(self->res->value), .is_error = false}; \
+    } \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_const(Result(T, E)))(iter_const(Result(T, E)) *self) \
+    { \
+        (void)self; \
     }
 
 typedef struct {} Void;
-static inline void Void_free(Void *value)
+static inline void TEMPLATE_METHOD(Free, free, Void)(Void *value)
 {
     (void)value;
 }
+static inline Void TEMPLATE_METHOD(Clone, clone, Void)(const Void *self)
+{
+    (void)self;
+    return (Void){};
+}
+#define Void_free(...) Free(Void)(__VA_ARGS__)
+
+#include "my_c_utils/iterator.h"
 
 RESULT_CONFIG(Void, cref(Char))
-
-
 
 #endif

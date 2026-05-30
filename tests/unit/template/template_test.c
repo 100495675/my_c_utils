@@ -15,7 +15,7 @@ VECTOR_CONFIG(Int)
 #define Stack_new(...) TEMPLATE_METHOD(Stack, new, __VA_ARGS__)
 #define Stack_push(...) TEMPLATE_METHOD(Stack, push, __VA_ARGS__)
 #define Stack_pop(...) TEMPLATE_METHOD(Stack, pop, __VA_ARGS__)
-#define Stack_free(...) TEMPLATE_METHOD(Stack, free, __VA_ARGS__)
+#define Stack_free(...) Free(Stack(__VA_ARGS__))
 
 #define TEMPLATE_Stack(T) \
     STRUCT_CONFIG(Stack(T), \

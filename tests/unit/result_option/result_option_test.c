@@ -1,3 +1,4 @@
+#include "my_c_utils/primitives.h"
 #include "my_c_utils/option.h"
 #include "my_c_utils/result.h"
 #include "my_c_utils/string_type.h"
@@ -9,11 +10,6 @@ static inline String make_text(void)
 }
 
 OPTION_CONFIG(String)
-
-static inline void Int_free(Int *val)
-{
-  (void)val;
-}
 
 RESULT_CONFIG(Int, Int)
 

@@ -1,12 +1,5 @@
-#include "my_c_utils/free.h"
+#include "my_c_utils/primitives.h"
 #include "my_c_utils/result.h"
-
-static inline void Int_free(Int *value)
-{
-  (void)value;
-}
-
-RESULT_CONFIG(Int, cref(Char))
 
 Int main(void)
 {

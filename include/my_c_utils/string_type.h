@@ -52,7 +52,7 @@ static inline Bool String_equals(String a, String b)
     return strcmp(a, b) == 0;
 }
 
-static inline void String_free(String *value)
+static inline void TEMPLATE_METHOD(Free, free, String)(String *value)
 {
     if (value && *value)
     {
@@ -60,11 +60,12 @@ static inline void String_free(String *value)
         *value = NULL;
     }
 }
+#define String_free(...) Free(String)(__VA_ARGS__)
 
 RESULT_CONFIG(String, cref(Char))
 RESULT_CONFIG(ref_String, cref(Char))
 
-static inline String String_clone(const String *src)
+static inline String TEMPLATE_METHOD(Clone, clone, String)(const String *src)
 {
     if (!src || !*src)
     {
@@ -72,5 +73,6 @@ static inline String String_clone(const String *src)
     }
     return string_dup(*src);
 }
+#define String_clone(...) Clone(String)(__VA_ARGS__)
 
 #endif // MY_C_UTILS_STRING_TYPE_H

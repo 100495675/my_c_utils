@@ -43,7 +43,7 @@
  * @param self The Box(T) instance.
  * @usage Box_free(Int)(my_box)
  */
-#define Box_free(...) TEMPLATE_METHOD(Box, free, __VA_ARGS__)
+#define Box_free(...) Free(Box(__VA_ARGS__))
 
 /**
  * @brief Returns an immutable borrow (cref(T)) pointing to the inner value.
@@ -52,7 +52,7 @@
  * @returns cref(T)
  * @usage cref_deref(Int)(Box_deref(Int)(&my_box))
  */
-#define Box_deref(...) TEMPLATE_METHOD(Box, deref, __VA_ARGS__)
+#define Box_deref(...) Deref(Box(__VA_ARGS__))
 
 /**
  * @brief Returns a mutable borrow (ref(T)) pointing to the inner value.
@@ -61,7 +61,7 @@
  * @returns ref(T)
  * @usage *Box_deref_mut(Int)(&my_box) = 99;
  */
-#define Box_deref_mut(...) TEMPLATE_METHOD(Box, deref_mut, __VA_ARGS__)
+#define Box_deref_mut(...) DerefMut(Box(__VA_ARGS__))
 
 /**
  * @brief Extracts the inner T value from the Box, destroying the Box and transferring ownership.
@@ -79,7 +79,7 @@
  * @returns Box(T)
  * @usage Box(Int) cloned = Box_clone(Int)(&my_box)
  */
-#define Box_clone(...) TEMPLATE_METHOD(Box, clone, __VA_ARGS__)
+#define Box_clone(...) Clone(Box(__VA_ARGS__))
 
 // Backward compatibility alias for the manual BOX_CONFIG
 #define BOX_CONFIG(T) TEMPLATE_Box(T)
@@ -91,16 +91,13 @@
     } Box(T); \
     typedef Box(T) *ref_Box(T); \
     typedef const Box(T) *cref_Box(T); \
-    static inline void TEMPLATE_METHOD(ref_Box, free, T)(ref_Box(T) *value) { (void)value; } \
-    static inline void TEMPLATE_METHOD(cref_Box, free, T)(cref_Box(T) *value) { (void)value; } \
-    static inline void Box_free(T)(ref_Box(T) self) { \
-        if (self->value) { \
-            T##_free(self->value); \
-            MY_C_UTILS_FREE(self->value); \
-            self->value = NULL; \
-        } \
-    } \
-    RESULT_CONFIG(Box(T), cref(Char)) \
+    static inline void TEMPLATE_METHOD(Free, free, ref(Box(T)))(ref(Box(T)) *self) { (void)self; } \
+    static inline void TEMPLATE_METHOD(Free, free, cref(Box(T)))(cref(Box(T)) *self) { (void)self; } \
+    static inline ref(Box(T)) TEMPLATE_METHOD(Clone, clone, ref(Box(T)))(const ref(Box(T)) *self) { return *self; } \
+    static inline cref(Box(T)) TEMPLATE_METHOD(Clone, clone, cref(Box(T)))(const cref(Box(T)) *self) { return *self; } \
+    static inline Box(T) TEMPLATE_METHOD(Deref, deref, ref(Box(T)))(ref(Box(T)) self) { return *self; } \
+    static inline Box(T) TEMPLATE_METHOD(Deref, deref, cref(Box(T)))(cref(Box(T)) self) { return *self; } \
+    \
     static inline Box(T) Box_new(T)(T value) { \
         ref(T) boxed_value = MY_C_UTILS_MALLOC(sizeof(T)); \
         if (!boxed_value) { \
@@ -110,13 +107,7 @@
         *boxed_value = value; \
         return (Box(T)){.value = boxed_value}; \
     } \
-    static inline cref(T) Box_deref(T)(cref_Box(T) self) { \
-        return self->value; \
-    } \
-    static inline ref(T) Box_deref_mut(T)(ref_Box(T) self) { \
-        return self->value; \
-    } \
-    static inline T Box_into_inner(T)(ref_Box(T) self) { \
+    static inline T Box_into_inner(T)(ref(Box(T)) self) { \
         if (!self->value) { \
             fputs("Box is empty\n", stderr); \
             exit(1); \
@@ -126,12 +117,27 @@
         self->value = NULL; \
         return value; \
     } \
-    static inline Box(T) Box_clone(T)(cref_Box(T) src) { \
-        if (!src) { \
+    static inline void TEMPLATE_METHOD(Free, free, Box(T))(ref(Box(T)) self) { \
+        if (self->value) { \
+            Free(T)(self->value); \
+            MY_C_UTILS_FREE(self->value); \
+            self->value = NULL; \
+        } \
+    } \
+    static inline Box(T) TEMPLATE_METHOD(Clone, clone, Box(T))(cref(Box(T)) self) { \
+        if (!self) { \
             perror("Cannot clone NULL Box pointer"); \
             exit(1); \
         } \
-        return Box_new(T)(T##_clone(src->value)); \
-    }
+        return Box_new(T)(Clone(T)(self->value)); \
+    } \
+    static inline cref(T) TEMPLATE_METHOD(Deref, deref, Box(T))(cref(Box(T)) self) { \
+        return self->value; \
+    } \
+    static inline ref(T) TEMPLATE_METHOD(DerefMut, deref_mut, Box(T))(ref(Box(T)) self) { \
+        return self->value; \
+    } \
+    RESULT_CONFIG(Box(T), cref(Char)) \
+    RESULT_CONFIG(ref(Box(T)), cref(Char))
 
 #endif

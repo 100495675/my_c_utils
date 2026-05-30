@@ -6,7 +6,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "my_c_utils/template.h"
 #include "my_c_utils/free.h"
+#include "my_c_utils/clone.h"
+#include "my_c_utils/deref.h"
 
 // ref_##T is a mutable borrowed view.
 // cref_##T is an immutable borrowed view.
@@ -15,9 +18,9 @@
 #define REF_EXPAND(T)                                               \
     typedef T *ref_##T;                                             \
     typedef const T *cref_##T;                                      \
-    void MY_C_UTILS_CONCAT(ref_##T, _free)(ref_##T *self) { (void)self; } \
-    void MY_C_UTILS_CONCAT(cref_##T, _free)(cref_##T *self) { (void)self; } \
-    static inline ref_##T MY_C_UTILS_CONCAT(ref_##T, _clone)(const ref_##T *self) \
+    static inline void TEMPLATE_METHOD(Free, free, ref_##T)(ref_##T *self) { (void)self; } \
+    static inline void TEMPLATE_METHOD(Free, free, cref_##T)(cref_##T *self) { (void)self; } \
+    static inline ref_##T TEMPLATE_METHOD(Clone, clone, ref_##T)(const ref_##T *self) \
     { \
         if (!self) { \
             perror("Cannot clone NULL pointer"); \
@@ -25,7 +28,7 @@
         } \
         return *self; \
     } \
-    static inline cref_##T MY_C_UTILS_CONCAT(cref_##T, _clone)(const cref_##T *self) \
+    static inline cref_##T TEMPLATE_METHOD(Clone, clone, cref_##T)(const cref_##T *self) \
     { \
         if (!self) { \
             perror("Cannot clone NULL pointer"); \
@@ -33,7 +36,7 @@
         } \
         return *self; \
     } \
-    static inline T MY_C_UTILS_CONCAT(ref_##T, _deref)(ref_##T self) \
+    static inline T TEMPLATE_METHOD(Deref, deref, ref_##T)(ref_##T self) \
     { \
         if (!self) { \
             perror("Cannot dereference NULL pointer"); \
@@ -41,7 +44,7 @@
         } \
         return *self; \
     } \
-    static inline T MY_C_UTILS_CONCAT(cref_##T, _deref)(cref_##T self) \
+    static inline T TEMPLATE_METHOD(Deref, deref, cref_##T)(cref_##T self) \
     { \
         if (!self) { \
             perror("Cannot dereference NULL pointer"); \
@@ -69,7 +72,7 @@
  * @returns ref(T)
  * @usage ref(Int) cloned = ref_clone(Int)(&my_ref);
  */
-#define ref_clone(...) TEMPLATE_METHOD(ref, clone, __VA_ARGS__)
+#define ref_clone(...) Clone(ref(__VA_ARGS__))
 
 /**
  * @brief Clones the immutable reference wrapper (by copying the pointer address).
@@ -78,7 +81,7 @@
  * @returns cref(T)
  * @usage cref(Int) cloned = cref_clone(Int)(&my_cref);
  */
-#define cref_clone(...) TEMPLATE_METHOD(cref, clone, __VA_ARGS__)
+#define cref_clone(...) Clone(cref(__VA_ARGS__))
 
 /**
  * @brief Dereferences the mutable pointer, returning the T value by copy/value. Panics and aborts if NULL.
@@ -87,7 +90,7 @@
  * @returns T
  * @usage Int value = ref_deref(Int)(my_ref);
  */
-#define ref_deref(...) TEMPLATE_METHOD(ref, deref, __VA_ARGS__)
+#define ref_deref(...) Deref(ref(__VA_ARGS__))
 
 /**
  * @brief Dereferences the immutable pointer, returning the T value by copy/value. Panics and aborts if NULL.
@@ -96,6 +99,6 @@
  * @returns T
  * @usage Int value = cref_deref(Int)(my_cref);
  */
-#define cref_deref(...) TEMPLATE_METHOD(cref, deref, __VA_ARGS__)
+#define cref_deref(...) Deref(cref(__VA_ARGS__))
 
 #endif

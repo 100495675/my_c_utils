@@ -1,30 +1,12 @@
+#include "my_c_utils/primitives.h"
 #include "my_c_utils/option.h"
 #include "my_c_utils/result.h"
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-
-static inline void Int_free(Int *val)
-{
-    (void)val;
-}
-
-static inline void Double_free(Double *val)
-{
-    (void)val;
-}
-
-// 1. Instantiate Option and Result Templates first
-RESULT_CONFIG(Int, cref(Char))
-RESULT_CONFIG(Double, cref(Char))
 OPTION_CONFIG(Int)
 OPTION_CONFIG(Double)
-OPTION_MAP_CONFIG(Int, Double)
-OPTION_AND_THEN_CONFIG(Int, Double)
-
-RESULT_MAP_CONFIG(Int, cref(Char), Double)
-RESULT_AND_THEN_CONFIG(Int, cref(Char), Double)
 
 // 2. Helper mapping functions for Option
 static inline Double int_to_double(Int x)

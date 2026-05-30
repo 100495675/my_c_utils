@@ -72,7 +72,7 @@ int main(void)
     Size expected_idx = 0;
     Int expected_val = 10;
     
-    Result(ref(Pair(Size, ref(Int))), cref(Char)) res = iter_next(Enumerate(Vector(Int), Int))(&enum_it);
+    Result(ref(Pair(Size, ref(Int))), cref(Char)) res = iter_Enumerate_next(Vector(Int), Int)(&enum_it);
     while (!res.is_error) {
       ref(Pair(Size, ref(Int))) pair_ref = Result_unwrap(ref(Pair(Size, ref(Int))), cref(Char))(res);
       Pair(Size, ref(Int)) pair = ref_deref(Pair(Size, ref(Int)))(pair_ref);
@@ -81,10 +81,10 @@ int main(void)
       
       expected_idx++;
       expected_val += 10;
-      res = iter_next(Enumerate(Vector(Int), Int))(&enum_it);
+      res = iter_Enumerate_next(Vector(Int), Int)(&enum_it);
     }
     assert(expected_idx == 5);
-    iter_free(Enumerate(Vector(Int), Int))(&enum_it);
+    iter_Enumerate_free(Vector(Int), Int)(&enum_it);
     printf("✓\n");
   }
 
@@ -100,7 +100,7 @@ int main(void)
     Int expected_v2 = 10;
     Size count = 0;
 
-    Result(ref(Pair(ref(Int), ref(Int))), cref(Char)) res = iter_next(Zip(List(Int), Vector(Int), Int, Int))(&zip_it);
+    Result(ref(Pair(ref(Int), ref(Int))), cref(Char)) res = iter_Zip_next(List(Int), Vector(Int), Int, Int)(&zip_it);
     while (!res.is_error) {
       ref(Pair(ref(Int), ref(Int))) pair_ref = Result_unwrap(ref(Pair(ref(Int), ref(Int))), cref(Char))(res);
       Pair(ref(Int), ref(Int)) pair = ref_deref(Pair(ref(Int), ref(Int)))(pair_ref);
@@ -110,11 +110,11 @@ int main(void)
       expected_v1 += 100;
       expected_v2 += 10;
       count++;
-      res = iter_next(Zip(List(Int), Vector(Int), Int, Int))(&zip_it);
+      res = iter_Zip_next(List(Int), Vector(Int), Int, Int)(&zip_it);
     }
     // Zip must terminate when list runs out (3 elements), even though vector has 5
     assert(count == 3);
-    iter_free(Zip(List(Int), Vector(Int), Int, Int))(&zip_it);
+    iter_Zip_free(List(Int), Vector(Int), Int, Int)(&zip_it);
     printf("✓\n");
   }
 

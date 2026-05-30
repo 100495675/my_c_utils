@@ -19,13 +19,13 @@
         A first; \
         B second; \
     } Pair(A, B); \
-    typedef Pair(A, B) *TEMPLATE_TYPE(ref, Pair(A, B)); \
-    typedef const Pair(A, B) *TEMPLATE_TYPE(cref, Pair(A, B)); \
-    static inline void TEMPLATE_METHOD(ref, free, Pair(A, B))(TEMPLATE_TYPE(ref, Pair(A, B)) *self) { (void)self; } \
-    static inline void TEMPLATE_METHOD(cref, free, Pair(A, B))(TEMPLATE_TYPE(cref, Pair(A, B)) *self) { (void)self; } \
-    static inline TEMPLATE_TYPE(ref, Pair(A, B)) TEMPLATE_METHOD(ref, clone, Pair(A, B))(const TEMPLATE_TYPE(ref, Pair(A, B)) *self) { return *self; } \
-    static inline TEMPLATE_TYPE(cref, Pair(A, B)) TEMPLATE_METHOD(cref, clone, Pair(A, B))(const TEMPLATE_TYPE(cref, Pair(A, B)) *self) { return *self; } \
-    static inline Pair(A, B) TEMPLATE_METHOD(ref, deref, Pair(A, B))(TEMPLATE_TYPE(ref, Pair(A, B)) self) { return *self; } \
-    static inline Pair(A, B) TEMPLATE_METHOD(cref, deref, Pair(A, B))(TEMPLATE_TYPE(cref, Pair(A, B)) self) { return *self; }
+    typedef Pair(A, B) *ref(Pair(A, B)); \
+    typedef const Pair(A, B) *cref(Pair(A, B)); \
+    static inline void TEMPLATE_METHOD(Free, free, ref(Pair(A, B)))(ref(Pair(A, B)) *self) { (void)self; } \
+    static inline void TEMPLATE_METHOD(Free, free, cref(Pair(A, B)))(cref(Pair(A, B)) *self) { (void)self; } \
+    static inline ref(Pair(A, B)) TEMPLATE_METHOD(Clone, clone, ref(Pair(A, B)))(const ref(Pair(A, B)) *self) { return *self; } \
+    static inline cref(Pair(A, B)) TEMPLATE_METHOD(Clone, clone, cref(Pair(A, B)))(const cref(Pair(A, B)) *self) { return *self; } \
+    static inline Pair(A, B) TEMPLATE_METHOD(Deref, deref, ref(Pair(A, B)))(ref(Pair(A, B)) self) { return *self; } \
+    static inline Pair(A, B) TEMPLATE_METHOD(Deref, deref, cref(Pair(A, B)))(cref(Pair(A, B)) self) { return *self; }
 
 #endif

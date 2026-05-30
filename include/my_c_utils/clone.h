@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "my_c_utils/tipos.h"
+#include "my_c_utils/template.h"
 
 /**
  * Clone Infrastructure
@@ -23,6 +24,12 @@
  */
 
 /**
+ * @brief Trait definition to deep-clone/duplicate a value of a type.
+ * @usage Clone(T)(&instance)
+ */
+#define Clone(...) TEMPLATE_METHOD(Clone, clone, __VA_ARGS__)
+
+/**
  * TRIVIAL_CLONE(T)
  *
  * Generates a trivial clone function for primitive types.
@@ -38,7 +45,7 @@
  *   etc.
  */
 #define TRIVIAL_CLONE(T)                              \
-    static inline T MY_C_UTILS_CONCAT(T, _clone)(const T *self)          \
+    static inline T TEMPLATE_METHOD(Clone, clone, T)(const T *self)  \
     {                                                 \
         if (!self)                                    \
         {                                             \

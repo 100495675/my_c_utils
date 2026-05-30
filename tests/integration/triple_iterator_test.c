@@ -39,7 +39,7 @@ int main(void)
     printf("TEST 2: Vector Mutable Reference Iterator (_mut)... ");
     Vector(Int) local_vec = Vector_clone(Int)(&vec);
     for_each_mut(Vector(Int), item_ref, &local_vec) {
-      *item_ref = (*item_ref) * 2;
+      *item_ref = ref_deref(Int)(item_ref) * 2;
     }
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&local_vec, 0))) == 20);
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Vector_at(Int)(&local_vec, 1))) == 40);
@@ -75,7 +75,7 @@ int main(void)
     printf("TEST 5: LinkedList Mutable Reference Iterator (_mut)... ");
     List(Int) local_list = List_clone(Int)(&list);
     for_each_mut(List(Int), item_ref, &local_list) {
-      *item_ref = (*item_ref) * 2;
+      *item_ref = ref_deref(Int)(item_ref) * 2;
     }
     // Convert to vector to assert easily
     Vector(Int) v_collected = Vector_new(Int)();
@@ -120,7 +120,7 @@ int main(void)
     (void)Hashmap_add(String, Int)(&hm, string_dup("two"), 20);
 
     for_each_mut(Hashmap(String, Int), item_ref, &hm) {
-      *item_ref = (*item_ref) * 2;
+      *item_ref = ref_deref(Int)(item_ref) * 2;
     }
 
     assert(ref_deref(Int)(Result_unwrap(ref(Int), cref(Char))(Hashmap_get(String, Int)(&hm, "one"))) == 20);

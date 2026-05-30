@@ -2,6 +2,7 @@
 #define MY_C_UTILS_ITERATOR_H
 
 #include "my_c_utils/template.h"
+#include "my_c_utils/default.h"
 #include "my_c_utils/pair.h"
 
 /*
@@ -12,7 +13,84 @@ Functions the containes has to implement to be iterable:
     a Result_Void, or an error if the iterator is out of bounds
 */
 
-// Iterator macros moved to template.h to allow global access for result.h and option.h
+// Iterator traits and driving macros
+#define iter(...) MY_C_UTILS_CONCAT(iter_, __VA_ARGS__)
+#define ref_iter(...) MY_C_UTILS_CONCAT(ref_iter_, __VA_ARGS__)
+#define cref_iter(...) MY_C_UTILS_CONCAT(cref_iter_, __VA_ARGS__)
+
+#define into_iter(...) IntoIterator(__VA_ARGS__)
+#define iter_next(...) Iterator_next(iter(__VA_ARGS__))
+#define iter_deref(...) Iterator_deref(iter(__VA_ARGS__))
+#define iter_free(...) Iterator_free(iter(__VA_ARGS__))
+
+#define iter_val(...) MY_C_UTILS_CONCAT(iter_val_, __VA_ARGS__)
+#define ref_iter_val(...) MY_C_UTILS_CONCAT(ref_iter_val_, __VA_ARGS__)
+#define cref_iter_val(...) MY_C_UTILS_CONCAT(cref_iter_val_, __VA_ARGS__)
+
+#define into_iter_val(...) TEMPLATE_METHOD(IntoIterator, into_iter_val, __VA_ARGS__)
+#define iter_val_next(...) Iterator_next(iter_val(__VA_ARGS__))
+#define iter_val_deref(...) Iterator_deref(iter_val(__VA_ARGS__))
+#define iter_val_free(...) Iterator_free(iter_val(__VA_ARGS__))
+
+#define iter_mut(...) MY_C_UTILS_CONCAT(iter_mut_, __VA_ARGS__)
+#define ref_iter_mut(...) MY_C_UTILS_CONCAT(ref_iter_mut_, __VA_ARGS__)
+#define cref_iter_mut(...) MY_C_UTILS_CONCAT(cref_iter_mut_, __VA_ARGS__)
+
+#define iter_mut_init(...) IntoIteratorMut(__VA_ARGS__)
+#define iter_mut_next(...) Iterator_next(iter_mut(__VA_ARGS__))
+#define iter_mut_deref(...) Iterator_deref(iter_mut(__VA_ARGS__))
+#define iter_mut_free(...) Iterator_free(iter_mut(__VA_ARGS__))
+
+#define iter_const(...) MY_C_UTILS_CONCAT(iter_const_, __VA_ARGS__)
+#define ref_iter_const(...) MY_C_UTILS_CONCAT(ref_iter_const_, __VA_ARGS__)
+#define cref_iter_const(...) MY_C_UTILS_CONCAT(cref_iter_const_, __VA_ARGS__)
+
+#define iter_const_init(...) IntoIteratorConst(__VA_ARGS__)
+#define iter_const_next(...) Iterator_next(iter_const(__VA_ARGS__))
+#define iter_const_deref(...) Iterator_deref(iter_const(__VA_ARGS__))
+#define iter_const_free(...) Iterator_free(iter_const(__VA_ARGS__))
+
+/**
+ * @brief Trait definitions to get iterators from a container type.
+ * @usage IntoIterator(Vector(Int))(vec)
+ */
+#define IntoIterator(...)      TEMPLATE_METHOD(IntoIterator, into_iter, __VA_ARGS__)
+#define IntoIteratorMut(...)   TEMPLATE_METHOD(IntoIteratorMut, into_iter_mut, __VA_ARGS__)
+#define IntoIteratorConst(...) TEMPLATE_METHOD(IntoIteratorConst, into_iter_const, __VA_ARGS__)
+
+/**
+ * @brief Trait definitions to drive iteration for an iterator type.
+ * @usage Iterator_next(iter_val(Vector(Int)))(&it)
+ */
+#define Iterator_next(...)  TEMPLATE_METHOD(Iterator, next, __VA_ARGS__)
+#define Iterator_deref(...) TEMPLATE_METHOD(Iterator, deref, __VA_ARGS__)
+#define Iterator_free(...)  TEMPLATE_METHOD(Iterator, free, __VA_ARGS__)
+
+// Namespaced adapter macros
+#define iter_Mapped_next(...)   Iterator_next(iter_Mapped(__VA_ARGS__))
+#define iter_Mapped_deref(...)  Iterator_deref(iter_Mapped(__VA_ARGS__))
+#define iter_Mapped_free(...)   Iterator_free(iter_Mapped(__VA_ARGS__))
+
+#define iter_Filtered_next(...)   Iterator_next(iter_Filtered(__VA_ARGS__))
+#define iter_Filtered_deref(...)  Iterator_deref(iter_Filtered(__VA_ARGS__))
+#define iter_Filtered_free(...)   Iterator_free(iter_Filtered(__VA_ARGS__))
+
+#define iter_Take_next(...)   Iterator_next(iter_Take(__VA_ARGS__))
+#define iter_Take_deref(...)  Iterator_deref(iter_Take(__VA_ARGS__))
+#define iter_Take_free(...)   Iterator_free(iter_Take(__VA_ARGS__))
+
+#define iter_Skip_next(...)   Iterator_next(iter_Skip(__VA_ARGS__))
+#define iter_Skip_deref(...)  Iterator_deref(iter_Skip(__VA_ARGS__))
+#define iter_Skip_free(...)   Iterator_free(iter_Skip(__VA_ARGS__))
+
+#define iter_Enumerate_next(...)   Iterator_next(iter_Enumerate(__VA_ARGS__))
+#define iter_Enumerate_deref(...)  Iterator_deref(iter_Enumerate(__VA_ARGS__))
+#define iter_Enumerate_free(...)   Iterator_free(iter_Enumerate(__VA_ARGS__))
+
+#define iter_Zip_next(...)   Iterator_next(iter_Zip(__VA_ARGS__))
+#define iter_Zip_deref(...)  Iterator_deref(iter_Zip(__VA_ARGS__))
+#define iter_Zip_free(...)   Iterator_free(iter_Zip(__VA_ARGS__))
+
 #define lambda_impl(ret_t, params, body, unique_id) \
     ({ \
         ret_t unique_id params body \
@@ -35,9 +113,9 @@ Functions the containes has to implement to be iterable:
 // due to standard C preprocessor syntax limitations for control structures (cannot define macros inside macros or paste unclosed parentheses without compiler errors).
 
 #define for_each_ref_impl(ContainerT, var_name, iterable, state_var) \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable)) it; \
+    for (struct { __typeof__(into_iter(ContainerT)(*iterable)) it; \
                   __typeof__(iter_next(ContainerT)(NULL)) res; \
-                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable), .active = true}; \
+                  bool active; } state_var = {.it = into_iter(ContainerT)(*iterable), .active = true}; \
          (state_var.active = true) && \
          (state_var.res = iter_next(ContainerT)(&state_var.it), \
           !state_var.res.is_error ? true : (iter_free(ContainerT)(&state_var.it), false));) \
@@ -56,9 +134,9 @@ Functions the containes has to implement to be iterable:
     for_each_ref_impl(ContainerT, var_name, iterable, MY_C_UTILS_CONCAT(_state_, __COUNTER__))
 
 #define for_each_impl(ContainerT, var_name, iterable, state_var) \
-    for (struct { __typeof__(MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable)) it; \
+    for (struct { __typeof__(into_iter(ContainerT)(*iterable)) it; \
                   __typeof__(iter_next(ContainerT)(NULL)) res; \
-                  bool active; } state_var = {.it = MY_C_UTILS_CONCAT(ContainerT, _into_iter)(*iterable), .active = true}; \
+                  bool active; } state_var = {.it = into_iter(ContainerT)(*iterable), .active = true}; \
          (state_var.active = true) && \
          (state_var.res = iter_next(ContainerT)(&state_var.it), \
           !state_var.res.is_error ? true : (iter_free(ContainerT)(&state_var.it), false));) \
@@ -180,7 +258,7 @@ Functions the containes has to implement to be iterable:
     ({ \
         typedef __typeof__(*(iter_next(SrcContainerT)((iter(SrcContainerT)*)0).value)) _SrcT; \
         void _for_each_fn_impl(SrcContainerT* _c, void (*_f)(const _SrcT*)) { \
-            iter(SrcContainerT) _s = MY_C_UTILS_CONCAT(SrcContainerT, _into_iter)(*_c); \
+            iter(SrcContainerT) _s = into_iter(SrcContainerT)(*_c); \
             __typeof__(iter_next(SrcContainerT)(&_s)) _res = iter_next(SrcContainerT)(&_s); \
             while (!_res.is_error) { \
                 _f(_res.value); \
@@ -206,11 +284,11 @@ Functions the containes has to implement to be iterable:
         DestT current_value; \
     } iter_Mapped(SrcContainer, DestT); \
     \
-    static inline void TEMPLATE_METHOD(iter_Mapped, free, SrcContainer, DestT)(const iter_Mapped(SrcContainer, DestT)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Mapped(SrcContainer, DestT))(iter_Mapped(SrcContainer, DestT)* self) { \
         iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
-    static inline Result(ref(DestT), cref(Char)) TEMPLATE_METHOD(iter_Mapped, next, SrcContainer, DestT)(iter_Mapped(SrcContainer, DestT)* self) { \
+    static inline Result(ref(DestT), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Mapped(SrcContainer, DestT))(iter_Mapped(SrcContainer, DestT)* self) { \
         __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
         if (res.is_error) { \
             return Result_err(ref(DestT), cref(Char))(res.error); \
@@ -219,7 +297,7 @@ Functions the containes has to implement to be iterable:
         return Result_ok(ref(DestT), cref(Char))(&self->current_value); \
     } \
     \
-    static inline Result(ref(DestT), cref(Char)) TEMPLATE_METHOD(iter_Mapped, deref, SrcContainer, DestT)(const iter_Mapped(SrcContainer, DestT)* self) { \
+    static inline Result(ref(DestT), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Mapped(SrcContainer, DestT))(const iter_Mapped(SrcContainer, DestT)* self) { \
         __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
         if (res.is_error) { \
             return Result_err(ref(DestT), cref(Char))(res.error); \
@@ -243,11 +321,11 @@ Functions the containes has to implement to be iterable:
         bool (*predicate)(const T*); \
     } iter_Filtered(SrcContainer); \
     \
-    static inline void TEMPLATE_METHOD(iter_Filtered, free, SrcContainer)(const iter_Filtered(SrcContainer)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Filtered(SrcContainer))(iter_Filtered(SrcContainer)* self) { \
         iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Filtered, next, SrcContainer)(iter_Filtered(SrcContainer)* self) { \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Filtered(SrcContainer))(iter_Filtered(SrcContainer)* self) { \
         __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
         while (!res.is_error) { \
             if (self->predicate(res.value)) { \
@@ -258,7 +336,7 @@ Functions the containes has to implement to be iterable:
         return Result_err(ref(T), cref(Char))(res.error); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Filtered, deref, SrcContainer)(const iter_Filtered(SrcContainer)* self) { \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Filtered(SrcContainer))(const iter_Filtered(SrcContainer)* self) { \
         __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
         if (res.is_error) { \
             return Result_err(ref(T), cref(Char))(res.error); \
@@ -394,11 +472,11 @@ Functions the containes has to implement to be iterable:
         Size count; \
     } iter_Take(SrcContainer); \
     \
-    static inline void TEMPLATE_METHOD(iter_Take, free, SrcContainer)(const iter_Take(SrcContainer)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Take(SrcContainer))(iter_Take(SrcContainer)* self) { \
         iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Take, next, SrcContainer)(iter_Take(SrcContainer)* self) { \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Take(SrcContainer))(iter_Take(SrcContainer)* self) { \
         if (self->count >= self->limit) { \
             return Result_err(ref(T), cref(Char))("Take limit reached"); \
         } \
@@ -410,7 +488,7 @@ Functions the containes has to implement to be iterable:
         return Result_ok(ref(T), cref(Char))(res.value); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Take, deref, SrcContainer)(const iter_Take(SrcContainer)* self) { \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Take(SrcContainer))(const iter_Take(SrcContainer)* self) { \
         if (self->count >= self->limit) { \
             return Result_err(ref(T), cref(Char))("Take limit reached"); \
         } \
@@ -447,16 +525,20 @@ Functions the containes has to implement to be iterable:
         iter(SrcContainer) source; \
     } iter_Skip(SrcContainer); \
     \
-    static inline void TEMPLATE_METHOD(iter_Skip, free, SrcContainer)(const iter_Skip(SrcContainer)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Skip(SrcContainer))(iter_Skip(SrcContainer)* self) { \
         iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Skip, next, SrcContainer)(iter_Skip(SrcContainer)* self) { \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Skip(SrcContainer))(iter_Skip(SrcContainer)* self) { \
         return iter_next(SrcContainer)(&self->source); \
     } \
     \
-    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(iter_Skip, deref, SrcContainer)(const iter_Skip(SrcContainer)* self) { \
-        return iter_deref(SrcContainer)(&self->source); \
+    static inline Result(ref(T), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Skip(SrcContainer))(const iter_Skip(SrcContainer)* self) { \
+        __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
+        if (res.is_error) { \
+            return Result_err(ref(T), cref(Char))(res.error); \
+        } \
+        return Result_ok(ref(T), cref(Char))(res.value); \
     }
 
 /**
@@ -495,11 +577,11 @@ Functions the containes has to implement to be iterable:
         Pair(Size, ref(T)) current_value; \
     } iter_Enumerate(SrcContainer, T); \
     \
-    static inline void TEMPLATE_METHOD(iter_Enumerate, free, SrcContainer, T)(const iter_Enumerate(SrcContainer, T)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Enumerate(SrcContainer, T))(iter_Enumerate(SrcContainer, T)* self) { \
         iter_free(SrcContainer)((iter(SrcContainer)*)&self->source); \
     } \
     \
-    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(iter_Enumerate, next, SrcContainer, T)(iter_Enumerate(SrcContainer, T)* self) { \
+    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Enumerate(SrcContainer, T))(iter_Enumerate(SrcContainer, T)* self) { \
         __typeof__(iter_next(SrcContainer)(&self->source)) res = iter_next(SrcContainer)(&self->source); \
         if (res.is_error) { \
             return Result_err(ref(Pair(Size, ref(T))), cref(Char))(res.error); \
@@ -510,7 +592,7 @@ Functions the containes has to implement to be iterable:
         return Result_ok(ref(Pair(Size, ref(T))), cref(Char))(&self->current_value); \
     } \
     \
-    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(iter_Enumerate, deref, SrcContainer, T)(const iter_Enumerate(SrcContainer, T)* self) { \
+    static inline Result(ref(Pair(Size, ref(T))), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Enumerate(SrcContainer, T))(const iter_Enumerate(SrcContainer, T)* self) { \
         __typeof__(iter_deref(SrcContainer)(&self->source)) res = iter_deref(SrcContainer)(&self->source); \
         if (res.is_error) { \
             return Result_err(ref(Pair(Size, ref(T))), cref(Char))(res.error); \
@@ -554,12 +636,12 @@ Functions the containes has to implement to be iterable:
         Pair(ref(T1), ref(T2)) current_value; \
     } iter_Zip(SrcContainer1, SrcContainer2, T1, T2); \
     \
-    static inline void TEMPLATE_METHOD(iter_Zip, free, SrcContainer1, SrcContainer2, T1, T2)(const iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+    static inline void TEMPLATE_METHOD(Iterator, free, iter_Zip(SrcContainer1, SrcContainer2, T1, T2))(iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
         iter_free(SrcContainer1)((iter(SrcContainer1)*)&self->source1); \
         iter_free(SrcContainer2)((iter(SrcContainer2)*)&self->source2); \
     } \
     \
-    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(iter_Zip, next, SrcContainer1, SrcContainer2, T1, T2)(iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(Iterator, next, iter_Zip(SrcContainer1, SrcContainer2, T1, T2))(iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
         __typeof__(iter_next(SrcContainer1)(&self->source1)) res1 = iter_next(SrcContainer1)(&self->source1); \
         __typeof__(iter_next(SrcContainer2)(&self->source2)) res2 = iter_next(SrcContainer2)(&self->source2); \
         if (res1.is_error || res2.is_error) { \
@@ -570,7 +652,7 @@ Functions the containes has to implement to be iterable:
         return Result_ok(ref(Pair(ref(T1), ref(T2))), cref(Char))(&self->current_value); \
     } \
     \
-    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(iter_Zip, deref, SrcContainer1, SrcContainer2, T1, T2)(const iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
+    static inline Result(ref(Pair(ref(T1), ref(T2))), cref(Char)) TEMPLATE_METHOD(Iterator, deref, iter_Zip(SrcContainer1, SrcContainer2, T1, T2))(const iter_Zip(SrcContainer1, SrcContainer2, T1, T2)* self) { \
         __typeof__(iter_deref(SrcContainer1)(&self->source1)) res1 = iter_deref(SrcContainer1)(&self->source1); \
         __typeof__(iter_deref(SrcContainer2)(&self->source2)) res2 = iter_deref(SrcContainer2)(&self->source2); \
         if (res1.is_error || res2.is_error) { \

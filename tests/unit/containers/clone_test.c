@@ -23,7 +23,7 @@ void test_clone_primitive_int(void)
 {
     printf("TEST: Clone primitive Int... ");
     Int original = 42;
-    Int cloned = Int_clone(&original);
+    Int cloned = Clone(Int)(&original);
     assert(cloned == 42);
     printf("✓\n");
 }
@@ -32,7 +32,7 @@ void test_clone_primitive_char(void)
 {
     printf("TEST: Clone primitive Char... ");
     Char original = 'A';
-    Char cloned = Char_clone(&original);
+    Char cloned = Clone(Char)(&original);
     assert(cloned == 'A');
     printf("✓\n");
 }

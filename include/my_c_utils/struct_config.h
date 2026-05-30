@@ -85,8 +85,8 @@
 #define MY_C_UTILS_STRUCT_MEMBER_ASSIGN(FieldT, FieldName) .FieldName = FieldName
 
 #define MY_C_UTILS_STRUCT_FIELD_DECLARE(FieldT, FieldName) FieldT FieldName;
-#define MY_C_UTILS_STRUCT_FIELD_FREE(FieldT, FieldName) MY_C_UTILS_CONCAT(FieldT, _free)(&self->FieldName);
-#define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldT, FieldName) dest.FieldName = MY_C_UTILS_CONCAT(FieldT, _clone)(&src->FieldName);
+#define MY_C_UTILS_STRUCT_FIELD_FREE(FieldT, FieldName) Free(FieldT)(&self->FieldName);
+#define MY_C_UTILS_STRUCT_FIELD_CLONE(FieldT, FieldName) dest.FieldName = Clone(FieldT)(&src->FieldName);
 
 #define NEW_CONFIG(T, ...) \
     static inline T MY_C_UTILS_CONCAT(T, _new)(MY_C_UTILS_FOR_EACH_PARAM(MY_C_UTILS_STRUCT_PARAM_DECLARE, __VA_ARGS__)) \
@@ -95,7 +95,7 @@
     }
 
 #define FREE_CONFIG(T, ...)                                                 \
-    static inline void MY_C_UTILS_CONCAT(T, _free)(ref(T) self)         \
+    static inline void TEMPLATE_METHOD(Free, free, T)(T *self)         \
     {                                                                          \
         if (!self)                                                             \
             return;                                                            \
@@ -103,7 +103,7 @@
     }
 
 #define CLONE_CONFIG(T, ...)                                                 \
-    static inline T MY_C_UTILS_CONCAT(T, _clone)(cref(T) src)         \
+    static inline T TEMPLATE_METHOD(Clone, clone, T)(const T *src)         \
     {                                                                           \
         if (!src)                                                               \
         {                                                                       \

@@ -26,7 +26,7 @@ Int main(void)
     sum_ref += ref_deref(Int)(item);
   }
   assert(sum_ref == 60);
-  Int_free(&sum_ref);
+  Free(Int)(&sum_ref);
 
   Int sum_copy = 0;
   Vector(Int) clone2 = Vector_clone(Int)(&vector);
